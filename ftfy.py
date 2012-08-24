@@ -12,7 +12,7 @@ if sys.version_info.major == 3:
 else:
     import htmlentitydefs
 
-def fixtext(text, normalization='NFKC'):
+def fix_text(text, normalization='NFKC'):
     """
     Given Unicode text as input, make its representation consistent and
     possibly less broken:
@@ -42,28 +42,28 @@ def fixtext(text, normalization='NFKC'):
     Unicode normalization, such as NFC or NFKD, or set it to None to skip this
     step.
 
-        >>> print(fixtext('uÌˆnicode'))
+        >>> print(fix_text('uÌˆnicode'))
         ünicode
                
-        >>> print(fixtext('Broken text&hellip; it&#x2019;s ﬂubberiﬁc!'))
+        >>> print(fix_text('Broken text&hellip; it&#x2019;s ﬂubberiﬁc!'))
         Broken text... it's flubberific!
 
-        >>> print(fixtext('HTML entities &lt;3'))
+        >>> print(fix_text('HTML entities &lt;3'))
         HTML entities <3
 
-        >>> print(fixtext('<em>HTML entities &lt;3</em>'))
+        >>> print(fix_text('<em>HTML entities &lt;3</em>'))
         <em>HTML entities &lt;3</em>
 
-        >>> print(fixtext('\001\033[36;44mI&#x92;m blue, da ba dee da ba '
+        >>> print(fix_text('\001\033[36;44mI&#x92;m blue, da ba dee da ba '
         ...               'doo&#133;\033[0m'))
         I'm blue, da ba dee da ba doo...
 
-        >>> len(fixtext(''))
+        >>> len(fix_text(''))
         0
 
     """
     if isinstance(text, bytes):
-        raise TypeError("fixtext works on Unicode text. Please decode "
+        raise TypeError("fix_text works on Unicode text. Please decode "
                         "your text first.")
     text = remove_terminal_escapes(text)
     if '<' not in text or '>' not in text:
