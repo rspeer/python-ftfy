@@ -14,7 +14,8 @@ else:
 
 def fixtext(text, normalization='NFKC'):
     """
-    Given any basestring as input, make its representation consistent:
+    Given any basestring as input, make its representation consistent and
+    possibly less broken:
 
     - Ensure that it is a Unicode string, converting from UTF-8 if
       necessary.
@@ -40,13 +41,33 @@ def fixtext(text, normalization='NFKC'):
     You may change the `normalization` argument to apply a different kind of
     Unicode normalization, such as NFC or NFKD, or set it to None to skip this
     step.
+
+        >>> print(fixtext('uÌˆnicode'))
+        ünicode
+               
+        >>> print(fixtext('Broken text&hellip; it&#x2019;s ﬂubberiﬁc!'))
+        Broken text... it's flubberific!
+
+        >>> print(fixtext('HTML entities &lt;3'))
+        HTML entities <3
+
+        >>> print(fixtext('<em>HTML entities &lt;3</em>'))
+        <em>HTML entities &lt;3</em>
+
+        >>> print(fixtext('\001\033[36;44mI&#x92;m blue, da ba dee da ba '
+        ...               'doo&#133;\033[0m'))
+        I'm blue, da ba dee da ba doo...
+
+        >>> len(fixtext(''))
+        0
+
     """
     if isinstance(text, bytes):
         text = text.decode('utf-8')
     text = remove_terminal_escapes(text)
-    text = fix_bad_encoding(text)
     if '<' not in text or '>' not in text:
         text = unescape_html(text)
+    text = fix_bad_encoding(text)
     text = text.translate(CONTROL_CHARS)
     if normalization is not None:
         text = unicodedata.normalize(normalization, text)
