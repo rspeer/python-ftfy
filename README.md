@@ -1,5 +1,7 @@
-A simple module for making text less broken. Works in Python 2.7, Python 3.2,
-or later.
+## ftfy: fixes text for you
+
+This is a simple module for making text less broken. Works in Python 2.7, 
+Python 3.2, or later.
 
 Its main function, `fix_text` aka `ftfy`, performs the following operations on
 a Unicode string:
