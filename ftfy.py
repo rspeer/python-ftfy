@@ -74,6 +74,7 @@ def fix_text(text, normalization='NFKC'):
         text = unicodedata.normalize(normalization, text)
     text = uncurl_quotes(text)
     return text
+ftfy = fix_text
 
 def fix_bad_encoding(text):
     """
