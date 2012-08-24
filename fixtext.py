@@ -14,7 +14,7 @@ else:
 
 def fixtext(text, normalization='NFKC'):
     """
-    Given any basestring as input, make its representation consistent and
+    Given Unicode text as input, make its representation consistent and
     possibly less broken:
 
     - Ensure that it is a Unicode string, converting from UTF-8 if
@@ -62,8 +62,6 @@ def fixtext(text, normalization='NFKC'):
         0
 
     """
-    if isinstance(text, bytes):
-        text = text.decode('utf-8')
     text = remove_terminal_escapes(text)
     if '<' not in text or '>' not in text:
         text = unescape_html(text)
