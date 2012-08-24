@@ -62,6 +62,9 @@ def fixtext(text, normalization='NFKC'):
         0
 
     """
+    if isinstance(text, bytes):
+        raise TypeError("fixtext works on Unicode text. Please decode "
+                        "your text first.")
     text = remove_terminal_escapes(text)
     if '<' not in text or '>' not in text:
         text = unescape_html(text)
