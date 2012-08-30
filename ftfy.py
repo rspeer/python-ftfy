@@ -6,7 +6,7 @@ import re
 import sys
 
 # Adjust names that have changed in Python 3
-if sys.version_info.major == 3:
+if sys.version_info[0] >= 3:
     from html import entities as htmlentitydefs
     unichr = chr
 else:
