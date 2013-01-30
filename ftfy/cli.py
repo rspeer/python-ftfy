@@ -19,7 +19,7 @@ def main():
     # we're about to make things better.
     file = codecs.open(args.filename, encoding='latin-1')
     for line in fix_file(file):
-        sys.stdout.write(line.encode('utf-8'))
+        print(line.rstrip('\n'))
 
 
 if __name__ == '__main__':
