@@ -1,6 +1,8 @@
 from ftfy import fix_file
 import codecs
+
 import sys
+ENCODE_STDOUT = (sys.version_info.major < 3)
 
 
 def main():
@@ -19,7 +21,10 @@ def main():
     # we're about to make things better.
     file = codecs.open(args.filename, encoding='latin-1')
     for line in fix_file(file):
-        print(line.rstrip('\n'))
+        if ENCODE_STDOUT:
+            sys.stdout.write(line.encode('utf-8'))
+        else:
+            sys.stdout.write(line)
 
 
 if __name__ == '__main__':
