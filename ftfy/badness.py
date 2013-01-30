@@ -6,9 +6,9 @@ import re
 from ftfy.chardata import (SCRIPT_LETTERS, SINGLE_BYTE_WEIRDNESS,
     WINDOWS_1252_GREMLINS)
 
-import logging
-LOG = logging.getLogger(__name__)
-logging.basicConfig()
+import sys
+if sys.version_info.major == 3:
+    unichr = chr
 
 SCRIPT_MAP = {}
 
@@ -24,13 +24,13 @@ SCRIPT_MAP = {}
 # Astral characters pass through unmodified; we don't count them as script
 # conflicts. They are probably intentional.
 
-for codepoint in xrange(0x10000):
+for codepoint in range(0x10000):
     char = unichr(codepoint)
     if unicodedata.category(char).startswith('L'):
         name = unicodedata.name(char)
         script = name.split()[0]
         if script in SCRIPT_LETTERS:
-            SCRIPT_MAP[codepoint] = unicode(SCRIPT_LETTERS[script])
+            SCRIPT_MAP[codepoint] = SCRIPT_LETTERS[script]
         else:
             SCRIPT_MAP[codepoint] = 'z'
     elif unicodedata.category(char).startswith('Z'):
@@ -45,7 +45,7 @@ SCRIPT_MAP[0x0a] = '\n'
 SCRIPT_MAP[0xfffd] = '?'
 
 # mark weird extended characters as their own script
-for codepoint in xrange(0x100):
+for codepoint in range(0x100):
     if SINGLE_BYTE_WEIRDNESS[codepoint] >= 2:
         SCRIPT_MAP[codepoint] = 'W'
 
@@ -58,10 +58,10 @@ GREMLINS_RE = re.compile('[' +
     + ']')
 
 WEIRD_CHARACTER_RES = []
-for i in xrange(5):
+for i in range(5):
     chars = [unichr(codepoint) for codepoint in range(0x80, 0x100)
              if SINGLE_BYTE_WEIRDNESS[codepoint] > i]
-    WEIRD_CHARACTER_RES.append(re.compile(u'[' + u''.join(chars) + u']'))
+    WEIRD_CHARACTER_RES.append(re.compile('[' + ''.join(chars) + ']'))
 
 
 def num_consistent_scripts(scriptdata):
@@ -70,15 +70,15 @@ def num_consistent_scripts(scriptdata):
 
     Uses a "scriptdata" string as input, not the actual text.
 
-    >>> num_consistent_scripts(u'LL AAA.')
+    >>> num_consistent_scripts('LL AAA.')
     3
-    >>> num_consistent_scripts(u'LLAAA ...')
+    >>> num_consistent_scripts('LLAAA ...')
     3
-    >>> num_consistent_scripts(u'LAL')
+    >>> num_consistent_scripts('LAL')
     0
-    >>> num_consistent_scripts(u'..LLL..')
+    >>> num_consistent_scripts('..LLL..')
     2
-    >>> num_consistent_scripts(u'LWWW')
+    >>> num_consistent_scripts('LWWW')
     2
     """
     matches = CONSISTENT_SCRIPTS_RE.findall(scriptdata)
@@ -95,15 +95,15 @@ def num_inconsistent_scripts(scriptdata):
 
     Uses a "scriptdata" string as input, not the actual text.
 
-    >>> num_inconsistent_scripts(u'LL AAA.')
+    >>> num_inconsistent_scripts('LL AAA.')
     0
-    >>> num_inconsistent_scripts(u'LLAAA ...')
+    >>> num_inconsistent_scripts('LLAAA ...')
     1
-    >>> num_inconsistent_scripts(u'LAL')
+    >>> num_inconsistent_scripts('LAL')
     2
-    >>> num_inconsistent_scripts(u'..LLL..')
+    >>> num_inconsistent_scripts('..LLL..')
     0
-    >>> num_inconsistent_scripts(u'LWWW')
+    >>> num_inconsistent_scripts('LWWW')
     3
     """
     # First, count the number of times two letters are adjacent
@@ -126,9 +126,9 @@ def script_obscurity(scriptdata):
     Count the number of characters in obscure scripts. Characters in very
     obscure scripts count twice as much.
 
-    >>> script_obscurity(u'LWWW')
+    >>> script_obscurity('LWWW')
     0
-    >>> script_obscurity(u'Llkzz')
+    >>> script_obscurity('Llkzz')
     6
     """
     return len(LOWERCASE_RE.findall(scriptdata)) + scriptdata.count('z')
@@ -138,11 +138,11 @@ def character_weirdness(text):
     """
     Sum the weirdness of all the single-byte characters in this text.
 
-    >>> character_weirdness(u'test')
+    >>> character_weirdness('test')
     0
-    >>> character_weirdness(u'wúút')
+    >>> character_weirdness('wúút')
     0
-    >>> character_weirdness(u'\x81\x81')
+    >>> character_weirdness('\x81\x81')
     10
     """
     total = 0
@@ -175,6 +175,5 @@ def text_badness(text):
     scriptdata = text.translate(SCRIPT_MAP)
     badness = character_weirdness(text) + script_obscurity(scriptdata)
     badness += 10 * num_inconsistent_scripts(scriptdata)
-    badness += 100 * scriptdata.count(u'?')
-    LOG.info('%r has badness %r' % (text, badness))
+    badness += 100 * scriptdata.count('?')
     return badness
