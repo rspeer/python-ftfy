@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+"""
+ftfy: fixes text for you
+
+This is a module for making text less broken. See the `fix_text` function
+for more information.
+"""
+
 from __future__ import unicode_literals
 
 import unicodedata
@@ -19,6 +26,23 @@ else:
 # Don't try to ftfy more than 64 KiB of text at a time, to prevent
 # denial of service.
 MAXLEN = 0x10000
+BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode!
+
+ftfy is designed to fix problems that were introduced by handling Unicode
+incorrectly. It might be able to fix the bytes you just handed it, but the
+fact that you just gave a pile of bytes to a function that fixes text means
+that your code is *also* handling Unicode incorrectly.
+
+ftfy takes Unicode text as input. You should take these bytes and decode
+them from the encoding you think they are in. If you're not sure, you can
+try decoding it as 'latin-1', which may work and at least won't make
+anything worse.
+
+If you're confused by this, please read the Python Unicode HOWTO:
+
+    http://docs.python.org/%d/howto/unicode.html
+""" % sys.version_info.major
+
 
 def fix_text(text, normalization='NFKC'):
     """
@@ -109,10 +133,21 @@ def fix_text(text, normalization='NFKC'):
 
     return ''.join(out)
 
+ftfy = fix_text
+
 
 def fix_file(file, normalization='NFKC'):
+    """
+    Fix a file that is being read in as Unicode text (for example, using
+    the `codecs.open` function), and stream the resulting text one line
+    at a time.
+    """
     entities = True
     for line in file:
+        if isinstance(line, bytes):
+            raise UnicodeError("fix_file wants Unicode as input, so that "
+                "it knows what to fix.\n"
+                "Try this: codecs.open(file, encoding='utf-8')")
         if '<' in line and '>' in line:
             entities = False
         yield fix_text_segment(line, normalization, entities)
@@ -120,11 +155,12 @@ def fix_file(file, normalization='NFKC'):
 
 def fix_text_segment(text, normalization='NFKC', entities=True):
     """
-    Apply fixes to a single line of text.
+    Apply fixes to text in a single chunk. This could be a line of text
+    within a larger run of `fix_text`, or it could be a larger amount
+    of text that you are certain is all in the same encoding.
     """
     if isinstance(text, bytes):
-        raise TypeError("fix_text works on Unicode text. Please decode "
-                        "your text first.")
+        raise UnicodeError(BYTES_ERROR_TEXT)
     text = remove_terminal_escapes(text)
     if entities:
         text = unescape_html(text)
@@ -135,8 +171,6 @@ def fix_text_segment(text, normalization='NFKC', entities=True):
     text = uncurl_quotes(text)
     text = remove_bom(text)
     return text
-
-ftfy = fix_text_segment
 
 
 def fix_bad_encoding(text):
@@ -208,8 +242,7 @@ def fix_bad_encoding(text):
         This text was never UTF-8 at all…
     """
     if isinstance(text, bytes):
-        raise TypeError("This isn't even decoded into Unicode yet. "
-                        "Decode it first.")
+        raise UnicodeError(BYTES_ERROR_TEXT)
     if len(text) == 0:
         return text
 
