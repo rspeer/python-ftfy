@@ -6,7 +6,7 @@ setup(
     maintainer='Luminoso, LLC',
     maintainer_email='dev@lumino.so',
     license="MIT",
-    url='http://github.com/LuminosoInsight/ftfy',
+    url='http://github.com/LuminosoInsight/python-ftfy',
     platforms=["any"],
     description="Fixes some problems with Unicode text after the fact",
     packages=['ftfy'],

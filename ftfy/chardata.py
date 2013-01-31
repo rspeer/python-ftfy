@@ -131,6 +131,23 @@ SCRIPT_TABLE = {
     'FEMININE': (1, 'latin')
 }
 
+# Create a fast mapping that converts a Unicode string to a string describing
+# its character classes, particularly the scripts its letters are in.
+#
+# Capital letters represent groups of commonly-used scripts:
+#   L = Latin
+#   E = several East Asian scripts including hanzi, kana, and Hangul
+#   C = Cyrillic
+#   etc.
+#
+# Lowercase letters represent rare scripts.
+# . represents non-letters.
+# Whitespace represents whitespace.
+# ? represents errors.
+#
+# Astral characters pass through unmodified; we don't count them as script
+# conflicts. They are probably intentional.
+
 SCRIPT_LETTERS = {
     'LATIN': 'L',
     'CJK': 'E',
@@ -148,7 +165,7 @@ SCRIPT_LETTERS = {
     'MASCULINE': 'L',
     'FEMININE': 'L',
     'MODIFIER': '.',
-    'HALFWIDTH': 'C',
+    'HALFWIDTH': 'E',
     'BENGALI': 'b',
     'LAO': 'l',
     'KHMER': 'k',
@@ -161,6 +178,33 @@ SCRIPT_LETTERS = {
     'KANNADA': 'n',  # mostly used for looks of disapproval
 }
 
+
+SCRIPT_MAP = {}
+
+for codepoint in range(0x10000):
+    char = unichr(codepoint)
+    if unicodedata.category(char).startswith('L'):
+        name = unicodedata.name(char)
+        script = name.split()[0]
+        if script in SCRIPT_LETTERS:
+            SCRIPT_MAP[codepoint] = SCRIPT_LETTERS[script]
+        else:
+            SCRIPT_MAP[codepoint] = 'z'
+    elif unicodedata.category(char).startswith('Z'):
+        SCRIPT_MAP[codepoint] = ' '
+    elif unicodedata.category(char) in ('Cn', 'Co'):
+        SCRIPT_MAP[codepoint] = '?'
+    else:
+        SCRIPT_MAP[codepoint] = '.'
+
+SCRIPT_MAP[0x09] = ' '
+SCRIPT_MAP[0x0a] = '\n'
+SCRIPT_MAP[0xfffd] = '?'
+
+# mark weird extended characters as their own script
+for codepoint in range(0x100):
+    if SINGLE_BYTE_WEIRDNESS[codepoint] >= 2:
+        SCRIPT_MAP[codepoint] = 'W'
 
 # A translate mapping that will strip all control characters except \t and \n.
 # This incidentally has the effect of normalizing Windows \r\n line endings to
