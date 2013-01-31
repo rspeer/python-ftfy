@@ -1,53 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import unicodedata
 import re
-from ftfy.chardata import (SCRIPT_LETTERS, SINGLE_BYTE_WEIRDNESS,
+from ftfy.chardata import (SCRIPT_MAP, SINGLE_BYTE_WEIRDNESS,
     WINDOWS_1252_GREMLINS)
 
 import sys
 if sys.version_info.major == 3:
     unichr = chr
-
-SCRIPT_MAP = {}
-
-# Create a fast mapping that converts a Unicode string to a string describing
-# its character classes, particularly the scripts its letters are in.
-#
-# Capital letters represent groups of commonly-used scripts.
-# Lowercase letters represent rare scripts.
-# . represents non-letters.
-# Whitespace represents whitespace.
-# ? represents errors.
-#
-# Astral characters pass through unmodified; we don't count them as script
-# conflicts. They are probably intentional.
-
-for codepoint in range(0x10000):
-    char = unichr(codepoint)
-    if unicodedata.category(char).startswith('L'):
-        name = unicodedata.name(char)
-        script = name.split()[0]
-        if script in SCRIPT_LETTERS:
-            SCRIPT_MAP[codepoint] = SCRIPT_LETTERS[script]
-        else:
-            SCRIPT_MAP[codepoint] = 'z'
-    elif unicodedata.category(char).startswith('Z'):
-        SCRIPT_MAP[codepoint] = ' '
-    elif unicodedata.category(char) in ('Cn', 'Co'):
-        SCRIPT_MAP[codepoint] = '?'
-    else:
-        SCRIPT_MAP[codepoint] = '.'
-
-SCRIPT_MAP[0x09] = ' '
-SCRIPT_MAP[0x0a] = '\n'
-SCRIPT_MAP[0xfffd] = '?'
-
-# mark weird extended characters as their own script
-for codepoint in range(0x100):
-    if SINGLE_BYTE_WEIRDNESS[codepoint] >= 2:
-        SCRIPT_MAP[codepoint] = 'W'
 
 CONSISTENT_SCRIPTS_RE = re.compile(r'([A-Za-z])(\1+)')
 LETTER_SEGMENTS_RE = re.compile(r'([A-Za-z]+)')
@@ -62,7 +22,6 @@ for i in range(5):
     chars = [unichr(codepoint) for codepoint in range(0x80, 0x100)
              if SINGLE_BYTE_WEIRDNESS[codepoint] > i]
     WEIRD_CHARACTER_RES.append(re.compile('[' + ''.join(chars) + ']'))
-
 
 def num_consistent_scripts(scriptdata):
     """
