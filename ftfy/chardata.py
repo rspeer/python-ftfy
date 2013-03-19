@@ -144,11 +144,21 @@ SCRIPT_MAP = {}
 for codepoint in range(0x10000):
     char = unichr(codepoint)
     if unicodedata.category(char).startswith('L'):
-        name = unicodedata.name(char)
-        script = name.split()[0]
-        if script in SCRIPT_LETTERS:
-            SCRIPT_MAP[codepoint] = SCRIPT_LETTERS[script]
-        else:
+        try:
+            name = unicodedata.name(char)
+            script = name.split()[0]
+            if script in SCRIPT_LETTERS:
+                SCRIPT_MAP[codepoint] = SCRIPT_LETTERS[script]
+            else:
+                SCRIPT_MAP[codepoint] = 'z'
+        except ValueError:
+            # it's unfortunate that this gives subtly different results
+            # on Python 2.6, which is confused about the Unicode 5.1
+            # Chinese range. It knows they're letters but it has no idea
+            # what they are named.
+            #
+            # This could be something to fix in the future, or maybe we
+            # just stop supporting Python 2.6 eventually.
             SCRIPT_MAP[codepoint] = 'z'
     elif unicodedata.category(char).startswith('Z'):
         SCRIPT_MAP[codepoint] = ' '
