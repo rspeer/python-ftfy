@@ -16,7 +16,7 @@ from ftfy.chardata import (CONTROL_CHARS, WINDOWS_1252_CODEPOINTS,
 from ftfy.badness import text_badness
 
 # Adjust names that have changed in Python 3
-if sys.version_info.major == 3:
+if sys.hexversion >= 0x03000000:
     from html import entities
     htmlentitydefs = entities
     unichr = chr
