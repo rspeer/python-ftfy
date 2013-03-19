@@ -3,7 +3,7 @@ from __future__ import unicode_literals
 
 import unicodedata
 import sys
-if sys.version_info.major == 3:
+if sys.hexversion >= 0x03000000:
     unichr = chr
 
 # Start with an inventory of "gremlins", which are characters from all over
@@ -90,46 +90,6 @@ SINGLE_BYTE_LETTERS = [
     unicodedata.category(unichr(i)).startswith('L')
     for i in range(256)
 ]
-
-# A table telling us how to interpret the first word of a letter's Unicode
-# name. The number indicates how frequently we expect this script to be used
-# on computers. Many scripts not included here are assumed to have a frequency
-# of "0" -- if you're going to write in Linear B using Unicode, you're
-# probably aware enough of encoding issues to get it right.
-#
-# The lowercase name is a general category -- for example, Han characters and
-# Hiragana characters are very frequently adjacent in Japanese, so they all go
-# into category 'cjk'. Letters of different categories are assumed not to
-# appear next to each other often.
-SCRIPT_TABLE = {
-    'LATIN': (3, 'latin'),
-    'CJK': (2, 'cjk'),
-    'ARABIC': (2, 'arabic'),
-    'CYRILLIC': (2, 'cyrillic'),
-    'GREEK': (2, 'greek'),
-    'HEBREW': (2, 'hebrew'),
-    'KATAKANA': (2, 'cjk'),
-    'HIRAGANA': (2, 'cjk'),
-    'HIRAGANA-KATAKANA': (2, 'cjk'),
-    'HANGUL': (2, 'cjk'),
-    'DEVANAGARI': (2, 'devanagari'),
-    'THAI': (2, 'thai'),
-    'FULLWIDTH': (2, 'cjk'),
-    'MODIFIER': (2, None),
-    'HALFWIDTH': (1, 'cjk'),
-    'BENGALI': (1, 'bengali'),
-    'LAO': (1, 'lao'),
-    'KHMER': (1, 'khmer'),
-    'TELUGU': (1, 'telugu'),
-    'MALAYALAM': (1, 'malayalam'),
-    'SINHALA': (1, 'sinhala'),
-    'TAMIL': (1, 'tamil'),
-    'GEORGIAN': (1, 'georgian'),
-    'ARMENIAN': (1, 'armenian'),
-    'KANNADA': (1, 'kannada'),  # mostly used for looks of disapproval
-    'MASCULINE': (1, 'latin'),
-    'FEMININE': (1, 'latin')
-}
 
 # Create a fast mapping that converts a Unicode string to a string describing
 # its character classes, particularly the scripts its letters are in.
