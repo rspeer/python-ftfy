@@ -41,7 +41,7 @@ anything worse.
 If you're confused by this, please read the Python Unicode HOWTO:
 
     http://docs.python.org/%d/howto/unicode.html
-""" % sys.version_info.major
+""" % sys.version_info[0]
 
 
 def fix_text(text, normalization='NFKC'):
