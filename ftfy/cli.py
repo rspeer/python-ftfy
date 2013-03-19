@@ -2,7 +2,7 @@ from ftfy import fix_file
 import codecs
 
 import sys
-ENCODE_STDOUT = (sys.version_info.major < 3)
+ENCODE_STDOUT = (sys.hexversion < 0x03000000)
 
 
 def main():
@@ -17,8 +17,8 @@ def main():
 
     args = parser.parse_args()
 
-    # Why open in Latin-1? Because it'll never make anything worse, and
-    # we're about to make things better.
+    # Why open in Latin-1? Because it at least won't make encoding problems
+    # worse, and we're about to make things better.
     file = codecs.open(args.filename, encoding='latin-1')
     for line in fix_file(file):
         if ENCODE_STDOUT:

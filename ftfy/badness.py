@@ -6,7 +6,7 @@ from ftfy.chardata import (SCRIPT_MAP, SINGLE_BYTE_WEIRDNESS,
     WINDOWS_1252_GREMLINS)
 
 import sys
-if sys.version_info.major == 3:
+if sys.hexversion >= 0x03000000:
     unichr = chr
 
 CONSISTENT_SCRIPTS_RE = re.compile(r'([A-Za-z])(\1+)')
