@@ -49,8 +49,6 @@ def fix_text(text, normalization='NFKC'):
     Given Unicode text as input, make its representation consistent and
     possibly less broken:
 
-    - Ensure that it is a Unicode string, converting from UTF-8 if
-      necessary.
     - Detect whether the text was incorrectly encoded into UTF-8 and fix it,
       as defined in `fix_bad_encoding`.
     - If the text is HTML-escaped but has no HTML tags, replace HTML entities
@@ -122,14 +120,14 @@ def fix_text(text, normalization='NFKC'):
                     # oh well. We might not be able to fix the 2**16th character.
                     textbreak = MAXLEN
 
-        substring = text[pos:textbreak + 1]
+        substring = text[pos:pos + textbreak + 1]
 
         if '<' in substring and '>' in substring:
             # we see angle brackets together; this could be HTML
             entities = False
 
         out.append(fix_text_segment(substring, normalization, entities))
-        pos = textbreak + 1
+        pos += textbreak + 1
 
     return ''.join(out)
 
@@ -253,6 +251,8 @@ def fix_bad_encoding(text):
     else:
         attempts = []
         if maxord < 256:
+            # All characters have codepoints below 256, so this could be in
+            # Latin-1.
             attempts = [
                 (text, 0),
                 (reinterpret_latin1_as_utf8(text), 0.5),
@@ -260,6 +260,8 @@ def fix_bad_encoding(text):
                 #(reinterpret_latin1_as_macroman(text), 2),
             ]
         elif all(ord(char) in WINDOWS_1252_CODEPOINTS for char in text):
+            # All characters are in the Windows-1252 character set, so let's
+            # try that.
             attempts = [
                 (text, 0),
                 (reinterpret_windows1252_as_utf8(text), 0.5),
@@ -278,6 +280,8 @@ def fix_bad_encoding(text):
         if goodtext == text:
             return goodtext
         else:
+            # We changed the text. Re-run fix_bad_encoding, so we can fix
+            # recursive mis-encodings.
             return fix_bad_encoding(goodtext)
 
 
