@@ -162,7 +162,7 @@ for codepoint in range(0x10000):
             SCRIPT_MAP[codepoint] = 'z'
     elif unicodedata.category(char).startswith('Z'):
         SCRIPT_MAP[codepoint] = ' '
-    elif unicodedata.category(char) in ('Cn', 'Co'):
+    elif unicodedata.category(char) == 'Cn':
         SCRIPT_MAP[codepoint] = '?'
     else:
         SCRIPT_MAP[codepoint] = '.'
