@@ -118,7 +118,7 @@ def text_badness(text):
 
     Obvious problems (badness = 100):
     - The replacement character \ufffd, indicating a decoding error
-    - Unassigned or private-use Unicode characters
+    - Unassigned Unicode characters
 
     Very weird things (badness = 10):
     - Adjacent letters from two different scripts
