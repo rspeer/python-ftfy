@@ -118,6 +118,7 @@ SCRIPT_LETTERS = {
     'KATAKANA': 'E',
     'HIRAGANA': 'E',
     'HIRAGANA-KATAKANA': 'E',
+    'KATAKANA-HIRAGANA': 'E',
     'HANGUL': 'E',
     'DEVANAGARI': 'D',
     'THAI': 'T',
