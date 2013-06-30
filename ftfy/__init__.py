@@ -11,9 +11,7 @@ from __future__ import unicode_literals
 import unicodedata
 import re
 import sys
-from ftfy.chardata import (CONTROL_CHARS, WINDOWS_1252_CODEPOINTS,
-    WINDOWS_1252_GREMLINS)
-from ftfy.badness import text_badness
+from ftfy.chardata import possible_encoding, CHARMAPS, CHARMAP_ENCODINGS
 
 # Adjust names that have changed in Python 3
 if sys.hexversion >= 0x03000000:
@@ -23,6 +21,180 @@ if sys.hexversion >= 0x03000000:
 else:
     import htmlentitydefs
 
+
+# Is this the right name?
+def fix_text_encoding(text):
+    """
+    TODO documentation.
+
+    Returns a fixed version of the text, plus a data structure that
+    explains how it was fixed.
+    """
+    if isinstance(text, bytes):
+        raise UnicodeError(BYTES_ERROR_TEXT)
+    if len(text) == 0:
+        return text, []
+
+    # The first plan is to return ASCII text unchanged.
+    if possible_encoding(text, 'ascii'):
+        return text, []
+
+    # As we go through the next step, remember the possible encodings
+    # that we encounter but don't successfully fix yet. We may need them
+    # later.
+    possible_1byte_encodings = []
+
+    # Suppose the text was supposed to be UTF-8, but it was decoded using
+    # a single-byte encoding instead. When these cases can be fixed, they
+    # are usually the correct thing to do, so try them next.
+    for encoding in CHARMAP_ENCODINGS:
+        if possible_encoding(text, encoding):
+            # This is an ugly-looking way to get the bytes that represent
+            # the text in this encoding. The reason we can't necessarily
+            # use .encode(encoding) is that the decoder is very likely
+            # to have been sloppier than Python.
+            #
+            # The decoder might have left bytes unchanged when they're not
+            # part of the encoding. It might represent b'\x81' as u'\x81'
+            # in Windows-1252, while Python would claim that using byte
+            # 0x81 in Windows-1252 is an error.
+            #
+            # So what we do here is we use the .translate method of Unicode
+            # strings, which gives us back a Unicode string using only code
+            # points up to 0xff. This can then be converted into the intended
+            # bytes by encoding it as Latin-1.
+            sorta_encoded_text = text.translate(CHARMAPS[encoding])
+            encoded_bytes = sorta_encoded_text.encode('latin-1')
+
+            # Now, find out if it's UTF-8.
+            try:
+                fixed = encoded_bytes.decode('utf-8')
+                steps = [('sloppy_encode', encoding), ('decode', 'utf-8')]
+                return fixed, steps
+            except UnicodeDecodeError:
+                possible_1byte_encodings.append(encoding)
+
+    # The next most likely case is that this is Latin-1 that was intended to
+    # be read as Windows-1252, because those two encodings in particular are
+    # easily confused.
+    #
+    # We don't need to check for possibilites such as Latin-1 that was
+    # intended to be read as MacRoman, because it is unlikely that any
+    # software has that confusion.
+    if 'latin-1' in possible_1byte_encodings:
+        if 'windows-1252' in possible_1byte_encodings:
+            # This text is in the intersection of Latin-1 and
+            # Windows-1252, so it's probably legit.
+            return text, []
+        else:
+            # Otherwise, it means we have characters that are in Latin-1 but
+            # not in Windows-1252. Those are C1 control characters. Nobody
+            # wants those.
+            encoded = text.encode('latin-1')
+            fixed = encoded.decode('windows-1252', errors='replace')
+            steps = [('encode', 'latin-1'), ('decode', 'windows-1252')]
+            return fixed, steps
+
+    # Now we need to check for a mixup between Windows-1252, cp437,
+    # and MacRoman. We know Latin-1 isn't in the list, because if it were,
+    # we would have returned already.
+    #
+    # We aren't crazy enough to try to turn text *into* Windows-1251.
+    # Russia, if you screw things up that much, you're on you're own.
+    for encoding in possible_1byte_encodings:
+        for target in ['windows-1252', 'cp437', 'macroman']:
+            result, goodness = try_reencoding(text, encoding, target)
+
+            # A sort of prior: if it's not Windows-1252, it's less likely
+            if target != 'windows-1252':
+                goodness -= 5
+            if goodness > 0:
+                fixed = text.encode(encoding).decode(target)
+                steps = [('encode', encoding), ('decode', target)]
+                return fixed, steps
+
+    # We haven't returned anything by now? That's probably fine. It means
+    # this is probably perfectly good Unicode.
+    return text, []
+
+
+def fix_bad_encoding(text):
+    """
+    Something you will find all over the place, in real-world text, is text
+    that's mistakenly encoded as utf-8, decoded in some ugly format like
+    latin-1 or even Windows codepage 1252, and encoded as utf-8 again.
+
+    This causes your perfectly good Unicode-aware code to end up with garbage
+    text because someone else (or maybe "someone else") made a mistake.
+
+    This function looks for the evidence of that having happened and fixes it.
+    It determines whether it should replace nonsense sequences of single-byte
+    characters that were really meant to be UTF-8 characters, and if so, turns
+    them into the correctly-encoded Unicode character that they were meant to
+    represent.
+
+    The input to the function must be Unicode. If you don't have Unicode text,
+    you're not using the right tool to solve your problem.
+
+    NOTE: the following examples are written using unmarked literal strings,
+    but they are Unicode text. In Python 2 we have "unicode_literals" turned
+    on, and in Python 3 this is always the case.
+
+        >>> print(fix_bad_encoding('Ãºnico'))
+        único
+
+        >>> print(fix_bad_encoding('This text is fine already :þ'))
+        This text is fine already :þ
+
+    Because these characters often come from Microsoft products, we allow
+    for the possibility that we get not just Unicode characters 128-255, but
+    also Windows's conflicting idea of what characters 128-160 are.
+
+        >>> print(fix_bad_encoding('This â€” should be an em dash'))
+        This — should be an em dash
+
+    We might have to deal with both Windows characters and raw control
+    characters at the same time, especially when dealing with characters like
+    \x81 that have no mapping in Windows.
+
+        >>> print(fix_bad_encoding('This text is sad .â\x81”.'))
+        This text is sad .⁔.
+
+    This function even fixes multiple levels of badness:
+
+        >>> wtf = '\xc3\xa0\xc2\xb2\xc2\xa0_\xc3\xa0\xc2\xb2\xc2\xa0'
+        >>> print(fix_bad_encoding(wtf))
+        ಠ_ಠ
+
+    However, it has safeguards against fixing sequences of letters and
+    punctuation that can occur in valid text:
+
+        >>> print(fix_bad_encoding('not such a fan of Charlotte Brontë…”'))
+        not such a fan of Charlotte Brontë…”
+
+    Cases of genuine ambiguity can sometimes be addressed by finding other
+    characters that are not double-encoded, and expecting the encoding to
+    be consistent:
+
+        >>> print(fix_bad_encoding('AHÅ™, the new sofa from IKEA®'))
+        AHÅ™, the new sofa from IKEA®
+
+    Finally, we handle the case where the text is in a single-byte encoding
+    that was intended as Windows-1252 all along but read as Latin-1:
+
+        >>> print(fix_bad_encoding('This text was never UTF-8 at all\x85'))
+        This text was never UTF-8 at all…
+    """
+    keep_going = True
+    while keep_going:
+        fixed, info = fix_text_encoding(text)
+        keep_going = (fixed != text)
+        text = fixed
+
+    return fixed
+
+
+# ----------------
 # Don't try to ftfy more than 64 KiB of text at a time, to prevent
 # denial of service.
 MAXLEN = 0x10000
@@ -171,118 +343,6 @@ def fix_text_segment(text, normalization='NFKC', entities=True):
     return text
 
 
-def fix_bad_encoding(text):
-    """
-    Something you will find all over the place, in real-world text, is text
-    that's mistakenly encoded as utf-8, decoded in some ugly format like
-    latin-1 or even Windows codepage 1252, and encoded as utf-8 again.
-
-    This causes your perfectly good Unicode-aware code to end up with garbage
-    text because someone else (or maybe "someone else") made a mistake.
-
-    This function looks for the evidence of that having happened and fixes it.
-    It determines whether it should replace nonsense sequences of single-byte
-    characters that were really meant to be UTF-8 characters, and if so, turns
-    them into the correctly-encoded Unicode character that they were meant to
-    represent.
-
-    The input to the function must be Unicode. It's not going to try to
-    auto-decode bytes for you -- then it would just create the problems it's
-    supposed to fix.
-
-    NOTE: the following examples are written using unmarked literal strings,
-    but they are Unicode text. In Python 2 we have "unicode_literals" turned
-    on, and in Python 3 this is always the case.
-
-        >>> print(fix_bad_encoding('Ãºnico'))
-        único
-
-        >>> print(fix_bad_encoding('This text is fine already :þ'))
-        This text is fine already :þ
-
-    Because these characters often come from Microsoft products, we allow
-    for the possibility that we get not just Unicode characters 128-255, but
-    also Windows's conflicting idea of what characters 128-160 are.
-
-        >>> print(fix_bad_encoding('This â€” should be an em dash'))
-        This — should be an em dash
-
-    We might have to deal with both Windows characters and raw control
-    characters at the same time, especially when dealing with characters like
-    \x81 that have no mapping in Windows.
-
-        >>> print(fix_bad_encoding('This text is sad .â\x81”.'))
-        This text is sad .⁔.
-
-    This function even fixes multiple levels of badness:
-
-        >>> wtf = '\xc3\xa0\xc2\xb2\xc2\xa0_\xc3\xa0\xc2\xb2\xc2\xa0'
-        >>> print(fix_bad_encoding(wtf))
-        ಠ_ಠ
-
-    However, it has safeguards against fixing sequences of letters and
-    punctuation that can occur in valid text:
-
-        >>> print(fix_bad_encoding('not such a fan of Charlotte Brontë…”'))
-        not such a fan of Charlotte Brontë…”
-
-    Cases of genuine ambiguity can sometimes be addressed by finding other
-    characters that are not double-encoded, and expecting the encoding to
-    be consistent:
-
-        >>> print(fix_bad_encoding('AHÅ™, the new sofa from IKEA®'))
-        AHÅ™, the new sofa from IKEA®
-
-    Finally, we handle the case where the text is in a single-byte encoding
-    that was intended as Windows-1252 all along but read as Latin-1:
-
-        >>> print(fix_bad_encoding('This text was never UTF-8 at all\x85'))
-        This text was never UTF-8 at all…
-    """
-    if isinstance(text, bytes):
-        raise UnicodeError(BYTES_ERROR_TEXT)
-    if len(text) == 0:
-        return text
-
-    maxord = max(ord(char) for char in text)
-    if maxord < 128:
-        # Hooray! It's ASCII!
-        return text
-    else:
-        attempts = []
-        if maxord < 256:
-            # All characters have codepoints below 256, so this could be in
-            # Latin-1.
-            attempts = [
-                (text, 0),
-                (reinterpret_latin1_as_utf8(text), 0.5),
-                (reinterpret_latin1_as_windows1252(text), 0.5),
-                #(reinterpret_latin1_as_macroman(text), 2),
-            ]
-        elif all(ord(char) in WINDOWS_1252_CODEPOINTS for char in text):
-            # All characters are in the Windows-1252 character set, so let's
-            # try that.
-            attempts = [
-                (text, 0),
-                (reinterpret_windows1252_as_utf8(text), 0.5),
-                #(reinterpret_windows1252_as_macroman(text), 2),
-            ]
-        else:
-            # We can't imagine how this would be anything but valid text.
-            return text
-
-        results = [(newtext, penalty + text_cost(newtext))
-                   for newtext, penalty in attempts]
-
-        # Sort the results by badness
-        results.sort(key=lambda x: x[1])
-        goodtext = results[0][0]
-        if goodtext == text:
-            return goodtext
-        else:
-            # We changed the text. Re-run fix_bad_encoding, so we can fix
-            # recursive mis-encodings.
-            return fix_bad_encoding(goodtext)
 
 
 def reinterpret_latin1_as_utf8(wrongtext):
