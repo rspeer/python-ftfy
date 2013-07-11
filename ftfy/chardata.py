@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 import unicodedata
 import sys
 import re
+from collections import defaultdict
 
 if sys.hexversion >= 0x03000000:
     unichr = chr
@@ -18,52 +19,77 @@ CHARMAP_ENCODINGS = [
     'cp437',
     'windows-1251',
 ]
+CONFUSABLE_1BYTE_ENCODINGS = [
+    'windows-1252',
+    'macroman',
+    'cp437'
+]
 CHARMAPS = {}
-ENCODING_REGULAR_EXPRESSIONS = {}
-
-for encoding in CHARMAP_ENCODINGS:
-    charmap = {}
-    for codepoint in range(0, 0x80):
-        charmap[unichr(codepoint)] = unichr(codepoint)
-    for codepoint in range(0x80, 0x100):
-        char = unichr(codepoint)
-        encoded_char = char.encode('latin-1')
-        try:
-            decoded_char = encoded_char.decode(encoding)
-        except ValueError:
-            decoded_char = char
-        charmap[decoded_char] = char
-
-    charlist = [char for char in sorted(charmap.keys()) if ord(char) >= 0x80]
-    regex = '^[\x00-\x7f{}]*$'.format(''.join(charlist))
-    CHARMAPS[encoding] = charmap
-    ENCODING_REGULAR_EXPRESSIONS[encoding] = re.compile(regex)
-
-ENCODING_REGULAR_EXPRESSIONS['ascii'] = re.compile('^[\x00-\x7f]*')
 
 
-# Challenge questions:
-# (1) How does this differ from the UTF-8 standard?
-# (2) Does it matter?
+def _make_encoding_regexes():
+    encoding_regular_expressions = {}
 
-UTF8_AS_BYTES = re.compile(
-    b'^('
-    b'[\x00-\x7f]|'
-    b'([\xc2-\xdf][\x80-\xbf])|'
-    b'(\xe0[\xa0-\xbf][\x80-\xbf])|'
-    b'([\xe1-\xef][\x80-\xbf][\x80-\xbf])|'
-    b'(\xf0[\x90-\xbf][\x80-\xbf][\x80-\xbf])|'
-    b'([\xf1-\xf4][\x80-\xbf][\x80-\xbf][\x80-\xbf])|'
-    b')*$'
-)
+    for encoding in CHARMAP_ENCODINGS:
+        charmap = {}
+        for codepoint in range(0, 0x80):
+            charmap[unichr(codepoint)] = unichr(codepoint)
+        for codepoint in range(0x80, 0x100):
+            char = unichr(codepoint)
+            encoded_char = char.encode('latin-1')
+            try:
+                decoded_char = encoded_char.decode(encoding)
+            except ValueError:
+                decoded_char = char
+            charmap[decoded_char] = char
+
+        charlist = [char for char in sorted(charmap.keys()) if ord(char) >= 0x80]
+        regex = '^[\x00-\x7f{}]*$'.format(''.join(charlist))
+        CHARMAPS[encoding] = charmap
+        encoding_regular_expressions[encoding] = re.compile(regex)
+
+    encoding_regular_expressions['ascii'] = re.compile('^[\x00-\x7f]*')
+    return encoding_regular_expressions
+
+ENCODING_REGEXES = _make_encoding_regexes()
+
 
 def possible_encoding(text, encoding):
     """
     Given text and a single-byte encoding, check whether that text could have
     been decoded from that single-byte encoding.
     """
-    return bool(ENCODING_REGULAR_EXPRESSIONS[encoding].match(text))
+    return bool(ENCODING_REGEXES[encoding].match(text))
 
+
+# Make regular expressions out of categories of Unicode characters.
+def _make_category_regex_ranges():
+    encodable_char_set = set([unichr(codepoint) for codepoint in range(0, 0x100)])
+    for codepoint in range(0x80, 0x100):
+        encoded_char = chr(codepoint).encode('latin-1')
+        for encoding in ['windows-1252', 'macroman', 'cp437']:
+            try:
+                decoded_char = encoded_char.decode(encoding)
+                encodable_char_set.add(decoded_char)
+            except ValueError:
+                pass
+
+    categories = defaultdict(list)
+    for char in sorted(encodable_char_set):
+        category = unicodedata.category(char)
+        categories[category].append(char)
+
+    ranges = {}
+    for category in categories:
+        ranges[category] = (''.join(categories[category])
+                              .replace('\\', '\\\\')
+                              .replace('[', r'\[')
+                              .replace(']', r'\]')
+                              .replace('^', r'\^')
+                              .replace('-', r'\-'))
+    return ranges
+CATEGORY_RANGES = _make_category_regex_ranges()
+print(CATEGORY_RANGES)
 
 # ----------------
 
@@ -73,7 +99,7 @@ encodable_chars = set()
 for codepoint in range(0x80, 0x100):
     encoded_char = chr(codepoint).encode('latin-1')
     possibilities = []
-    for encoding in CHARMAP_ENCODINGS:
+    for encoding in ['latin-1', 'windows-1252', 'macroman', 'cp437']:
         try:
             decoded_char = encoded_char.decode(encoding)
             encodable_chars.add(decoded_char)
@@ -88,7 +114,7 @@ for char in sorted(encodable_chars):
         name = unicodedata.name(char)
     except ValueError:
         name = '[unknown]'
-    print(char, hex(ord(char)), name)
+    print(char, hex(ord(char)), unicodedata.category(char), name)
 
 # Rank the characters typically represented by a single byte -- that is, in
 # Latin-1 or Windows-1252 -- by how weird it would be to see them in running
@@ -123,7 +149,7 @@ CHARACTER_WEIRDNESS = {
     '\N{DIAERESIS}': 4,
     '\N{COPYRIGHT SIGN}': 2,
     '\N{FEMININE ORDINAL INDICATOR}': 3,
-    '\N{LEFT-POINTING DOUBLE ANGLE QUOTATION MARK}': 0,
+    # '\N{LEFT-POINTING DOUBLE ANGLE QUOTATION MARK}': 0,
     '\N{NOT SIGN}': 3,
     '\N{SOFT HYPHEN}': 1,
     '\N{REGISTERED SIGN}': 1,
@@ -134,14 +160,14 @@ CHARACTER_WEIRDNESS = {
     '\N{PLUS-MINUS SIGN}': 2,
     '\N{SUPERSCRIPT TWO}': 2,
     '\N{SUPERSCRIPT THREE}': 3,
-    '\N{ACUTE ACCENT}': 4,
+    '\N{ACUTE ACCENT}': 3,
     '\N{MICRO SIGN}': 3,
     '\N{PILCROW SIGN}': 3,
     '\N{MIDDLE DOT}': 2,
     '\N{CEDILLA}': 4,
     '\N{SUPERSCRIPT ONE}': 4,
     '\N{MASCULINE ORDINAL INDICATOR}': 4,
-    '\N{RIGHT POINTING DOUBLE ANGLE QUOTATION MARK}': 0,
+    # '\N{RIGHT POINTING DOUBLE ANGLE QUOTATION MARK}': 0,
     '\N{VULGAR FRACTION ONE QUARTER}': 2,
     '\N{VULGAR FRACTION ONE HALF}': 2,
     '\N{VULGAR FRACTION THREE QUARTERS}': 2,
@@ -167,9 +193,11 @@ CHARACTER_WEIRDNESS = {
     '\N{RING ABOVE}': 3,
     '\N{OGONEK}': 3,
     '\N{SMALL TILDE}': 4,
-    '\N{DOUBLE ACUTE ACCENT}': 1,
+    '\N{DOUBLE ACUTE ACCENT}': 3,
 
-    # \U0300 to \U0400
+    # \U0300 to \U0400: selected Greek letters that were used in cp437.
+    # You are probably not writing actual Greek with this small set of
+    # letters.
     '\N{GREEK CAPITAL LETTER GAMMA}': 1,
     '\N{GREEK CAPITAL LETTER THETA}': 1,
     '\N{GREEK CAPITAL LETTER SIGMA}': 1,
@@ -183,7 +211,6 @@ CHARACTER_WEIRDNESS = {
     '\N{GREEK SMALL LETTER TAU}': 1,
     '\N{GREEK SMALL LETTER PHI}': 1,
 
-    # \U0400 to \U0500 is fine (Cyrillic)
     # \U2000 to \U2400
     '\N{DAGGER}': 2,
     '\N{DOUBLE DAGGER}': 3,
@@ -209,12 +236,15 @@ CHARACTER_WEIRDNESS = {
     '\N{TOP HALF INTEGRAL}': 3,
     '\N{BOTTOM HALF INTEGRAL}': 3,
 
-    # \U2500 to \U2600 are mostly box drawings; they're okay
+    # \U2500 to \U2600 are mostly box drawings; they're okay, or at least
+    # require a different heuristic
     '\N{LOZENGE}': 2,
     '\uf8ff': 2,   # the Apple symbol
     '\N{LATIN SMALL LIGATURE FI}': 1,
     '\N{LATIN SMALL LIGATURE FL}': 1,
 }
+
+
 
 # Create a fast mapping that converts a Unicode string to a string describing
 # its character classes, particularly the scripts its letters are in.
