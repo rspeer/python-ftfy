@@ -11,7 +11,8 @@ from __future__ import unicode_literals
 import unicodedata
 import re
 import sys
-from ftfy.chardata import possible_encoding, CHARMAPS, CHARMAP_ENCODINGS
+from ftfy.chardata import (possible_encoding, CHARMAPS, CHARMAP_ENCODINGS,
+                           CONFUSABLE_1BYTE_ENCODINGS)
 
 # Adjust names that have changed in Python 3
 if sys.hexversion >= 0x03000000:
@@ -22,7 +23,6 @@ else:
     import htmlentitydefs
 
 
-# Is this the right name?
 def fix_text_encoding(text):
     """
     TODO documentation.
@@ -60,7 +60,8 @@ def fix_text_encoding(text):
             # 0x81 in Windows-1252 is an error.
             #
             # So what we do here is we use the .translate method of Unicode
-            # strings, which gives us back a Unicode string using only code
+            # strings. Using it with the character maps we have computed will 
+            # give us back a Unicode string using only code
             # points up to 0xff. This can then be converted into the intended
             # bytes by encoding it as Latin-1.
             sorta_encoded_text = text.translate(CHARMAPS[encoding])
@@ -78,7 +79,7 @@ def fix_text_encoding(text):
     # be read as Windows-1252, because those two encodings in particular are
     # easily confused.
     #
-    # We don't need to check for possibilites such as Latin-1 that was
+    # We don't need to check for possibilities such as Latin-1 that was
     # intended to be read as MacRoman, because it is unlikely that any
     # software has that confusion.
     if 'latin-1' in possible_1byte_encodings:
@@ -100,9 +101,9 @@ def fix_text_encoding(text):
     # we would have returned already.
     #
     # We aren't crazy enough to try to turn text *into* Windows-1251.
-    # Russia, if you screw things up that much, you're on you're own.
+    # Russians, if you screw things up that much, you're on you're own.
     for encoding in possible_1byte_encodings:
-        for target in ['windows-1252', 'cp437', 'macroman']:
+        for target in CONFUSABLE_1BYTE_ENCODINGS:
             result, goodness = try_reencoding(text, encoding, target)
 
             # A sort of prior: if it's not Windows-1252, it's less likely
@@ -341,43 +342,6 @@ def fix_text_segment(text, normalization='NFKC', entities=True):
     text = uncurl_quotes(text)
     text = remove_bom(text)
     return text
-
-
-
-
-def reinterpret_latin1_as_utf8(wrongtext):
-    newbytes = wrongtext.encode('latin-1', 'replace')
-    return newbytes.decode('utf-8', 'replace')
-
-
-def reinterpret_windows1252_as_utf8(wrongtext):
-    altered_bytes = []
-    for char in wrongtext:
-        if ord(char) in WINDOWS_1252_GREMLINS:
-            altered_bytes.append(char.encode('WINDOWS_1252'))
-        else:
-            altered_bytes.append(char.encode('latin-1', 'replace'))
-    return b''.join(altered_bytes).decode('utf-8', 'replace')
-
-
-def reinterpret_latin1_as_macroman(wrongtext):
-    "Not used, because it's too risky."
-    newbytes = wrongtext.encode('latin1', 'replace')
-    return newbytes.decode('macroman', 'replace')
-
-
-def reinterpret_windows1252_as_macroman(wrongtext):
-    "Not used, because it's too risky."
-    newbytes = wrongtext.encode('WINDOWS_1252', 'replace')
-    return newbytes.decode('macroman', 'replace')
-
-
-def reinterpret_latin1_as_windows1252(wrongtext):
-    """
-    Maybe this was always meant to be in a single-byte encoding, and it
-    makes the most sense in Windows-1252.
-    """
-    return wrongtext.encode('latin-1').decode('WINDOWS_1252', 'replace')
 
 
 def text_cost(text):
