@@ -71,6 +71,7 @@ def fix_text_encoding(text):
             try:
                 fixed = encoded_bytes.decode('utf-8')
                 steps = [('sloppy_encode', encoding), ('decode', 'utf-8')]
+                # Now do we check for the nyeoss problem?
                 return fixed, steps
             except UnicodeDecodeError:
                 possible_1byte_encodings.append(encoding)
@@ -90,34 +91,30 @@ def fix_text_encoding(text):
         else:
             # Otherwise, it means we have characters that are in Latin-1 but
             # not in Windows-1252. Those are C1 control characters. Nobody
-            # wants those.
+            # wants those. Assume they were meant to be Windows-1252.
             encoded = text.encode('latin-1')
             fixed = encoded.decode('windows-1252', errors='replace')
             steps = [('encode', 'latin-1'), ('decode', 'windows-1252')]
             return fixed, steps
 
-    # Now we need to check for a mixup between Windows-1252, cp437,
-    # and MacRoman. We know Latin-1 isn't in the list, because if it were,
-    # we would have returned already.
+    # The cases that remain are mixups between two different single-byte
+    # encodings, neither of which is Latin-1.
     #
-    # We aren't crazy enough to try to turn text *into* Windows-1251.
-    # Russians, if you screw things up that much, you're on you're own.
-    for encoding in possible_1byte_encodings:
-        for target in CONFUSABLE_1BYTE_ENCODINGS:
-            result, goodness = try_reencoding(text, encoding, target)
+    # Those cases are somewhat rare, and impossible to solve without false
+    # positives. If you're in one of these situations, you don't need an
+    # encoding fixer. You need something that heuristically guesses what
+    # the encoding is in the first place.
+    #
+    # It's a different problem, the one that the 'chardet' module is
+    # theoretically designed to solve. It probably *won't* solve it in
+    # such an ambiguous case, but perhaps a version of it with better
+    # heuristics would. Anyway, ftfy should not claim to solve it.
 
-            # A sort of prior: if it's not Windows-1252, it's less likely
-            if target != 'windows-1252':
-                goodness -= 5
-            if goodness > 0:
-                fixed = text.encode(encoding).decode(target)
-                steps = [('encode', encoding), ('decode', target)]
-                return fixed, steps
+    return text, [('give up', None)]
 
-    # We haven't returned anything by now? That's probably fine. It means
-    # this is probably perfectly good Unicode.
-    return text, []
-
+# TODO:
+#   - write a function that just continues to use the same decoding step
+#   - if the decoding step encounters a problem, back up and try line-by-line
 
 def fix_bad_encoding(text):
     """
@@ -217,34 +214,45 @@ If you're confused by this, please read the Python Unicode HOWTO:
 """ % sys.version_info[0]
 
 
-def fix_text(text, normalization='NFKC'):
+def fix_text_segment(text, 
+                     fix_entities=True,
+                     remove_terminal_escapes=True,
+                     fix_encoding=True,
+                     normalization='NFKC',
+                     uncurl_quotes=True,
+                     remove_control_chars=True,
+                     remove_bom=True):
     """
     Given Unicode text as input, make its representation consistent and
-    possibly less broken:
+    possibly less broken, by applying these steps in order:
 
-    - Detect whether the text was incorrectly encoded into UTF-8 and fix it,
-      as defined in `fix_bad_encoding`.
-    - If the text is HTML-escaped but has no HTML tags, replace HTML entities
-      with their equivalent characters.
-    - Remove terminal escapes and color codes.
-    - Remove control characters except for newlines and tabs.
-    - Normalize it with Unicode normalization form KC, which applies the
-      following relevant transformations:
-      - Combine characters and diacritics that are written using separate
+    - If `remove_terminal_escapes` is True, remove sequences of bytes that are
+      instructions for Unix terminals, such as the codes that make text appear
+      in different colors.
+    - If `fix_entities` is True, consider replacing HTML entities with their
+      equivalent characters. However, this never applies to text with a pair
+      of angle brackets in it already; you're probably not supposed to decode
+      entities there, and you'd make things ambiguous if you did.
+    - If `fix_encoding` is True, look for common mistakes that come from
+      encoding or decoding Unicode text incorrectly, and fix them if they are
+      reasonably fixable. See `fix_text_encoding` for details.
+    - If `normalization` is not None, apply the specified form of Unicode
+      normalization, which can be one of 'NFC', 'NFKC', 'NFD', and 'NFKD'.
+      The default, 'NFKC', applies the following relevant transformations:
+      - C: Combine characters and diacritics that are written using separate
         code points, such as converting "e" plus an acute accent modifier
         into "é", or converting "ka" (か) plus a dakuten into the
         single character "ga" (が).
-      - Replace characters that are functionally equivalent with the most
-        common form: for example, half-width katakana will be replaced with
-        full-width, full-width Roman characters will be replaced with
-        ASCII characters, ellipsis characters will be replaced by three
-        periods, and the ligature 'ﬂ' will be replaced by 'fl'.
-    - Replace curly quotation marks with straight ones.
-    - Remove the Byte-Order Mark if it exists.
-
-    You may change the `normalization` argument to apply a different kind of
-    Unicode normalization, such as NFC or NFKD, or set it to None to skip this
-    step.
+      - K: Replace characters that are functionally equivalent with the most
+        common form. For example, half-width katakana will be replaced with
+        full-width versions, full-width Roman characters will be replaced with
+        ASCII characters, ellipsis characters will be replaced with three
+        periods, and the ligature 'ﬂ' will be replaced with 'fl'.
+    - If `uncurl_quotes` is True, replace various curly quotation marks with
+      plain-ASCII straight quotes.
+    - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
+    - If anything was changed, repeat all the steps, so that the function is
+      idempotent. "&amp;amp;" will become "&", for example, not "&amp;".
 
         >>> print(fix_text('uÌˆnicode'))
         ünicode
