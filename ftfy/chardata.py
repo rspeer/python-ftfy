@@ -63,16 +63,15 @@ def possible_encoding(text, encoding):
 
 
 # Make regular expressions out of categories of Unicode characters.
+# Except we probably need broader ranges.
+#
+# Ll Lu: weirdness=1
+# Ll [Lo Lt]: weirdness=2
+# Lm Sk Sm Sc No So Po
 def _make_category_regex_ranges():
-    encodable_char_set = set([unichr(codepoint) for codepoint in range(0, 0x100)])
-    for codepoint in range(0x80, 0x100):
-        encoded_char = chr(codepoint).encode('latin-1')
-        for encoding in ['windows-1252', 'macroman', 'cp437']:
-            try:
-                decoded_char = encoded_char.decode(encoding)
-                encodable_char_set.add(decoded_char)
-            except ValueError:
-                pass
+    encodable_char_set = []
+    for codepoint in range(0x20, 0x10000):
+        encodable_char_set.append(unichr(codepoint))
 
     categories = defaultdict(list)
     for char in sorted(encodable_char_set):
@@ -89,7 +88,6 @@ def _make_category_regex_ranges():
                               .replace('-', r'\-'))
     return ranges
 CATEGORY_RANGES = _make_category_regex_ranges()
-print(CATEGORY_RANGES)
 
 # ----------------
 
@@ -122,8 +120,7 @@ for char in sorted(encodable_chars):
 #
 #   0 = not weird at all
 #   1 = rare punctuation or rare letter that someone could certainly
-#       have a good reason to use. All Windows-1252 gremlins are at least
-#       weirdness 1.
+#       have a good reason to use.
 #   2 = things that probably don't appear next to letters or other
 #       symbols, such as math or currency symbols
 #   3 = obscure symbols that nobody would go out of their way to use
