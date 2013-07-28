@@ -5,8 +5,6 @@ from ftfy.chardata import (possible_encoding, CHARMAPS, CHARMAP_ENCODINGS,
 from ftfy.badness import text_cost
 import re
 import sys
-import logging
-LOG = logging.getLogger(__name__)
 
 if sys.hexversion >= 0x03000000:
     from html import entities
@@ -134,11 +132,6 @@ def fix_text_and_explain(text):
             # points up to 0xff. This can then be converted into the intended
             # bytes by encoding it as Latin-1.
             sorta_encoded_text = text.translate(CHARMAPS[encoding])
-            if max(sorta_encoded_text) > unichr(255):
-                LOG.warn("Charmap: %s" % CHARMAPS[encoding])
-                LOG.warn("Encoding: %s" % encoding)
-                LOG.warn("Original text: %s" % text)
-                LOG.warn("encoded text: %s" % sorta_encoded_text)
             encoded_bytes = sorta_encoded_text.encode('latin-1')
 
             # Now, find out if it's UTF-8.
