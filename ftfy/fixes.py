@@ -16,7 +16,7 @@ else:
     import htmlentitydefs
 
 
-BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode!
+BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
 
 ftfy is designed to fix problems that were introduced by handling Unicode
 incorrectly. It might be able to fix the bytes you just handed it, but the
@@ -25,8 +25,8 @@ that your code is *also* handling Unicode incorrectly.
 
 ftfy takes Unicode text as input. You should take these bytes and decode
 them from the encoding you think they are in. If you're not sure, you can
-try decoding it as 'latin-1', which may work and at least won't make
-anything worse.
+try decoding it as 'latin-1' and letting ftfy take it from there. This may
+or may not work, but at least it shouldn't make the situation worse.
 
 If you're confused by this, please read the Python Unicode HOWTO:
 
