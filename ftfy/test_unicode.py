@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ftfy import fix_bad_encoding, WINDOWS_1252_GREMLINS
+from ftfy.fixes import fix_text_encoding
 import unicodedata
 
 # Most single-character strings which have been misencoded should be restored.
@@ -7,9 +7,9 @@ def test_all_bmp_characters():
     for index in xrange(0xa0, 0xfffd):
         char = unichr(index)
         # Exclude code points that are not assigned
-        if unicodedata.category(char) not in ('Co', 'Cn'):
+        if unicodedata.category(char) not in ('Co', 'Cn', 'Mc', 'Mn'):
             garble = char.encode('utf-8').decode('latin-1')
-            assert fix_bad_encoding(garble) == char
+            assert fix_text_encoding(garble) == char
 
 phrases = [
     u"\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
@@ -28,5 +28,5 @@ def test_valid_phrases():
         yield check_phrase, phrase[1:]
 
 def check_phrase(text):
-    assert fix_bad_encoding(text) == text, text
+    assert fix_text_encoding(text) == text, text
 
