@@ -88,7 +88,6 @@ def fix_text(text,
     """
     out = []
     pos = 0
-    entities = True
     while pos < len(text):
         textbreak = text.find('\n', pos, pos + MAXLEN)
         if textbreak == -1:
@@ -104,9 +103,20 @@ def fix_text(text,
 
         if '<' in substring and '>' in substring:
             # we see angle brackets together; this could be HTML
-            entities = False
+            fix_entities = False
 
-        out.append(fix_text_segment(substring, normalization, entities))
+        out.append(
+            fix_text_segment(
+                substring,
+                fix_entities=fix_entities,
+                remove_terminal_escapes=remove_terminal_escapes,
+                fix_encoding=fix_encoding,
+                normalization=normalization,
+                uncurl_quotes=uncurl_quotes,
+                remove_control_chars=remove_control_chars,
+                remove_bom=remove_bom
+            )
+        )
         pos += textbreak + 1
 
     return ''.join(out)
@@ -170,3 +180,5 @@ def fix_text_segment(text,
         if text == origtext:
             return text
 
+
+fix_text_encoding = fixes.fix_text_encoding
