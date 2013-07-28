@@ -33,7 +33,7 @@ def _make_encoding_regexes():
     for encoding in CHARMAP_ENCODINGS:
         charmap = {}
         for codepoint in range(0, 0x80):
-            charmap[unichr(codepoint)] = unichr(codepoint)
+            charmap[codepoint] = unichr(codepoint)
         for codepoint in range(0x80, 0x100):
             char = unichr(codepoint)
             encoded_char = char.encode('latin-1')
@@ -41,14 +41,14 @@ def _make_encoding_regexes():
                 decoded_char = encoded_char.decode(encoding)
             except ValueError:
                 decoded_char = char
-            charmap[decoded_char] = char
+            charmap[ord(decoded_char)] = char
 
-        charlist = [char for char in sorted(charmap.keys()) if ord(char) >= 0x80]
+        charlist = [unichr(codept) for codept in sorted(charmap.keys()) if codept >= 0x80]
         regex = '^[\x00-\x7f{}]*$'.format(''.join(charlist))
         CHARMAPS[encoding] = charmap
         encoding_regular_expressions[encoding] = re.compile(regex)
 
-    encoding_regular_expressions['ascii'] = re.compile('^[\x00-\x7f]*')
+    encoding_regular_expressions['ascii'] = re.compile('^[\x00-\x7f]*$')
     return encoding_regular_expressions
 
 ENCODING_REGEXES = _make_encoding_regexes()
@@ -89,30 +89,6 @@ def _make_category_regex_ranges():
     return ranges
 CATEGORY_RANGES = _make_category_regex_ranges()
 
-# ----------------
-
-
-# What is the heuristic for comparing single-byte encodings to each other?
-encodable_chars = set()
-for codepoint in range(0x80, 0x100):
-    encoded_char = chr(codepoint).encode('latin-1')
-    possibilities = []
-    for encoding in ['latin-1', 'windows-1252', 'macroman', 'cp437']:
-        try:
-            decoded_char = encoded_char.decode(encoding)
-            encodable_chars.add(decoded_char)
-        except ValueError:
-            decoded_char = encoded_char.decode('latin-1')
-        possibilities.append(decoded_char)
-    print(' '.join(possibilities))
-print()
-
-for char in sorted(encodable_chars):
-    try:
-        name = unicodedata.name(char)
-    except ValueError:
-        name = '[unknown]'
-    print(char, hex(ord(char)), unicodedata.category(char), name)
 
 # Rank the characters typically represented by a single byte -- that is, in
 # Latin-1 or Windows-1252 -- by how weird it would be to see them in running
@@ -240,89 +216,6 @@ CHARACTER_WEIRDNESS = {
     '\N{LATIN SMALL LIGATURE FI}': 1,
     '\N{LATIN SMALL LIGATURE FL}': 1,
 }
-
-
-
-# Create a fast mapping that converts a Unicode string to a string describing
-# its character classes, particularly the scripts its letters are in.
-#
-# Capital letters represent groups of commonly-used scripts:
-#   L = Latin
-#   E = several East Asian scripts including hanzi, kana, and Hangul
-#   C = Cyrillic
-#   etc.
-#
-# Lowercase letters represent rare scripts.
-# . represents non-letters.
-# Whitespace represents whitespace.
-# ? represents errors.
-#
-# Astral characters pass through unmodified; we don't count them as script
-# conflicts. They are probably intentional.
-
-SCRIPT_LETTERS = {
-    'LATIN': 'L',
-    'CJK': 'E',
-    'ARABIC': 'A',
-    'CYRILLIC': 'C',
-    'GREEK': 'G',
-    'HEBREW': 'H',
-    'KATAKANA': 'E',
-    'HIRAGANA': 'E',
-    'HIRAGANA-KATAKANA': 'E',
-    'KATAKANA-HIRAGANA': 'E',
-    'HANGUL': 'E',
-    'DEVANAGARI': 'D',
-    'THAI': 'T',
-    'FULLWIDTH': 'E',
-    'MASCULINE': 'L',
-    'FEMININE': 'L',
-    'MODIFIER': '.',
-    'HALFWIDTH': 'E',
-    'BENGALI': 'b',
-    'LAO': 'l',
-    'KHMER': 'k',
-    'TELUGU': 't',
-    'MALAYALAM': 'm',
-    'SINHALA': 's',
-    'TAMIL': 'a',
-    'GEORGIAN': 'g',
-    'ARMENIAN': 'r',
-    'KANNADA': 'n',  # mostly used for looks of disapproval
-}
-
-
-SCRIPT_MAP = {}
-
-for codepoint in range(0x10000):
-    char = unichr(codepoint)
-    if unicodedata.category(char).startswith('L'):
-        try:
-            name = unicodedata.name(char)
-            script = name.split()[0]
-            if script in SCRIPT_LETTERS:
-                SCRIPT_MAP[codepoint] = SCRIPT_LETTERS[script]
-            else:
-                SCRIPT_MAP[codepoint] = 'z'
-        except ValueError:
-            # it's unfortunate that this gives subtly different results
-            # on Python 2.6, which is confused about the Unicode 5.1
-            # Chinese range. It knows they're letters but it has no idea
-            # what they are named.
-            #
-            # This could be something to fix in the future, or maybe we
-            # just stop supporting Python 2.6 eventually.
-            SCRIPT_MAP[codepoint] = 'z'
-    elif unicodedata.category(char).startswith('Z'):
-        SCRIPT_MAP[codepoint] = ' '
-    elif unicodedata.category(char) == 'Cn':
-        SCRIPT_MAP[codepoint] = '?'
-    else:
-        SCRIPT_MAP[codepoint] = '.'
-
-SCRIPT_MAP[0x09] = ' '
-SCRIPT_MAP[0x0a] = '\n'
-SCRIPT_MAP[0xfffd] = '?'
 
 
 # A translate mapping that will strip all control characters except \t and \n.
