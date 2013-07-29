@@ -20,4 +20,9 @@ TEST_CASES = [
 
 def test_real_tweets():
     for orig, target in TEST_CASES:
+        # make sure we can decode the text as intended
         eq_(fix_text_encoding(orig), target)
+
+        # make sure we can decode as intended even with an extra layer of badness
+        extra_bad = orig.encode('utf-8').decode('latin-1')
+        eq_(fix_text_encoding(extra_bad), target)
