@@ -93,8 +93,11 @@ def fix_text_encoding(text):
         >>> print(fix_text_encoding('This text was never UTF-8 at all\x85'))
         This text was never UTF-8 at all…
     """
-    fixed, _ = fix_text_and_explain(text)
-    return fixed
+    while True:
+        origtext = text
+        text, _ = fix_text_and_explain(text)
+        if text == origtext:
+            return text
 
 def fix_text_and_explain(text):
     if isinstance(text, bytes):
