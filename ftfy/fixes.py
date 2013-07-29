@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from ftfy.chardata import (possible_encoding, CHARMAPS, CHARMAP_ENCODINGS,
-                           CONTROL_CHARS)
+                           CONTROL_CHARS, CATEGORY_RANGES)
 from ftfy.badness import text_cost
 import re
 import sys
+import warnings
 
 if sys.hexversion >= 0x03000000:
     from html import entities
@@ -31,6 +32,20 @@ If you're confused by this, please read the Python Unicode HOWTO:
     http://docs.python.org/%d/howto/unicode.html
 """ % sys.version_info[0]
 
+SURROGATES_WARNING_TEXT = """
+This text contains characters that this version of Python can't handle.
+
+You are using a "narrow" build of Python, which can only represent the first
+2^16 characters in Unicode. There are characters called "astral" characters
+above this range, including emoji and some rare Chinese characters. 
+
+Python will instead represent these as pairs of surrogate characters. Your
+string will be the wrong length and will cause problems if you try to refer
+to its individual characters.
+
+Unfortunately, this can't be fixed from within Python. You should download
+or compile a "wide" build, or upgrade to Python 3.3 or later.
+"""
 
 def fix_text_encoding(text):
     """
@@ -236,7 +251,35 @@ def uncurl_quotes(text):
 
 
 def remove_control_chars(text):
+    """
+    Remove all control characters except for the important ones (line feed
+    and tab).
+    
+    This removes all characters from U+0000 to U+001F and U+0080 to U+009F,
+    but it of course leaves TAB (U+0009) and LF (U+000A) alone.
+
+    Note that, for example, this will convert Windows-style CRLF line breaks
+    into Unix-style LF line breaks, because CR (U+000D) is a control
+    character that does nothing on its own. You are likely to want this
+    transformation anyway.
+    """
     return text.translate(CONTROL_CHARS)
+
+
+SURROGATES_RE = re.compile('[{0}]'.format(CATEGORY_RANGES['Cs']))
+def fix_surrogate_encoding(text):
+    # Python has no functions that manipulate surrogate pairs
+    # directly. However, if they can be fixed at all, they will
+    # be fixed by round-tripping to UTF-8 encoding.
+    #
+    # On the other hand, on a narrow build of Python, this can't possibly
+    # work. The fixed text simply cannot be represented by the unicode
+    # type in narrow Python. In that case, we'll let it do its thing with
+    # surrogates, but also warn the user.
+    if sys.maxunicode < 0x10000 and SURROGATES_RE.search(text):
+        warnings.warn(SURROGATES_WARNING_TEXT, UnicodeWarning)
+
+    return text.encode('utf-8').decode('utf-8')
 
 
 def remove_bom(text):
