@@ -20,6 +20,7 @@ def fix_text(text,
              normalization='NFKC',
              uncurl_quotes=True,
              remove_control_chars=True,
+             fix_surrogate_encoding=True,
              remove_bom=True):
     """
     Given Unicode text as input, make its representation consistent and
@@ -49,6 +50,11 @@ def fix_text(text,
         periods, and the ligature 'ﬂ' will be replaced with 'fl'.
     - If `uncurl_quotes` is True, replace various curly quotation marks with
       plain-ASCII straight quotes.
+    - If `fix_surrogate_encoding` is true, replace surrogate encodings of
+      "astral" Unicode characters with the actual characters... but only
+      on Python builds ("wide" builds or Python >= 3.3) that can handle
+      astral characters. On "narrow" builds, it'll keep using surrogate
+      characters and give a warning.
     - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
     - If anything was changed, repeat all the steps, so that the function is
       idempotent. "&amp;amp;" will become "&", for example, not "&amp;".
@@ -114,6 +120,7 @@ def fix_text(text,
                 normalization=normalization,
                 uncurl_quotes=uncurl_quotes,
                 remove_control_chars=remove_control_chars,
+                fix_surrogate_encoding=fix_surrogate_encoding,
                 remove_bom=remove_bom
             )
         )
@@ -148,6 +155,7 @@ def fix_text_segment(text,
                      normalization='NFKC',
                      uncurl_quotes=True,
                      remove_control_chars=True,
+                     fix_surrogate_encoding=True,
                      remove_bom=True):
     """
     Apply fixes to text in a single chunk. This could be a line of text
@@ -176,7 +184,8 @@ def fix_text_segment(text,
             text = fixes.remove_control_chars(text)
         if remove_bom:
             text = fixes.remove_bom(text)
-
+        if fix_surrogate_encoding:
+            text = fixes.fix_surrogate_encoding(text)
         if text == origtext:
             return text
 
