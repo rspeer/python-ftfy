@@ -2,6 +2,7 @@
 from ftfy.fixes import fix_text_encoding
 import unicodedata
 import sys
+from nose.tools import eq_
 
 if sys.hexversion >= 0x03000000:
     unichr = chr
@@ -13,7 +14,9 @@ def test_all_bmp_characters():
         # Exclude code points that are not assigned
         if unicodedata.category(char) not in ('Co', 'Cn', 'Cs', 'Mc', 'Mn'):
             garble = char.encode('utf-8').decode('latin-1')
-            assert fix_text_encoding(garble) == char
+            garble2 = char.encode('utf-8').decode('latin-1').encode('utf-8').decode('latin-1')
+            eq_(fix_text_encoding(garble), char)
+            eq_(fix_text_encoding(garble2), char)
 
 phrases = [
     u"\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
@@ -31,5 +34,5 @@ def test_valid_phrases():
         yield check_phrase, phrase[1:]
 
 def check_phrase(text):
-    assert fix_text_encoding(text) == text, text
+    eq_(fix_text_encoding(text), text)
 
