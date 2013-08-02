@@ -5,8 +5,8 @@ import re
 
 def _make_weirdness_regex():
     groups = []
-    groups.append(u'([{Ll}][{Lu}{Lo}{Lt}])'.format(**CATEGORY_RANGES))
-    groups.append(u'([{Mn}{Mc}])'.format(**CATEGORY_RANGES))
+    groups.append(u'([{Ll}][{Lun}{Lo}{Lt}])'.format(**CATEGORY_RANGES))
+    groups.append(u'([^{Lo}][{Mn}{Mc}])'.format(**CATEGORY_RANGES))
     exclusive_categories = ['Lm', 'Sk', 'Sm', 'Sc', 'No', 'So']
     for cat1 in exclusive_categories:
         others = exclusive_categories[:]
