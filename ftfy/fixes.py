@@ -178,9 +178,13 @@ def fix_text_and_explain(text):
             # not in Windows-1252. Those are C1 control characters. Nobody
             # wants those. Assume they were meant to be Windows-1252.
             encoded = text.encode('latin-1')
-            fixed = encoded.decode('windows-1252', errors='replace')
-            steps = [('encode', 'latin-1'), ('decode', 'windows-1252')]
-            return fixed, steps
+            try:
+                fixed = encoded.decode('windows-1252')
+                steps = [('encode', 'latin-1'), ('decode', 'windows-1252')]
+                return fixed, steps
+            except UnicodeDecodeError:
+                # Well, never mind.
+                pass
 
     # The cases that remain are mixups between two different single-byte
     # encodings, neither of which is Latin-1.
