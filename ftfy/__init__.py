@@ -191,3 +191,4 @@ def fix_text_segment(text,
 
 
 fix_text_encoding = fixes.fix_text_encoding
+fix_bad_encoding = fix_text_encoding

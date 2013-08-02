@@ -89,6 +89,12 @@ def _make_category_regex_ranges():
     return ranges
 CATEGORY_RANGES = _make_category_regex_ranges()
 
+# Separate out non-ASCII uppercase characters
+_non_ascii_upper = ''.join(
+    ch for ch in CATEGORY_RANGES['Lu']
+    if ord(ch) >= 0x80
+)
+CATEGORY_RANGES['Lun'] = _non_ascii_upper
 
 # A translate mapping that will strip all control characters except \t and \n.
 # This incidentally has the effect of normalizing Windows \r\n line endings to
