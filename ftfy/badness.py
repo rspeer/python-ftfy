@@ -4,10 +4,42 @@ from ftfy.chardata import CATEGORY_RANGES
 import re
 
 def _make_weirdness_regex():
+    """
+    Creates a list of regexes that match 'weird' character sequences.
+    The more matches there are, the weirder the text is.
+    """
     groups = []
+
+    # Match lowercase letters that are followed by:
+    # - non-ASCII uppercase letters, such as accented letters
+    # - letters from a different script that doesn't have case
+    # - title-case ligatures
     groups.append(u'([{Ll}][{Lun}{Lo}{Lt}])'.format(**CATEGORY_RANGES))
-    groups.append(u'([^{Lo}][{Mn}{Mc}])'.format(**CATEGORY_RANGES))
-    exclusive_categories = ['Lm', 'Sk', 'Sm', 'Sc', 'No', 'So']
+
+    # Match diacritic marks, except when they modify a non-cased letter.
+    #
+    # You wouldn't put a diacritic mark on a digit or a space, for example.
+    # You might, of course, put diacritics on Latin letters, but in that case
+    # it's a lot more common to see the pre-combined version. Modifier
+    # characters are most often used in other scripts where the letters have
+    # category 'Lo'.
+    groups.append(u'([^{Lo}][{Mn}{Mc}{Me}])'.format(**CATEGORY_RANGES))
+
+    # Match C1 control characters, which are almost always the result of
+    # decoding Latin-1 that was meant to be Windows-1252.
+    groups.append(u'[\x80-\x9f]')
+
+    # Match adjacent characters from any different pair of these categories:
+    # - Letter modifiers (Lm)
+    # - Spacing combining marks (Mc)
+    # - Enclosing marks (Me)
+    # - Nonspacing marks (Mn)
+    # - Miscellaneous numbers (No)
+    # - Symbol modifiers (Sk)
+    # - Mathematical symbols (Sm)
+    # - Currency symbols (Sc)
+    # - Other symbols (So)
+    exclusive_categories = ['Lm', 'Mc', 'Me', 'Mn', 'No', 'Sk', 'Sm', 'Sc', 'So']
     for cat1 in exclusive_categories:
         others = exclusive_categories[:]
         others.remove(cat1)
@@ -27,10 +59,9 @@ WEIRDNESS_RE = _make_weirdness_regex()
 
 def sequence_weirdness(text):
     """
-    TODO: better documentation
-
-    Determine how often a text has unexpected sequences of characters,
-    which might indicate an incorrect encoding.
+    Determine how often a text has unexpected characters or sequences of
+    characters. This metric is used to disambiguate when text should be
+    re-decoded or left as is.
     """
     return len(WEIRDNESS_RE.findall(text))
 
