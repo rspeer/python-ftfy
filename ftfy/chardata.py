@@ -106,3 +106,5 @@ for i in range(256):
 
 CONTROL_CHARS[ord('\t')] = '\t'
 CONTROL_CHARS[ord('\n')] = '\n'
+CONTROL_CHARS[ord('\f')] = '\f'
+CONTROL_CHARS[ord('\r')] = '\r'

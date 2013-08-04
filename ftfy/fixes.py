@@ -263,18 +263,27 @@ def uncurl_quotes(text):
     return SINGLE_QUOTE_RE.sub("'", DOUBLE_QUOTE_RE.sub('"', text))
 
 
-def remove_control_chars(text):
-    """
-    Remove all control characters except for the important ones (line feed
-    and tab).
-    
-    This removes all characters from U+0000 to U+001F and U+0080 to U+009F,
-    but it of course leaves TAB (U+0009) and LF (U+000A) alone.
+def fix_line_breaks(text):
+    r"""
+    Convert line breaks to Unix style.
 
-    Note that, for example, this will convert Windows-style CRLF line breaks
-    into Unix-style LF line breaks, because CR (U+000D) is a control
-    character that does nothing on its own. You are likely to want this
-    transformation anyway.
+    In particular, this replaces CRLF (\r\n) with LF (\n), then
+    additionally replaces CR (\r) with LF (\n).
+    """
+    return text.replace('\r\n', '\n').replace('\r', '\n')
+
+
+def remove_control_chars(text):
+    r"""
+    Remove all control characters except for the important ones.
+    
+    This removes characters from U+0000 to U+001F and U+0080 to U+009F, except
+    it leaves alone these characters that are commonly used for formatting:
+
+    - TAB (\t, U+0009)
+    - LF (\n, U+000A)
+    - FF (\f, U+000C)
+    - CR (\r, U+000D)
     """
     return text.translate(CONTROL_CHARS)
 
