@@ -6,6 +6,7 @@ from ftfy.badness import text_cost
 import re
 import sys
 import warnings
+import logging
 
 if sys.hexversion >= 0x03000000:
     from html import entities
@@ -33,15 +34,18 @@ If you're confused by this, please read the Python Unicode HOWTO:
 """ % sys.version_info[0]
 
 SURROGATES_WARNING_TEXT = """
-This text contains characters that this version of Python can't handle.
+This text contains characters that this installation of Python can't
+properly decode.
 
 You are using a "narrow" build of Python, which can only represent the first
 2^16 characters in Unicode. There are characters called "astral" characters
-above this range, including emoji and some rare Chinese characters. 
+above this range, including emoji (single-character emoticons) and some
+Chinese characters. 
 
-Python will instead represent these as pairs of surrogate characters. Your
-string will be the wrong length and will cause problems if you try to refer
-to its individual characters.
+Python will instead represent these as pairs of surrogate characters.
+If you are just going to re-encode the string and output it, this is fine.
+If you slice it, or refer to its length or individual characters, however,
+you will get incorrect results.
 
 Unfortunately, this can't be fixed from within Python. You should download
 or compile a "wide" build, or upgrade to Python 3.3 or later.
@@ -108,11 +112,17 @@ def fix_text_encoding(text):
         >>> print(fix_text_encoding('This text was never UTF-8 at all\x85'))
         This text was never UTF-8 at all…
     """
+    best_version = text
+    best_cost = text_cost(text)
     while True:
-        origtext = text
+        prevtext = text
         text, _ = fix_text_and_explain(text)
-        if text == origtext:
-            return text
+        cost = text_cost(text)
+        if cost < best_cost:
+            best_cost = cost
+            best_version = text
+        if text == prevtext:
+            return best_version
 
 def fix_text_and_explain(text):
     if isinstance(text, bytes):
@@ -156,8 +166,7 @@ def fix_text_and_explain(text):
             try:
                 fixed = encoded_bytes.decode('utf-8')
                 steps = [('sloppy_encode', encoding), ('decode', 'utf-8')]
-                if text_cost(fixed) < text_cost(text):
-                    return fixed, steps
+                return fixed, steps
             except UnicodeDecodeError:
                 possible_1byte_encodings.append(encoding)
 
