@@ -19,6 +19,7 @@ def fix_text(text,
              fix_encoding=True,
              normalization='NFKC',
              uncurl_quotes=True,
+             fix_line_breaks=True,
              remove_control_chars=True,
              fix_surrogate_encoding=True,
              remove_bom=True):
@@ -50,6 +51,11 @@ def fix_text(text,
         periods, and the ligature 'ﬂ' will be replaced with 'fl'.
     - If `uncurl_quotes` is True, replace various curly quotation marks with
       plain-ASCII straight quotes.
+    - If `fix_line_breaks` is true, convert all line breaks to Unix style
+      (CRLF and CR line breaks become LF line breaks).
+    - If `fix_control_characters` is true, remove all control characters
+      except the common useful ones: TAB, CR, LF, and FF. (CR characters
+      may have already been removed by the `fix_line_breaks` step.)
     - If `fix_surrogate_encoding` is true, replace surrogate encodings of
       "astral" Unicode characters with the actual characters... but only
       on Python builds ("wide" builds or Python >= 3.3) that can handle
@@ -119,6 +125,7 @@ def fix_text(text,
                 fix_encoding=fix_encoding,
                 normalization=normalization,
                 uncurl_quotes=uncurl_quotes,
+                fix_line_breaks=fix_line_breaks,
                 remove_control_chars=remove_control_chars,
                 fix_surrogate_encoding=fix_surrogate_encoding,
                 remove_bom=remove_bom
@@ -154,6 +161,7 @@ def fix_text_segment(text,
                      fix_encoding=True,
                      normalization='NFKC',
                      uncurl_quotes=True,
+                     fix_line_breaks=True,
                      remove_control_chars=True,
                      fix_surrogate_encoding=True,
                      remove_bom=True):
@@ -180,6 +188,8 @@ def fix_text_segment(text,
             text = unicodedata.normalize(normalization, text)
         if uncurl_quotes:
             text = fixes.uncurl_quotes(text)
+        if fix_line_breaks:
+            text = fixes.fix_line_breaks(text)
         if remove_control_chars:
             text = fixes.remove_control_chars(text)
         if remove_bom:
