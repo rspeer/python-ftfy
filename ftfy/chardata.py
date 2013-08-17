@@ -69,14 +69,19 @@ def possible_encoding(text, encoding):
 # Ll [Lo Lt]: weirdness=2
 # Lm Sk Sm Sc No So Po
 def _make_category_regex_ranges():
-    encodable_char_set = []
-    for codepoint in range(0x20, 0x10000):
-        encodable_char_set.append(unichr(codepoint))
-
     categories = defaultdict(list)
-    for char in sorted(encodable_char_set):
+    for codepoint in range(0x20, 0x10000):
+        char = unichr(codepoint)
         category = unicodedata.category(char)
         categories[category].append(char)
+        
+        # Find Latin vs. non-Latin letters
+        if category.startswith('L'):
+            if unicodedata.name(char).startswith('LATIN')\
+            and codepoint < 0x200:
+                categories['latin'].append(char)
+            else:
+                categories['nonlatin'].append(char)
 
     ranges = {}
     for category in categories:
@@ -86,6 +91,7 @@ def _make_category_regex_ranges():
                               .replace(']', r'\]')
                               .replace('^', r'\^')
                               .replace('-', r'\-'))
+
     return ranges
 CATEGORY_RANGES = _make_category_regex_ranges()
 
@@ -94,7 +100,13 @@ _non_ascii_upper = ''.join(
     ch for ch in CATEGORY_RANGES['Lu']
     if ord(ch) >= 0x80
 )
+_non_ascii_lower = ''.join(
+    ch for ch in CATEGORY_RANGES['Ll']
+    if ord(ch) >= 0x80
+)
 CATEGORY_RANGES['Lun'] = _non_ascii_upper
+CATEGORY_RANGES['Lln'] = _non_ascii_lower
+
 
 # A translate mapping that will strip all control characters except \t and \n.
 # This incidentally has the effect of normalizing Windows \r\n line endings to
