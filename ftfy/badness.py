@@ -10,11 +10,8 @@ def _make_weirdness_regex():
     """
     groups = []
 
-    # Match lowercase letters that are followed by:
-    # - non-ASCII uppercase letters, such as accented letters
-    # - letters from a different script that doesn't have case
-    # - title-case ligatures
-    groups.append(u'([{Ll}][{Lun}{Lo}{Lt}])'.format(**CATEGORY_RANGES))
+    # Match lowercase letters that are followed by non-ASCII uppercase letters
+    groups.append(u'([{Ll}][{Lun}{Lt}])'.format(**CATEGORY_RANGES))
 
     # Match diacritic marks, except when they modify a non-cased letter.
     #
@@ -25,9 +22,17 @@ def _make_weirdness_regex():
     # category 'Lo'.
     groups.append(u'([^{Lo}][{Mn}{Mc}{Me}])'.format(**CATEGORY_RANGES))
 
+    # Match non-Latin characters adjacent to Latin characters.
+    #
+    # This is a simplification from ftfy version 2, which compared all
+    # adjacent scripts. However, the ambiguities we need to resolve come from
+    # encodings designed to represent Latin characters.
+    groups.append(u'([{latin}][{nonlatin}])'.format(**CATEGORY_RANGES))
+    groups.append(u'([{nonlatin}][{latin}])'.format(**CATEGORY_RANGES))
+
     # Match C1 control characters, which are almost always the result of
     # decoding Latin-1 that was meant to be Windows-1252.
-    groups.append(u'[\x80-\x9f]')
+    groups.append(u'([\x80-\x9f])')
 
     # Match adjacent characters from any different pair of these categories:
     # - Letter modifiers (Lm)
