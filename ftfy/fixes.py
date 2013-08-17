@@ -116,8 +116,14 @@ def fix_text_encoding(text):
     best_cost = text_cost(text)
     while True:
         prevtext = text
-        text, _ = fix_text_and_explain(text)
+        text, plan = fix_text_and_explain(text)
         cost = text_cost(text)
+
+        # Add a small penalty if we used a particularly obsolete encoding.
+        if ('sloppy_encode', 'macroman') in plan or\
+           ('sloppy_encode', 'cp437') in plan:
+            cost += 1
+
         if cost < best_cost:
             best_cost = cost
             best_version = text
