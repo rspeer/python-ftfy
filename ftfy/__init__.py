@@ -144,9 +144,10 @@ def fix_file(file, normalization='NFKC'):
     entities = True
     for line in file:
         if isinstance(line, bytes):
-            raise UnicodeError("fix_file wants Unicode as input, so that "
-                "it knows what to fix.\n"
-                "Try this: codecs.open(file, encoding='utf-8')")
+            try:
+                line = line.decode('utf-8')
+            except UnicodeDecodeError:
+                line = line.decode('latin-1')
         if '<' in line and '>' in line:
             entities = False
         yield fix_text_segment(line, normalization, entities)
