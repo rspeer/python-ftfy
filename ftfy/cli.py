@@ -17,9 +17,7 @@ def main():
 
     args = parser.parse_args()
 
-    # Why open in Latin-1? Because it at least won't make encoding problems
-    # worse, and we're about to make things better.
-    file = codecs.open(args.filename, encoding='latin-1')
+    file = open(args.filename)
     for line in fix_file(file):
         if ENCODE_STDOUT:
             sys.stdout.write(line.encode('utf-8'))
