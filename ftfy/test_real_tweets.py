@@ -13,6 +13,7 @@ TEST_CASES = [
     ('4288×…', '4288×...'),
     ('RETWEET SE VOCÊ…', 'RETWEET SE VOCÊ...'),
     ('PARCE QUE SUR LEURS PLAQUES IL Y MARQUÉ…', 'PARCE QUE SUR LEURS PLAQUES IL Y MARQUÉ...'),
+    ('TEM QUE SEGUIR, SDV SÓ…', 'TEM QUE SEGUIR, SDV SÓ...'),
     ('Join ZZAJÉ’s Official Fan List and receive news, events, and more!', "Join ZZAJÉ's Official Fan List and receive news, events, and more!"),
     ('L’épisode 8 est trop fou ouahh', "L'épisode 8 est trop fou ouahh"),
     ("РґРѕСЂРѕРіРµ РР·-РїРѕРґ http://t.co/A0eJAMTuJ1 #С„СѓС‚Р±РѕР»",
