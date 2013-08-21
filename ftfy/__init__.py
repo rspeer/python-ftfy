@@ -11,8 +11,6 @@ from ftfy import fixes
 import unicodedata
 
 
-MAXLEN = 65536
-
 def fix_text(text, 
              fix_entities=True,
              remove_terminal_escapes=True,
@@ -22,7 +20,8 @@ def fix_text(text,
              fix_line_breaks=True,
              remove_control_chars=True,
              fix_surrogate_encoding=True,
-             remove_bom=True):
+             remove_bom=True,
+             max_line_length=2**20):
     """
     Given Unicode text as input, make its representation consistent and
     possibly less broken, by applying these steps in order:
@@ -101,15 +100,13 @@ def fix_text(text,
     out = []
     pos = 0
     while pos < len(text):
-        textbreak = text.find('\n', pos, pos + MAXLEN)
+        should_fix = True
+        textbreak = text.find('\n', pos, pos + max_line_length)
         if textbreak == -1:
-            if pos + MAXLEN >= len(text):
+            if pos + max_line_length >= len(text):
                 textbreak = len(text) - 1
             else:
-                textbreak = text.find(' ', pos, pos + MAXLEN)
-                if textbreak == -1:
-                    # oh well. We might not be able to fix the 2**16th character.
-                    textbreak = MAXLEN
+                should_fix = False
 
         substring = text[pos:pos + textbreak + 1]
 
