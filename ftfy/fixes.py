@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from ftfy.chardata import (possible_encoding, CHARMAPS, CHARMAP_ENCODINGS,
-                           CONTROL_CHARS, CATEGORY_RANGES)
+                           CONTROL_CHARS)
 from ftfy.badness import text_cost
 import re
 import sys
@@ -294,7 +294,7 @@ def remove_control_chars(text):
     return text.translate(CONTROL_CHARS)
 
 
-SURROGATES_RE = re.compile('[{0}]'.format(CATEGORY_RANGES['Cs']))
+SURROGATES_RE = re.compile(u'[\ud800-\udfff]')
 def fix_surrogate_encoding(text):
     # Python has no functions that manipulate surrogate pairs
     # directly. However, if they can be fixed at all, they will
