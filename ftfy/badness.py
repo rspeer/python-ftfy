@@ -1,7 +1,28 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from ftfy.chardata import CATEGORY_RANGES
+from ftfy.chardata import chars_to_classes
 import re
+
+# The following regex uses the mapping of character classes to ASCII
+# characters defined in chardata.py:
+#
+# L = Latin capital letter
+# l = Latin lowercase letter
+# A = Non-latin capital or title-case letter
+# a = Non-latin lowercase letter
+# C = Non-cased letter (Lo)
+# X = Control character (Cc)
+# m = Letter modifier (Lm)
+# M = Mark (Mc, Me, Mn)
+# N = Miscellaneous numbers (No)
+# 0 = Math symbol (Sm)
+# 1 = Currency symbol (Sc)
+# 2 = Symbol modifier (Sk)
+# 3 = Other symbol (So)
+# S = UTF-16 surrogate
+# _ = Unassigned character
+#   = Whitespace
+# o = Other
 
 def _make_weirdness_regex():
     """
@@ -11,7 +32,7 @@ def _make_weirdness_regex():
     groups = []
 
     # Match lowercase letters that are followed by non-ASCII uppercase letters
-    groups.append(u'([{Ll}][{Lun}{Lt}])'.format(**CATEGORY_RANGES))
+    groups.append('lA')
 
     # Match diacritic marks, except when they modify a non-cased letter.
     #
@@ -20,43 +41,33 @@ def _make_weirdness_regex():
     # it's a lot more common to see the pre-combined version. Modifier
     # characters are most often used in other scripts where the letters have
     # category 'Lo'.
-    groups.append(u'([^{Lo}][{Mn}{Mc}{Me}])'.format(**CATEGORY_RANGES))
+    groups.append('[^C]M')
 
     # Match non-Latin characters adjacent to Latin characters.
     #
     # This is a simplification from ftfy version 2, which compared all
     # adjacent scripts. However, the ambiguities we need to resolve come from
     # encodings designed to represent Latin characters.
-    groups.append(u'([{latin}][{nonlatin}])'.format(**CATEGORY_RANGES))
-    groups.append(u'([{nonlatin}][{latin}])'.format(**CATEGORY_RANGES))
+    groups.append('[Ll][AaC]')
+    groups.append('[AaC][Ll]')
 
     # Match C1 control characters, which are almost always the result of
     # decoding Latin-1 that was meant to be Windows-1252.
-    groups.append(u'([\x80-\x9f])')
+    groups.append(u'X')
 
     # Match adjacent characters from any different pair of these categories:
-    # - Letter modifiers (Lm)
-    # - Spacing combining marks (Mc)
-    # - Enclosing marks (Me)
-    # - Nonspacing marks (Mn)
-    # - Miscellaneous numbers (No)
-    # - Symbol modifiers (Sk)
-    # - Mathematical symbols (Sm)
-    # - Currency symbols (Sc)
-    # - Other symbols (So)
-    exclusive_categories = ['Lm', 'Mc', 'Me', 'Mn', 'No', 'Sk', 'Sm', 'Sc', 'So']
+    # - Modifier marks (M)
+    # - Letter modifiers (m)
+    # - Miscellaneous numbers (N)
+    # - Symbols (0123)
+    
+    exclusive_categories = 'MmN0123'
     for cat1 in exclusive_categories:
-        others = exclusive_categories[:]
-        others.remove(cat1)
-        cat1_range = CATEGORY_RANGES[cat1]
-        others_range = u''.join([CATEGORY_RANGES[other] for other in others])
-        groups.append(
-            u'([{cat1_range}][{others_range}])'.format(
-                cat1_range=cat1_range,
-                others_range=others_range
-            )
-        )
-    regex = '|'.join(groups)
+        others_range = ''.join(c for c in exclusive_categories if c != cat1)
+        groups.append('{cat1}[{others_range}]'.format(
+            cat1=cat1, others_range=others_range
+        ))
+    regex = '|'.join('({0})'.format(group) for group in groups)
     return re.compile(regex)
 
 WEIRDNESS_RE = _make_weirdness_regex()
@@ -68,7 +79,7 @@ def sequence_weirdness(text):
     characters. This metric is used to disambiguate when text should be
     re-decoded or left as is.
     """
-    return len(WEIRDNESS_RE.findall(text))
+    return len(WEIRDNESS_RE.findall(chars_to_classes(text)))
 
 
 def better_text(newtext, oldtext):

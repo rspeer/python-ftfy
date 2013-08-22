@@ -4,10 +4,12 @@ from __future__ import unicode_literals
 import unicodedata
 import sys
 import re
-from collections import defaultdict
+import zlib
+from pkg_resources import resource_string
 
 if sys.hexversion >= 0x03000000:
     unichr = chr
+    xrange = range
 
 # These are encodings that map each byte to a particular character.
 # They are listed in order of frequency, so that more frequent
@@ -62,51 +64,80 @@ def possible_encoding(text, encoding):
     return bool(ENCODING_REGEXES[encoding].match(text))
 
 
-# Make regular expressions out of categories of Unicode characters.
-# Except we probably need broader ranges.
-#
-# Ll Lu: weirdness=1
-# Ll [Lo Lt]: weirdness=2
-# Lm Sk Sm Sc No So Po
-def _make_category_regex_ranges():
-    categories = defaultdict(list)
-    for codepoint in range(0x20, 0x10000):
+# L = Latin capital letter
+# l = Latin lowercase letter
+# A = Non-latin capital or title-case letter
+# a = Non-latin lowercase letter
+# C = Non-cased letter (Lo)
+# X = Control character (Cc)
+# m = Letter modifier (Lm)
+# M = Mark (Mc, Me, Mn)
+# N = Miscellaneous numbers (No)
+# 0 = Math symbol (Sm)
+# 1 = Currency symbol (Sc)
+# 2 = Symbol modifier (Sk)
+# 3 = Other symbol (So)
+# S = UTF-16 surrogate
+# _ = Unassigned character
+#   = Whitespace
+# o = Other
+
+def _make_char_class_letters():
+    cclasses = [None] * 0x110000
+    for codepoint in range(0x0, 0x110000):
         char = unichr(codepoint)
         category = unicodedata.category(char)
-        categories[category].append(char)
-        
-        # Find Latin vs. non-Latin letters
-        if category.startswith('L'):
+
+        if category.startswith('L'):  # letters
             if unicodedata.name(char).startswith('LATIN')\
             and codepoint < 0x200:
-                categories['latin'].append(char)
-            else:
-                categories['nonlatin'].append(char)
+                if category == 'Lu':
+                    cclasses[codepoint] = 'L'
+                else:
+                    cclasses[codepoint] = 'l'
+            else: # non-Latin letter, or close enough
+                if category == 'Lu' or category == 'Lt':
+                    cclasses[codepoint] = 'A'
+                elif category == 'Ll':
+                    cclasses[codepoint] = 'a'
+                elif category == 'Lo':
+                    cclasses[codepoint] = 'C'
+                elif category == 'Lm':
+                    cclasses[codepoint] = 'm'
+                else:
+                    raise ValueError('got some weird kind of letter')
+        elif category.startswith('M'):  # marks
+            cclasses[codepoint] = 'M'
+        elif category == 'No':
+            cclasses[codepoint] = 'N'
+        elif category == 'Sm':
+            cclasses[codepoint] = '0'
+        elif category == 'Sc':
+            cclasses[codepoint] = '1'
+        elif category == 'Sk':
+            cclasses[codepoint] = '2'
+        elif category == 'So':
+            cclasses[codepoint] = '3'
+        elif category == 'Cn':
+            cclasses[codepoint] = '_'
+        elif category == 'Cc':
+            cclasses[codepoint] = 'X'
+        elif category == 'Cs':
+            cclasses[codepoint] = 'S'
+        elif category.startswith('Z'):
+            cclasses[codepoint] = ' '
+        else:
+            cclasses[codepoint] = 'o'
+    
+    cclasses[9] = cclasses[10] = cclasses[12] = cclasses[13] = ' '
+    out = open('char_classes.dat', 'wb')
+    out.write(zlib.compress(bytes(''.join(cclasses), 'ascii')))
+    out.close()
 
-    ranges = {}
-    for category in categories:
-        ranges[category] = (''.join(categories[category])
-                              .replace('\\', '\\\\')
-                              .replace('[', r'\[')
-                              .replace(']', r'\]')
-                              .replace('^', r'\^')
-                              .replace('-', r'\-'))
+CHAR_CLASS_STRING = zlib.decompress(resource_string(__name__, 'char_classes.dat')).decode('ascii')
 
-    return ranges
-CATEGORY_RANGES = _make_category_regex_ranges()
-
-# Separate out non-ASCII uppercase characters
-_non_ascii_upper = ''.join(
-    ch for ch in CATEGORY_RANGES['Lu']
-    if ord(ch) >= 0x80
-)
-_non_ascii_lower = ''.join(
-    ch for ch in CATEGORY_RANGES['Ll']
-    if ord(ch) >= 0x80
-)
-CATEGORY_RANGES['Lun'] = _non_ascii_upper
-CATEGORY_RANGES['Lln'] = _non_ascii_lower
-
+def chars_to_classes(string):
+    return string.translate(CHAR_CLASS_STRING)
 
 # A translate mapping that will strip all control characters except \t and \n.
 # This incidentally has the effect of normalizing Windows \r\n line endings to
