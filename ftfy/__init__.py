@@ -11,7 +11,7 @@ from ftfy import fixes
 import unicodedata
 
 
-def fix_text(text, 
+def fix_text(text,
              fix_entities=True,
              remove_terminal_escapes=True,
              fix_encoding=True,
@@ -19,7 +19,6 @@ def fix_text(text,
              uncurl_quotes=True,
              fix_line_breaks=True,
              remove_control_chars=True,
-             fix_surrogate_encoding=True,
              remove_bom=True,
              max_line_length=2**20):
     """
@@ -55,11 +54,6 @@ def fix_text(text,
     - If `fix_control_characters` is true, remove all control characters
       except the common useful ones: TAB, CR, LF, and FF. (CR characters
       may have already been removed by the `fix_line_breaks` step.)
-    - If `fix_surrogate_encoding` is true, replace surrogate encodings of
-      "astral" Unicode characters with the actual characters... but only
-      on Python builds ("wide" builds or Python >= 3.3) that can handle
-      astral characters. On "narrow" builds, it'll keep using surrogate
-      characters and give a warning.
     - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
     - If anything was changed, repeat all the steps, so that the function is
       idempotent. "&amp;amp;" will become "&", for example, not "&amp;".
@@ -124,7 +118,6 @@ def fix_text(text,
                 uncurl_quotes=uncurl_quotes,
                 fix_line_breaks=fix_line_breaks,
                 remove_control_chars=remove_control_chars,
-                fix_surrogate_encoding=fix_surrogate_encoding,
                 remove_bom=remove_bom
             )
         )
@@ -161,7 +154,6 @@ def fix_text_segment(text,
                      uncurl_quotes=True,
                      fix_line_breaks=True,
                      remove_control_chars=True,
-                     fix_surrogate_encoding=True,
                      remove_bom=True):
     """
     Apply fixes to text in a single chunk. This could be a line of text
@@ -192,8 +184,6 @@ def fix_text_segment(text,
             text = fixes.remove_control_chars(text)
         if remove_bom:
             text = fixes.remove_bom(text)
-        if fix_surrogate_encoding:
-            text = fixes.fix_surrogate_encoding(text)
         if text == origtext:
             return text
 
