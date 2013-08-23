@@ -7,13 +7,7 @@ import re
 import sys
 import warnings
 import logging
-
-if sys.hexversion >= 0x03000000:
-    from html import entities
-    htmlentitydefs = entities
-    unichr = chr
-else:
-    import htmlentitydefs
+from ftfy.compatibility import htmlentitydefs, unichr, bytes_to_ints
 
 
 BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
@@ -33,23 +27,6 @@ If you're confused by this, please read the Python Unicode HOWTO:
     http://docs.python.org/%d/howto/unicode.html
 """ % sys.version_info[0]
 
-SURROGATES_WARNING_TEXT = """
-This text contains characters that this installation of Python can't
-properly decode.
-
-You are using a "narrow" build of Python, which can only represent the first
-2^16 characters in Unicode. There are characters called "astral" characters
-above this range, including emoji (single-character emoticons) and some
-Chinese characters. 
-
-Python will instead represent these as pairs of surrogate characters.
-If you are just going to re-encode the string and output it, this is fine.
-If you slice it, or refer to its length or individual characters, however,
-you will get incorrect results.
-
-Unfortunately, this can't be fixed from within Python. You should download
-or compile a "wide" build, or upgrade to Python 3.3 or later.
-"""
 
 def fix_text_encoding(text):
     """
@@ -168,9 +145,10 @@ def fix_text_and_explain(text):
             sorta_encoded_text = text.translate(CHARMAPS[encoding])
             encoded_bytes = sorta_encoded_text.encode('latin-1')
 
-            # Now, find out if it's UTF-8.
+            # Now, find out if it's UTF-8. ...Or at least something that
+            # resembles UTF-8. See fix_java_encoding for more details.
             try:
-                fixed = encoded_bytes.decode('utf-8')
+                fixed = fix_java_encoding(encoded_bytes).decode('utf-8')
                 steps = [('sloppy_encode', encoding), ('decode', 'utf-8')]
                 return fixed, steps
             except UnicodeDecodeError:
@@ -294,20 +272,62 @@ def remove_control_chars(text):
     return text.translate(CONTROL_CHARS)
 
 
-SURROGATES_RE = re.compile(u'[\ud800-\udfff]')
-def fix_surrogate_encoding(text):
-    # Python has no functions that manipulate surrogate pairs
-    # directly. However, if they can be fixed at all, they will
-    # be fixed by round-tripping to UTF-8 encoding.
-    #
-    # On the other hand, on a narrow build of Python, this can't possibly
-    # work. The fixed text simply cannot be represented by the unicode
-    # type in narrow Python. In that case, we'll let it do its thing with
-    # surrogates, but also warn the user.
-    if sys.maxunicode < 0x10000 and SURROGATES_RE.search(text):
-        warnings.warn(SURROGATES_WARNING_TEXT, UnicodeWarning)
+CESU8_RE = re.compile(b'\xed[\xa0-\xaf][\x80-\xbf]\xed[\xb0-\xbf][\x80-\xbf]')
+def fix_java_encoding(bytestring):
+    """
+    Convert a bytestring that might contain "Java UTF8" into valid UTF-8.
 
-    return text.encode('utf-8').decode('utf-8')
+    There are two things that Java is known to do with its "UTF8" encoder
+    that are incompatible with UTF-8. (If you happen to be writing Java
+    code, apparently the standards-compliant encoder is named "AS32UTF8".)
+
+    - Every UTF-16 character is separately encoded as UTF-8. This is wrong
+      when the UTF-16 string contains surrogates; the character they actually
+      represent should have been encoded as UTF-8 instead. Unicode calls this
+      "CESU-8", the Compatibility Encoding Scheme for Unicode. Python 2 will
+      decode it as if it's UTF-8, but Python 3 refuses to.
+
+    - The null codepoint, U+0000, is encoded as 0xc0 0x80, which avoids
+      outputting a null byte by breaking the UTF shortest-form rule.
+      Unicode does not even deign to give this scheme a name, and no version
+      of Python will decode it.
+    """
+    assert isinstance(bytestring, bytes)
+    # Replace the sloppy encoding of U+0000 with the correct one.
+    bytestring = bytestring.replace(b'\xc0\x80', b'\x00')
+
+    # When we have improperly encoded surrogates, we can still see the
+    # bits that they were meant to represent.
+    # 
+    # The surrogates were meant to encode a 20-bit number, to which we
+    # add 0x10000 to get a codepoint. That 20-bit number now appears in
+    # this form:
+    # 
+    #   11101101 1010abcd 10efghij 11101101 1011klmn 10opqrst
+    #
+    # The CESU8_RE above matches byte sequences of this form. Then we need
+    # to extract the bits and assemble a codepoint number from them.
+    match = CESU8_RE.search(bytestring)
+    fixed_pieces = []
+    while match:
+        pos = match.start()
+        cesu8_sequence = bytes_to_ints(bytestring[pos:pos + 6])
+        assert cesu8_sequence[0] == cesu8_sequence[3] == 0xed
+        codepoint = (
+            ((cesu8_sequence[1] & 0x0f) << 16) +
+            ((cesu8_sequence[2] & 0x3f) << 10) +
+            ((cesu8_sequence[4] & 0x0f) << 6) +
+            (cesu8_sequence[5] & 0x3f) +
+            0x10000
+        )
+        # For the reason why this will work on all Python builds, see
+        # compatibility.py.
+        new_bytes = unichr(codepoint).encode('utf-8')
+        fixed_pieces.append(bytestring[:pos] + new_bytes)
+        bytestring = bytestring[pos + 6:]
+        match = CESU8_RE.match(bytestring)
+
+    return b''.join(fixed_pieces) + bytestring
 
 
 def remove_bom(text):
