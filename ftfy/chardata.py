@@ -6,10 +6,8 @@ import sys
 import re
 import zlib
 from pkg_resources import resource_string
+from ftfy.compatibility import htmlentitydefs, unichr, xrange
 
-if sys.hexversion >= 0x03000000:
-    unichr = chr
-    xrange = range
 
 # These are encodings that map each byte to a particular character.
 # They are listed in order of frequency, so that more frequent
@@ -27,7 +25,6 @@ CONFUSABLE_1BYTE_ENCODINGS = [
     'cp437'
 ]
 CHARMAPS = {}
-
 
 def _make_encoding_regexes():
     encoding_regular_expressions = {}
