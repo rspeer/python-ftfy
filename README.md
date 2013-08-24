@@ -93,7 +93,7 @@ All the fixes are on by default, but you can pass options to turn them off.
   (It's an instruction to a UTF-16 decoder. It's not meant to actually
   end up in your string.)
 - If anything was changed, repeat all the steps, so that the function is
-  idempotent. "&amp;amp;" will become "&", for example, not "&amp;".
+  idempotent. `"&amp;amp;"` will become `"&"`, for example, not `"&amp;"`.
 
 ### Encodings ftfy can handle
 
