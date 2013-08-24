@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 from ftfy.chardata import chars_to_classes
 import re
+import unicodedata
 
 # The following regex uses the mapping of character classes to ASCII
 # characters defined in chardata.py:
@@ -34,10 +35,15 @@ def _make_weirdness_regex():
     # Match lowercase letters that are followed by non-ASCII uppercase letters
     groups.append('lA')
 
-    # Match diacritic marks, except when they modify a letter.
+    # Match diacritical marks, except when they modify a non-cased letter or
+    # another mark.
     #
-    # You wouldn't put a diacritic mark on a digit or a space, for example.
-    groups.append('[^LlAaC]M')
+    # You wouldn't put a diacritical mark on a digit or a space, for example.
+    # You might put it on a Latin letter, but in that case there will almost
+    # always be a pre-composed version, and we normalize to pre-composed
+    # versions first. The cases that can't be pre-composed tend to be in
+    # large scripts without case, which are in class C.
+    groups.append('[^CM]M')
 
     # Match non-Latin characters adjacent to Latin characters.
     #
@@ -75,7 +81,8 @@ def sequence_weirdness(text):
     characters. This metric is used to disambiguate when text should be
     re-decoded or left as is.
     """
-    return len(WEIRDNESS_RE.findall(chars_to_classes(text)))
+    text2 = unicodedata.normalize('NFC', text)
+    return len(WEIRDNESS_RE.findall(chars_to_classes(text2)))
 
 
 def better_text(newtext, oldtext):
