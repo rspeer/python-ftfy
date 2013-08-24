@@ -65,8 +65,8 @@ def _build_charmaps():
         charmaps[encoding] = charmap
         encoding_regexes[encoding] = re.compile(regex)
     return charmaps, encoding_regexes
-
 CHARMAPS, ENCODING_REGEXES = _build_charmaps()
+
 
 def possible_encoding(text, encoding):
     """
@@ -88,9 +88,9 @@ def chars_to_classes(string):
     """
     return string.translate(CHAR_CLASS_STRING)
 
+
 # A translate mapping that will strip all C0 control characters except
-# \t and \n. This incidentally has the effect of normalizing Windows \r\n
-# line endings to Unix \n line endings.
+# those that represent whitespace.
 CONTROL_CHARS = {}
 for i in range(32):
     CONTROL_CHARS[i] = None
