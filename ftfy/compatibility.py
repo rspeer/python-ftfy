@@ -1,3 +1,7 @@
+"""
+Makes some function names and behavior consistent between Python 2 and
+Python 3, and also between narrow and wide builds.
+"""
 import sys
 
 if sys.hexversion >= 0x03000000:
