@@ -131,17 +131,21 @@ ftfy = fix_text
 
 def fix_file(file, normalization='NFKC'):
     """
-    Fix a file that is being read in as Unicode text (for example, using
-    the `codecs.open` function), and stream the resulting text one line
-    at a time.
+    Fix text that is found in a file.
+
+    If the file is being read as Unicode text, use that. If it's being read as
+    bytes, then we'll try to decode each line as Latin-1, and then fix it if it
+    was really UTF-8 or something.
+
+    That's kind of awful, but it will have to suffice until we have a working
+    encoding detector.
+
+    The output is a stream of fixed lines of text.
     """
     entities = True
     for line in file:
         if isinstance(line, bytes):
-            try:
-                line = line.decode('utf-8')
-            except UnicodeDecodeError:
-                line = line.decode('latin-1')
+            line = line.decode('latin-1')
         if '<' in line and '>' in line:
             entities = False
         yield fix_text_segment(line, normalization, entities)

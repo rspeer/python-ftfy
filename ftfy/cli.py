@@ -1,5 +1,14 @@
+"""
+A simple command-line utility for fixing text found in a file.
+
+This utility knows nothing about the initial encoding of the file, so it will
+guess Latin-1 and then try to fix it in the very likely event that that guess
+is wrong.
+
+That behavior is slower than strictly necessary, and possibly a bit risky,
+so consider this utility a proof of concept.
+"""
 from ftfy import fix_file
-import codecs
 
 import sys
 ENCODE_STDOUT = (sys.hexversion < 0x03000000)
