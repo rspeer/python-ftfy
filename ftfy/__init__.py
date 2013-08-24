@@ -8,7 +8,9 @@ for more information.
 
 from __future__ import unicode_literals
 from ftfy import fixes
+from ftfy.fixes import fix_text_encoding
 import unicodedata
+import warnings
 
 
 def fix_text(text,
@@ -145,7 +147,7 @@ def fix_file(file, normalization='NFKC'):
         yield fix_text_segment(line, normalization, entities)
 
 
-def fix_text_segment(text, 
+def fix_text_segment(text,
                      fix_entities=True,
                      remove_terminal_escapes=True,
                      fix_encoding=True,
@@ -187,5 +189,13 @@ def fix_text_segment(text,
             return text
 
 
-fix_text_encoding = fixes.fix_text_encoding
-fix_bad_encoding = fix_text_encoding
+def fix_bad_encoding(text):
+    """
+    Kept for compatibility with previous versions of ftfy.
+    """
+    warnings.warn(
+        'fix_bad_encoding is now known as fix_text_encoding',
+        DeprecationWarning
+    )
+    return fix_text_encoding(text)
+
