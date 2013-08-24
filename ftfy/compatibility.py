@@ -23,16 +23,16 @@ def _narrow_unichr_workaround(codepoint):
     return escaped.decode('unicode-escape')
 
 if sys.maxunicode < 0x10000:
-	unichr = _narrow_unichr_workaround
+    unichr = _narrow_unichr_workaround
 
 
 def bytes_to_ints(bytestring):
-	"""
-	No matter what version of Python this is, make a sequence of integers from
-	a bytestring. On Python 3, this is easy, because a 'bytes' object _is_ a
-	sequence of integers.
-	"""
-	if PYTHON3:
-		return bytestring
-	else:
-		return [ord(b) for b in bytestring]
+    """
+    No matter what version of Python this is, make a sequence of integers from
+    a bytestring. On Python 3, this is easy, because a 'bytes' object _is_ a
+    sequence of integers.
+    """
+    if PYTHON3:
+        return bytestring
+    else:
+        return [ord(b) for b in bytestring]
