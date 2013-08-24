@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
+"""
+This module contains the individual fixes that the main fix_text function
+can perform.
+"""
+
 from __future__ import unicode_literals
 from ftfy.chardata import (possible_encoding, CHARMAPS, CHARMAP_ENCODINGS,
                            CONTROL_CHARS)
 from ftfy.badness import text_cost
 import re
 import sys
-import warnings
-import logging
 from ftfy.compatibility import htmlentitydefs, unichr, bytes_to_ints
 
 
@@ -108,6 +111,14 @@ def fix_text_encoding(text):
             return best_version
 
 def fix_text_and_explain(text):
+    """
+    Performs a single step of re-encoding text that's been decoded incorrectly.
+    It returns the decoded text, plus a structure explaining what it did.
+
+    This structure could be used for more than it currently is, but we at least
+    use it to track whether we had to intepret text as an old encoding such as
+    MacRoman or cp437.
+    """
     if isinstance(text, bytes):
         raise UnicodeError(BYTES_ERROR_TEXT)
     if len(text) == 0:
@@ -143,7 +154,7 @@ def fix_text_and_explain(text):
             # points up to 0xff. This can then be converted into the intended
             # bytes by encoding it as Latin-1.
             sorta_encoded_text = text.translate(CHARMAPS[encoding])
-            
+
             # When we get the bytes, run them through fix_java_encoding,
             # because we can only reliably do that at the byte level. (See
             # its documentation for details.)
@@ -201,18 +212,24 @@ def fix_text_and_explain(text):
     return text, [('give up', None)]
 
 
-HTML_ENTITY_RE = re.compile(r"&#?\w+;")
+HTML_ENTITY_RE = re.compile(r"&#?\w{0,8};")
 def unescape_html(text):
     """
     Decode all three types of HTML entities/character references.
 
-    Code by Fredrik Lundh of effbot.org.
+    Code by Fredrik Lundh of effbot.org. Rob Speer made a slight change
+    to it for efficiency: it won't match entities longer than 8 characters,
+    because there are no valid entities like that.
 
         >>> print(unescape_html('&lt;tag&gt;'))
         <tag>
     """
-    def fixup(m):
-        text = m.group(0)
+    def fixup(match):
+        """
+        Replace one matched HTML entity with the character it represents,
+        if possible.
+        """
+        text = match.group(0)
         if text[:2] == "&#":
             # character reference
             try:
@@ -266,7 +283,7 @@ def fix_line_breaks(text):
 def remove_control_chars(text):
     r"""
     Remove all control characters except for the important ones.
-    
+
     This removes characters from U+0000 to U+001F and U+0080 to U+009F, except
     it leaves alone these characters that are commonly used for formatting:
 
@@ -304,11 +321,11 @@ def fix_java_encoding(bytestring):
 
     # When we have improperly encoded surrogates, we can still see the
     # bits that they were meant to represent.
-    # 
+    #
     # The surrogates were meant to encode a 20-bit number, to which we
     # add 0x10000 to get a codepoint. That 20-bit number now appears in
     # this form:
-    # 
+    #
     #   11101101 1010abcd 10efghij 11101101 1011klmn 10opqrst
     #
     # The CESU8_RE above matches byte sequences of this form. Then we need
