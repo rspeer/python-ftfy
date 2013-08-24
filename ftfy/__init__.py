@@ -51,7 +51,7 @@ def fix_text(text,
       plain-ASCII straight quotes.
     - If `fix_line_breaks` is true, convert all line breaks to Unix style
       (CRLF and CR line breaks become LF line breaks).
-    - If `fix_control_characters` is true, remove all control characters
+    - If `fix_control_characters` is true, remove all C0 control characters
       except the common useful ones: TAB, CR, LF, and FF. (CR characters
       may have already been removed by the `fix_line_breaks` step.)
     - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
