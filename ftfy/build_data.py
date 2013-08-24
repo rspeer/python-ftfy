@@ -37,6 +37,14 @@ if sys.hexversion >= 0x03000000:
 # o = Other
 
 def make_char_data_file():
+    """
+    Build the compressed data file 'char_classes.dat' and write it to the
+    current directory.
+
+    If you run this, run it in Python 3.3 or later. It will run in earlier
+    versions, but you won't get the current Unicode standard, leading to
+    inconsistent behavior.
+    """
     cclasses = [None] * 0x110000
     for codepoint in range(0x0, 0x110000):
         char = unichr(codepoint)
