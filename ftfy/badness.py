@@ -34,14 +34,10 @@ def _make_weirdness_regex():
     # Match lowercase letters that are followed by non-ASCII uppercase letters
     groups.append('lA')
 
-    # Match diacritic marks, except when they modify a non-cased letter.
+    # Match diacritic marks, except when they modify a letter.
     #
     # You wouldn't put a diacritic mark on a digit or a space, for example.
-    # You might, of course, put diacritics on Latin letters, but in that case
-    # it's a lot more common to see the pre-combined version. Modifier
-    # characters are most often used in other scripts where the letters have
-    # category 'Lo'.
-    groups.append('[^C]M')
+    groups.append('[^LlAaC]M')
 
     # Match non-Latin characters adjacent to Latin characters.
     #
