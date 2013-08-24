@@ -20,7 +20,7 @@ def fix_text(text,
              fix_line_breaks=True,
              remove_control_chars=True,
              remove_bom=True,
-             max_line_length=2**20):
+             max_decode_length=2**16):
     """
     Given Unicode text as input, make its representation consistent and
     possibly less broken, by applying these steps in order:
@@ -94,15 +94,14 @@ def fix_text(text,
     out = []
     pos = 0
     while pos < len(text):
-        should_fix = True
-        textbreak = text.find('\n', pos, pos + max_line_length)
-        if textbreak == -1:
-            if pos + max_line_length >= len(text):
-                textbreak = len(text) - 1
-            else:
-                should_fix = False
+        textbreak = text.find('\n', pos) + 1
+        fix_encoding_this_time = fix_encoding
+        if textbreak == 0:
+            textbreak = len(text)
+        if (textbreak - pos) > max_decode_length:
+            fix_encoding_this_time = False
 
-        substring = text[pos:pos + textbreak + 1]
+        substring = text[pos:textbreak]
 
         if '<' in substring and '>' in substring:
             # we see angle brackets together; this could be HTML
@@ -113,7 +112,7 @@ def fix_text(text,
                 substring,
                 fix_entities=fix_entities,
                 remove_terminal_escapes=remove_terminal_escapes,
-                fix_encoding=fix_encoding,
+                fix_encoding=fix_encoding_this_time,
                 normalization=normalization,
                 uncurl_quotes=uncurl_quotes,
                 fix_line_breaks=fix_line_breaks,
@@ -121,7 +120,7 @@ def fix_text(text,
                 remove_bom=remove_bom
             )
         )
-        pos += textbreak + 1
+        pos = textbreak
 
     return ''.join(out)
 
