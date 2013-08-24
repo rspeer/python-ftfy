@@ -60,7 +60,7 @@ def _make_weirdness_regex():
 
     # Match C1 control characters, which are almost always the result of
     # decoding Latin-1 that was meant to be Windows-1252.
-    groups.append(u'X')
+    groups.append('X')
 
     # Match adjacent characters from any different pair of these categories:
     # - Modifier marks (M)
