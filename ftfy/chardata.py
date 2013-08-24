@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-import unicodedata
-import sys
 import re
 import zlib
 from pkg_resources import resource_string
-from ftfy.compatibility import htmlentitydefs, unichr, xrange
+from ftfy.compatibility import unichr
 
 
 # These are encodings that map each byte to a particular character.
@@ -66,13 +64,12 @@ CHAR_CLASS_STRING = zlib.decompress(resource_string(__name__, 'char_classes.dat'
 def chars_to_classes(string):
     return string.translate(CHAR_CLASS_STRING)
 
-# A translate mapping that will strip all control characters except \t and \n.
-# This incidentally has the effect of normalizing Windows \r\n line endings to
-# Unix \n line endings.
+# A translate mapping that will strip all C0 control characters except
+# \t and \n. This incidentally has the effect of normalizing Windows \r\n
+# line endings to Unix \n line endings.
 CONTROL_CHARS = {}
-for i in range(256):
-    if unicodedata.category(unichr(i)) == 'Cc':
-        CONTROL_CHARS[i] = None
+for i in range(32):
+    CONTROL_CHARS[i] = None
 
 CONTROL_CHARS[ord('\t')] = '\t'
 CONTROL_CHARS[ord('\n')] = '\n'
