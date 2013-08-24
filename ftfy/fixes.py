@@ -138,15 +138,21 @@ def fix_text_and_explain(text):
             # 0x81 in Windows-1252 is an error.
             #
             # So what we do here is we use the .translate method of Unicode
-            # strings. Using it with the character maps we have computed will 
+            # strings. Using it with the character maps we have computed will
             # give us back a Unicode string using only code
             # points up to 0xff. This can then be converted into the intended
             # bytes by encoding it as Latin-1.
             sorta_encoded_text = text.translate(CHARMAPS[encoding])
-            encoded_bytes = fix_java_encoding(sorta_encoded_text.encode('latin-1'))
+            
+            # When we get the bytes, run them through fix_java_encoding,
+            # because we can only reliably do that at the byte level. (See
+            # its documentation for details.)
+            encoded_bytes = fix_java_encoding(
+                sorta_encoded_text.encode('latin-1')
+            )
 
-            # Now, find out if it's UTF-8. ...Or at least something that
-            # resembles UTF-8. See fix_java_encoding for more details.
+            # Now, find out if it's UTF-8. Otherwise, remember the encoding
+            # for later.
             try:
                 fixed = encoded_bytes.decode('utf-8')
                 steps = [('sloppy_encode', encoding), ('decode', 'utf-8')]
@@ -195,7 +201,7 @@ def fix_text_and_explain(text):
     return text, [('give up', None)]
 
 
-HTML_ENTITY_RE = re.compile("&#?\w+;")
+HTML_ENTITY_RE = re.compile(r"&#?\w+;")
 def unescape_html(text):
     """
     Decode all three types of HTML entities/character references.
@@ -226,7 +232,7 @@ def unescape_html(text):
     return HTML_ENTITY_RE.sub(fixup, text)
 
 
-ANSI_RE = re.compile('\033\[((?:\d|;)*)([a-zA-Z])')
+ANSI_RE = re.compile('\033\\[((?:\\d|;)*)([a-zA-Z])')
 def remove_terminal_escapes(text):
     """
     Strip out "ANSI" terminal escape sequences, such as those that produce
