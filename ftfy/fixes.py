@@ -143,12 +143,12 @@ def fix_text_and_explain(text):
             # points up to 0xff. This can then be converted into the intended
             # bytes by encoding it as Latin-1.
             sorta_encoded_text = text.translate(CHARMAPS[encoding])
-            encoded_bytes = sorta_encoded_text.encode('latin-1')
+            encoded_bytes = fix_java_encoding(sorta_encoded_text.encode('latin-1'))
 
             # Now, find out if it's UTF-8. ...Or at least something that
             # resembles UTF-8. See fix_java_encoding for more details.
             try:
-                fixed = fix_java_encoding(encoded_bytes).decode('utf-8')
+                fixed = encoded_bytes.decode('utf-8')
                 steps = [('sloppy_encode', encoding), ('decode', 'utf-8')]
                 return fixed, steps
             except UnicodeDecodeError:
