@@ -5,18 +5,18 @@ Python 3.2, or later.
 
 What does it mean for text to be broken?
 
-    - The text could have been encoded with one encoding standard, and decoded
-      with a different one. The result is that some characters turn into
-      nonsense sequences that look like this: `â€”`
-    - The text could contain HTML entities, but be passed into a system that
-      was not designed to read HTML.
-    - For that matter, it could contain instructions for a text terminal to
-      move the cursor or change colors or something, but you are not sending
-      the text to a terminal.
-    - The text could write words in non-standard ways for display purposes,
-      such as using the three characters `ﬂ` `o` `p` for the word "flop".
-    - The text could contain control characters that are designed for a
-      certain operating system.
+- The text could have been encoded with one encoding standard, and decoded
+  with a different one. The result is that some characters turn into
+  nonsense sequences that look like this: `â€”`
+- The text could contain HTML entities, but be passed into a system that
+  was not designed to read HTML.
+- For that matter, it could contain instructions for a text terminal to
+  move the cursor or change colors or something, but you are not sending
+  the text to a terminal.
+- The text could write words in non-standard ways for display purposes,
+  such as using the three characters `ﬂ` `o` `p` for the word "flop".
+- The text could contain control characters that are designed for a
+  certain operating system.
 
 Of course you're better off if all the text you take as input is in the right
 format for your application and operating system. But often, your input is
@@ -57,44 +57,45 @@ Unicode strings as input.
 The main function, `fix_text`, will run text through a sequence of fixes. If
 the text changed, it will run them through again, so that you can be sure
 the output ends up in a standard form that will be unchanged by `fix_text`.
+
 All the fixes are on by default, but you can pass options to turn them off.
 
-    - If `remove_terminal_escapes` is True, remove sequences of bytes that are
-      instructions for Unix terminals, such as the codes that make text appear
-      in different colors.
-    - If `fix_entities` is True, consider replacing HTML entities with their
-      equivalent characters. However, this never applies to text with a pair
-      of angle brackets in it already; you're probably not supposed to decode
-      entities there, and you'd make things ambiguous if you did.
-    - If `fix_encoding` is True, look for common mistakes that come from
-      encoding or decoding Unicode text incorrectly, and fix them if they are
-      reasonably fixable.
-    - If `normalization` is not None, apply the specified form of Unicode
-      normalization, which can be one of 'NFC', 'NFKC', 'NFD', and 'NFKD'.
-      The default, 'NFKC', applies the following relevant transformations:
-      - C: Combine characters and diacritics that are written using separate
-        code points, such as converting "e" plus an acute accent modifier
-        into "é", or converting "ka" (か) plus a dakuten into the
-        single character "ga" (が).
-      - K: Replace characters that are functionally equivalent with the most
-        common form. For example, half-width katakana will be replaced with
-        full-width versions, full-width Roman characters will be replaced with
-        ASCII characters, ellipsis characters will be replaced with three
-        periods, and the ligature 'ﬂ' will be replaced with 'fl'.
-    - If `uncurl_quotes` is True, replace various curly quotation marks with
-      plain-ASCII straight quotes.
-    - If `fix_line_breaks` is true, convert all line breaks to Unix style
-      (CRLF and CR line breaks become LF line breaks).
-    - If `fix_control_characters` is true, remove all C0 control characters
-      except the common useful ones: TAB, CR, LF, and FF. (CR characters
-      may have already been removed by the `fix_line_breaks` step.)
-    - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
-      (It's an instruction to a UTF-16 decoder. It's not meant to actually
-      end up in your string.)
-    - If anything was changed, repeat all the steps, so that the function is
-      idempotent. "&amp;amp;" will become "&", for example, not "&amp;".
+- If `remove_terminal_escapes` is True, remove sequences of bytes that are
+  instructions for Unix terminals, such as the codes that make text appear
+  in different colors.
+- If `fix_entities` is True, consider replacing HTML entities with their
+  equivalent characters. However, this never applies to text with a pair
+  of angle brackets in it already; you're probably not supposed to decode
+  entities there, and you'd make things ambiguous if you did.
+- If `fix_encoding` is True, look for common mistakes that come from
+  encoding or decoding Unicode text incorrectly, and fix them if they are
+  reasonably fixable.
+- If `normalization` is not None, apply the specified form of Unicode
+  normalization, which can be one of 'NFC', 'NFKC', 'NFD', and 'NFKD'.
+  The default, 'NFKC', applies the following relevant transformations:
+  - C: Combine characters and diacritics that are written using separate
+    code points, such as converting "e" plus an acute accent modifier
+    into "é", or converting "ka" (か) plus a dakuten into the
+    single character "ga" (が).
+  - K: Replace characters that are functionally equivalent with the most
+    common form. For example, half-width katakana will be replaced with
+    full-width versions, full-width Roman characters will be replaced with
+    ASCII characters, ellipsis characters will be replaced with three
+    periods, and the ligature 'ﬂ' will be replaced with 'fl'.
+- If `uncurl_quotes` is True, replace various curly quotation marks with
+  plain-ASCII straight quotes.
+- If `fix_line_breaks` is true, convert all line breaks to Unix style
+  (CRLF and CR line breaks become LF line breaks).
+- If `fix_control_characters` is true, remove all C0 control characters
+  except the common useful ones: TAB, CR, LF, and FF. (CR characters
+  may have already been removed by the `fix_line_breaks` step.)
+- If `remove_bom` is True, remove the Byte-Order Mark if it exists.
+  (It's an instruction to a UTF-16 decoder. It's not meant to actually
+  end up in your string.)
+- If anything was changed, repeat all the steps, so that the function is
+  idempotent. "&amp;amp;" will become "&", for example, not "&amp;".
 
-## Encodings ftfy can handle
+### Encodings ftfy can handle
 
 `ftfy` can understand text that was decoded as any of these single-byte
 encodings:
@@ -114,7 +115,7 @@ It can also understand text that was intended as Windows-1252 but decoded as
 Latin-1 -- that's when things like smart-quotes and bullets turn into weird
 control characters.
 
-## Encodings ftfy can't handle
+### Encodings ftfy can't handle
 
 `ftfy` cannot understand other mixups between single-byte encodings besides
 Latin-1 for Windows-1252, because it is extremely difficult to detect which
