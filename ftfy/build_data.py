@@ -11,6 +11,13 @@ get consistent results from running ftfy on different versions of Python.
 
 The file will be written to the current directory.
 """
+from __future__ import unicode_literals
+import unicodedata
+import sys
+import zlib
+if sys.hexversion >= 0x03000000:
+    unichr = chr
+
 # L = Latin capital letter
 # l = Latin lowercase letter
 # A = Non-latin capital or title-case letter
@@ -75,10 +82,10 @@ def make_char_data_file():
             cclasses[codepoint] = ' '
         else:
             cclasses[codepoint] = 'o'
-    
+
     cclasses[9] = cclasses[10] = cclasses[12] = cclasses[13] = ' '
     out = open('char_classes.dat', 'wb')
-    out.write(zlib.compress(bytes(''.join(cclasses), 'ascii')))
+    out.write(zlib.compress(''.join(cclasses).encode('ascii')))
     out.close()
 
 if __name__ == '__main__':
