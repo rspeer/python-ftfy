@@ -10,6 +10,7 @@ setup(
     platforms=["any"],
     description="Fixes some problems with Unicode text after the fact",
     packages=['ftfy'],
+    package_data={'ftfy': ['char_classes.dat']},
     classifiers=[
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.6",
