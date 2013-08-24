@@ -7,6 +7,13 @@ from nose.tools import eq_
 if sys.hexversion >= 0x03000000:
     unichr = chr
 
+def char_names(text):
+    """
+    Show the names of the characters involved. Helpful for debugging when
+    characters themselves are not visually distinguishable.
+    """
+    return [unicodedata.name(c) for c in text]
+
 # Most single-character strings which have been misencoded should be restored.
 def test_all_bmp_characters():
     for index in range(0xa0, 0xfffd):
@@ -15,8 +22,8 @@ def test_all_bmp_characters():
         if unicodedata.category(char) not in ('Co', 'Cn', 'Cs', 'Mc', 'Mn'):
             garble = char.encode('utf-8').decode('latin-1')
             garble2 = char.encode('utf-8').decode('latin-1').encode('utf-8').decode('latin-1')
-            eq_(fix_text_encoding(garble), char)
-            eq_(fix_text_encoding(garble2), char)
+            eq_(char_names(fix_text_encoding(garble)), char_names(char))
+            eq_(char_names(fix_text_encoding(garble2)), char_names(char))
 
 phrases = [
     u"\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
@@ -35,4 +42,5 @@ def test_valid_phrases():
 
 def check_phrase(text):
     eq_(fix_text_encoding(text), text)
+    eq_(fix_text_encoding(text.encode('utf-8').decode('latin-1')), text)
 
