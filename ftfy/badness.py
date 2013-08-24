@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
+"""
+Heuristics to determine whether re-encoding text is actually making it
+more reasonable.
+"""
+
 from __future__ import unicode_literals
 from ftfy.chardata import chars_to_classes
 import re
 import unicodedata
 
 # The following regex uses the mapping of character classes to ASCII
-# characters defined in chardata.py:
+# characters defined in chardata.py and build_data.py:
 #
 # L = Latin capital letter
 # l = Latin lowercase letter
@@ -62,7 +67,7 @@ def _make_weirdness_regex():
     # - Letter modifiers (m)
     # - Miscellaneous numbers (N)
     # - Symbols (0123)
-    
+
     exclusive_categories = 'MmN0123'
     for cat1 in exclusive_categories:
         others_range = ''.join(c for c in exclusive_categories if c != cat1)
@@ -80,14 +85,26 @@ def sequence_weirdness(text):
     Determine how often a text has unexpected characters or sequences of
     characters. This metric is used to disambiguate when text should be
     re-decoded or left as is.
+
+    We start by normalizing text in NFC form, so that penalties for
+    diacritical marks don't apply to characters that know what to do with
+    them.
     """
     text2 = unicodedata.normalize('NFC', text)
     return len(WEIRDNESS_RE.findall(chars_to_classes(text2)))
 
 
 def better_text(newtext, oldtext):
+    """
+    Is newtext better than oldtext?
+    """
     return text_cost(newtext) < text_cost(oldtext)
 
 
 def text_cost(text):
+    """
+    An overall cost function for text. All else being equal, shorter strings
+    are better.
+    """
     return sequence_weirdness(text) * 2 + len(text)
+
