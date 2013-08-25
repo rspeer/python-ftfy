@@ -112,18 +112,12 @@ when it was actually intended to be decoded as a variable-length encoding:
 - CESU-8 (what some programmers think is UTF-8)
 
 It can also understand text that was intended as Windows-1252 but decoded as
-Latin-1 -- that's when things like smart-quotes and bullets turn into weird
-control characters.
+Latin-1 -- that's the very common case where things like smart-quotes and
+bullets turn into weird control characters.
 
-### Encodings ftfy can't handle
-
-`ftfy` cannot understand other mixups between single-byte encodings besides
-Latin-1 for Windows-1252, because it is extremely difficult to detect which
-mixup in particular is the one that happened.
-
-It cannot handle Windows-1250 and ISO-8859-2, and it never will. Look at their
-rows on http://en.wikipedia.org/wiki/Polish_code_pages and you might recognize
-why there is no hope of ever being able to tell these apart.
+However, `ftfy` cannot understand other mixups between single-byte encodings,
+because it is extremely difficult to detect which mixup in particular is the
+one that happened.
 
 ## Non-Unicode strings
 
@@ -131,17 +125,16 @@ When first using ftfy, you might be confused to find that you can't give it a
 bytestring (the type of object called `str` in Python 2).
 
 ftfy fixes text. Treating bytestrings as text is exactly the kind of thing that
-causes the Unicode problems that ftfy has to fix.
+causes the Unicode problems that ftfy has to fix. So if you don't give it a
+Unicode string, ftfy will point you to the [Python Unicode
+HOWTO](http://docs.python.org/3/howto/unicode.html).
 
-So instead of silently fixing your error, ftfy ensures first that *you* are
-doing it right -- which means you must give it a Unicode string as input. If
-you don't, it'll point you to the
-[Python Unicode HOWTO](http://docs.python.org/3/howto/unicode.html).
+Reasonable ways that you might exchange data, such as JSON or XML, already have
+perfectly good ways of expressing Unicode strings. Given a Unicode string, ftfy
+can apply fixes that are very likely to work without false positives.
 
-But what if you all you have is a mess of bytes? Well, you've got a problem,
-and ftfy is not quite the right tool to solve it. Maybe you should try getting
-your input from a protocol that understands encoding issues, such as JSON or
-XML.
+But what if you all you actually have is a mess of bytes on a disk? Well,
+you've got a problem, and ftfy is not quite the right tool to solve it.
 
 As a sort of half-measure that covers a few common cases, you can decode the
 bytes as Latin-1 and let ftfy take it from there, which might include
@@ -163,7 +156,8 @@ ftfy is not that tool. I might want to write that tool someday.
 You may have heard of chardet. Chardet is admirable, but it is not that tool
 either. Its heuristics only work on multi-byte encodings, such as UTF-8 and the
 language-specific encodings used in East Asian languages. It works very badly
-on single-byte encodings, and outputs wrong answers with high confidence.
+on single-byte encodings, to the point where it will output wrong answers with
+high confidence.
 
 There is lots of real-world text that's in an unknown single-byte encoding.
 There might be enough information to statistically sort out which encoding is
@@ -171,17 +165,25 @@ which. But nothing, so far, actually does that.
 
 ## Command-line usage
 
-ftfy installs itself as a command line tool, for cleaning up text files that
-are a mess of mangled bytes.
+ftfy installs itself as a command line tool that reads a file and applies
+`fix_text` to it.
+
+This has exactly the problem described above: a file on a disk is made of bytes
+in an unspecified encoding. It could assume the file is UTF-8, but if you had
+totally valid UTF-8 you probably wouldn't need this command line utility, and
+there's a slight chance that the file could contain Latin-1 that coincidentally
+looks like UTF-8.
+
+Instead, it will follow the "half-measure" above.
 
 You can type `ftfy FILENAME`, and it will read in FILENAME as Latin-1 text, fix
 everything that `fix_text` fixes (including re-interpreting it as UTF-8 if
 appropriate), and write the result to standard out as UTF-8.
 
-This is not necessarily a good idea, but it's kind of convenient. Consider this
-a proof of concept until we get a real encoding detector.
+This is not necessarily a good idea, but it's convenient. Consider this a proof
+of concept until we get a real encoding detector.
 
-## Who's behind this tool?
+## Who maintains ftfy?
 
 I'm Rob Speer (rob@luminoso.com).  I develop this tool as part of my
 text-understanding company, [Luminoso](http://luminoso.com), where it has
