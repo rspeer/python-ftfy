@@ -1,20 +1,29 @@
 # -*- coding: utf-8 -*-
-from ftfy import fix_bad_encoding
+from ftfy.fixes import fix_text_encoding
 import unicodedata
 import sys
+from nose.tools import eq_
 
 if sys.hexversion >= 0x03000000:
-    xrange = range
     unichr = chr
+
+def char_names(text):
+    """
+    Show the names of the characters involved. Helpful for debugging when
+    characters themselves are not visually distinguishable.
+    """
+    return [unicodedata.name(c) for c in text]
 
 # Most single-character strings which have been misencoded should be restored.
 def test_all_bmp_characters():
-    for index in xrange(0xa0, 0xfffd):
+    for index in range(0xa0, 0xfffd):
         char = unichr(index)
         # Exclude code points that are not assigned
-        if unicodedata.category(char) not in ('Co', 'Cn'):
+        if unicodedata.category(char) not in ('Co', 'Cn', 'Cs', 'Mc', 'Mn'):
             garble = char.encode('utf-8').decode('latin-1')
-            assert fix_bad_encoding(garble) == char
+            garble2 = char.encode('utf-8').decode('latin-1').encode('utf-8').decode('latin-1')
+            eq_(char_names(fix_text_encoding(garble)), char_names(char))
+            eq_(char_names(fix_text_encoding(garble2)), char_names(char))
 
 phrases = [
     u"\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
@@ -32,5 +41,6 @@ def test_valid_phrases():
         yield check_phrase, phrase[1:]
 
 def check_phrase(text):
-    assert fix_bad_encoding(text) == text, text
+    eq_(fix_text_encoding(text), text)
+    eq_(fix_text_encoding(text.encode('utf-8').decode('latin-1')), text)
 
