@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="ftfy",
-    version='2.0.2',
+    version='3.0b',
     maintainer='Luminoso, LLC',
     maintainer_email='dev@lumino.so',
     license="MIT",
@@ -10,6 +10,7 @@ setup(
     platforms=["any"],
     description="Fixes some problems with Unicode text after the fact",
     packages=['ftfy'],
+    package_data={'ftfy': ['char_classes.dat']},
     classifiers=[
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.6",
