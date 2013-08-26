@@ -1,138 +1,110 @@
 # -*- coding: utf-8 -*-
+"""
+Heuristics to determine whether re-encoding text is actually making it
+more reasonable.
+"""
+
 from __future__ import unicode_literals
-
+from ftfy.chardata import chars_to_classes
 import re
-from ftfy.chardata import (SCRIPT_MAP, SINGLE_BYTE_WEIRDNESS,
-    WINDOWS_1252_GREMLINS)
+import unicodedata
 
-import sys
-if sys.hexversion >= 0x03000000:
-    unichr = chr
+# The following regex uses the mapping of character classes to ASCII
+# characters defined in chardata.py and build_data.py:
+#
+# L = Latin capital letter
+# l = Latin lowercase letter
+# A = Non-latin capital or title-case letter
+# a = Non-latin lowercase letter
+# C = Non-cased letter (Lo)
+# X = Control character (Cc)
+# m = Letter modifier (Lm)
+# M = Mark (Mc, Me, Mn)
+# N = Miscellaneous numbers (No)
+# 0 = Math symbol (Sm)
+# 1 = Currency symbol (Sc)
+# 2 = Symbol modifier (Sk)
+# 3 = Other symbol (So)
+# S = UTF-16 surrogate
+# _ = Unassigned character
+#   = Whitespace
+# o = Other
 
-CONSISTENT_SCRIPTS_RE = re.compile(r'([A-Za-z])(\1+)')
-LETTER_SEGMENTS_RE = re.compile(r'([A-Za-z]+)')
-LOWERCASE_RE = re.compile(r'([a-z])')
-DOUBLE_WEIRD_RE = re.compile(r'(WW+)')
-GREMLINS_RE = re.compile('[' +
-    ''.join([unichr(codepoint) for codepoint in WINDOWS_1252_GREMLINS])
-    + ']')
-
-WEIRD_CHARACTER_RES = []
-for i in range(5):
-    chars = [unichr(codepoint) for codepoint in range(0x80, 0x100)
-             if SINGLE_BYTE_WEIRDNESS[codepoint] > i]
-    WEIRD_CHARACTER_RES.append(re.compile('[' + ''.join(chars) + ']'))
-
-def num_consistent_scripts(scriptdata):
+def _make_weirdness_regex():
     """
-    Count the number of times two adjacent letters are in the same script.
-
-    Uses a "scriptdata" string as input, not the actual text.
-
-    >>> num_consistent_scripts('LL AAA.')
-    3
-    >>> num_consistent_scripts('LLAAA ...')
-    3
-    >>> num_consistent_scripts('LAL')
-    0
-    >>> num_consistent_scripts('..LLL..')
-    2
-    >>> num_consistent_scripts('LWWW')
-    2
+    Creates a list of regexes that match 'weird' character sequences.
+    The more matches there are, the weirder the text is.
     """
-    matches = CONSISTENT_SCRIPTS_RE.findall(scriptdata)
-    total = 0
-    for first, rest in matches:
-        total += len(rest)
-    return total
+    groups = []
+
+    # Match lowercase letters that are followed by non-ASCII uppercase letters
+    groups.append('lA')
+
+    # Match diacritical marks, except when they modify a non-cased letter or
+    # another mark.
+    #
+    # You wouldn't put a diacritical mark on a digit or a space, for example.
+    # You might put it on a Latin letter, but in that case there will almost
+    # always be a pre-composed version, and we normalize to pre-composed
+    # versions first. The cases that can't be pre-composed tend to be in
+    # large scripts without case, which are in class C.
+    groups.append('[^CM]M')
+
+    # Match non-Latin characters adjacent to Latin characters.
+    #
+    # This is a simplification from ftfy version 2, which compared all
+    # adjacent scripts. However, the ambiguities we need to resolve come from
+    # encodings designed to represent Latin characters.
+    groups.append('[Ll][AaC]')
+    groups.append('[AaC][Ll]')
+
+    # Match C1 control characters, which are almost always the result of
+    # decoding Latin-1 that was meant to be Windows-1252.
+    groups.append('X')
+
+    # Match adjacent characters from any different pair of these categories:
+    # - Modifier marks (M)
+    # - Letter modifiers (m)
+    # - Miscellaneous numbers (N)
+    # - Symbols (0123)
+
+    exclusive_categories = 'MmN0123'
+    for cat1 in exclusive_categories:
+        others_range = ''.join(c for c in exclusive_categories if c != cat1)
+        groups.append('{cat1}[{others_range}]'.format(
+            cat1=cat1, others_range=others_range
+        ))
+    regex = '|'.join('({0})'.format(group) for group in groups)
+    return re.compile(regex)
+
+WEIRDNESS_RE = _make_weirdness_regex()
 
 
-def num_inconsistent_scripts(scriptdata):
+def sequence_weirdness(text):
     """
-    Count the number of times two adjacent letters are in different scripts,
-    or are both marked as 'weird'.
+    Determine how often a text has unexpected characters or sequences of
+    characters. This metric is used to disambiguate when text should be
+    re-decoded or left as is.
 
-    Uses a "scriptdata" string as input, not the actual text.
-
-    >>> num_inconsistent_scripts('LL AAA.')
-    0
-    >>> num_inconsistent_scripts('LLAAA ...')
-    1
-    >>> num_inconsistent_scripts('LAL')
-    2
-    >>> num_inconsistent_scripts('..LLL..')
-    0
-    >>> num_inconsistent_scripts('LWWW')
-    3
+    We start by normalizing text in NFC form, so that penalties for
+    diacritical marks don't apply to characters that know what to do with
+    them.
     """
-    # First, count the number of times two letters are adjacent
-    letter_segments = LETTER_SEGMENTS_RE.findall(scriptdata)
-    adjacent_letters = 0
-    for seg in letter_segments:
-        adjacent_letters += len(seg) - 1
-
-    # Then subtract out the number of times the scripts are consistent,
-    # but first add back in adjacent weird characters
-    double_weird_segments = DOUBLE_WEIRD_RE.findall(scriptdata)
-    for seg in double_weird_segments:
-        adjacent_letters += len(seg) - 1
-
-    return adjacent_letters - num_consistent_scripts(scriptdata)
+    text2 = unicodedata.normalize('NFC', text)
+    return len(WEIRDNESS_RE.findall(chars_to_classes(text2)))
 
 
-def script_obscurity(scriptdata):
+def better_text(newtext, oldtext):
     """
-    Count the number of characters in obscure scripts. Characters in very
-    obscure scripts count twice as much.
-
-    >>> script_obscurity('LWWW')
-    0
-    >>> script_obscurity('Llkzz')
-    6
+    Is newtext better than oldtext?
     """
-    return len(LOWERCASE_RE.findall(scriptdata)) + scriptdata.count('z')
+    return text_cost(newtext) < text_cost(oldtext)
 
 
-def character_weirdness(text):
+def text_cost(text):
     """
-    Sum the weirdness of all the single-byte characters in this text.
-
-    >>> character_weirdness('test')
-    0
-    >>> character_weirdness('wúút')
-    0
-    >>> character_weirdness('\x81\x81')
-    10
+    An overall cost function for text. All else being equal, shorter strings
+    are better.
     """
-    total = 0
-    for weird_re in WEIRD_CHARACTER_RES:
-        found = weird_re.findall(text)
-        total += len(found)
-    return total
+    return sequence_weirdness(text) * 2 + len(text)
 
-
-def text_badness(text):
-    """
-    Count the total badness of a string, which helps to determine when an
-    encoding has gone wrong.
-
-    Obvious problems (badness = 100):
-    - The replacement character \ufffd, indicating a decoding error
-    - Unassigned Unicode characters
-
-    Very weird things (badness = 10):
-    - Adjacent letters from two different scripts
-    - Letters adjacent to obscure single-byte symbols
-    - Obscure single-byte symbols adjacent to each other
-    - Improbable control characters, such as 0x81
-
-    Moderately weird things:
-    - Improbable single-byte characters, such as ƒ or ¬
-    - Letters in somewhat rare scripts (they'll still probably look better than
-      they would in the wrong encoding)
-    """
-    scriptdata = text.translate(SCRIPT_MAP)
-    badness = character_weirdness(text) + script_obscurity(scriptdata)
-    badness += 10 * num_inconsistent_scripts(scriptdata)
-    badness += 100 * scriptdata.count('?')
-    return badness
