@@ -1,5 +1,8 @@
 # ftfy: fixes text for you
 
+[![Downloads](https://pypip.in/d/ftfy/badge.png)](https://crate.io/package/ftfy)
+[![Version](https://pypip.in/v/ftfy/badge.png)](https://crate.io/package/ftfy)
+
 This is a module for making text less broken and more consistent. It works in
 Python 2.6, Python 3.2, or later.
 
