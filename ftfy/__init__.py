@@ -93,6 +93,9 @@ def fix_text(text,
     encoding is possibly flawed), and do not mind performing operations on
     the whole text at once, use `fix_text_segment`.
     """
+    if isinstance(text, bytes):
+        raise UnicodeError(fixes.BYTES_ERROR_TEXT)
+
     out = []
     pos = 0
     while pos < len(text):
