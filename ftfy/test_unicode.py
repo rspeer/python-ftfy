@@ -22,7 +22,6 @@ phrases = [
 # These phrases should not be erroneously "fixed"
 def test_valid_phrases():
     for phrase in phrases:
-        print phrase
         yield check_phrase, phrase
         # make it not just confirm based on the opening punctuation
         yield check_phrase, phrase[1:]
