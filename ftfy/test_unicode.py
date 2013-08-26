@@ -1,6 +1,11 @@
 # -*- coding: utf-8 -*-
-from ftfy import fix_bad_encoding, WINDOWS_1252_GREMLINS
+from ftfy import fix_bad_encoding
 import unicodedata
+import sys
+
+if sys.hexversion >= 0x03000000:
+    xrange = range
+    unichr = chr
 
 # Most single-character strings which have been misencoded should be restored.
 def test_all_bmp_characters():
