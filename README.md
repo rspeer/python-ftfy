@@ -1,14 +1,14 @@
 # ftfy: fixes text for you
 
-This is a module for making text less broken. It works in Python 2.6, 
-Python 3.2, or later.
+This is a module for making text less broken and more consistent. It works in
+Python 2.6, Python 3.2, or later.
 
 The most interesting kind of brokenness that this resolves is when someone
 has encoded Unicode with one standard and decoded it with a different one.
 This often shows up as characters that turn into nonsense sequences:
 
-- The word `schön` might become `schÃ¶n`.
-- An em dash (`—`) might become `â€”`.
+- The word `schön` might appear as `schÃ¶n`.
+- An em dash (`—`) might appear as `â€”`.
 - Text that was meant to be enclosed in quotation marks might end up
   instead enclosed in `â€œ` and `â€` (and that last character
   probably won't even display as anything meaningful).
@@ -28,14 +28,11 @@ interacting with the erroneous decoding:
   or something in the middle of the text.
 - The text could write words in non-standard ways for display purposes,
   such as using the three characters `ﬂ` `o` `p` for the word "flop".
-  This can happen when you copy text out of a PDF.
-- The text could contain control characters that are designed for a
-  particular operating system, which your application does not care about.
+  This can happen when you copy text out of a PDF, for example.
 
 Of course you're better off if all the text you take as input is decoded
-properly, and in the right format for your application and operating system.
-But often, your input is something you have no control over. Somebody else's
-minor mistake becomes your problem.
+properly and written in standard ways. But often, your input is something you
+have no control over. Somebody else's minor mistake becomes your problem.
 
 ftfy will do everything it can to fix the problem.
 
@@ -124,7 +121,7 @@ when it was actually intended to be decoded as one of these variable-length
 encodings:
 
 - UTF-8
-- CESU-8 (what some people, especially Java programmers, think is UTF-8)
+- CESU-8 (what some people think is UTF-8)
 
 It can also understand text that was intended as Windows-1252 but decoded as
 Latin-1. That's the very common case where things like smart-quotes and
