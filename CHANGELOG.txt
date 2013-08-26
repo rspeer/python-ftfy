@@ -1,0 +1,31 @@
+## Version 3.0 (August 26, 2013)
+
+- Generally runs faster
+- Idempotent
+- Simplified decoding logic
+- Understands more encodings and more kinds of mistakes
+- Takes options that enable or disable particular normalization steps
+- Long line handling: now the time-consuming step (fix_text_encoding) will be
+  consistently skipped on long lines, but all other fixes will apply
+- Tested on millions of examples from Twitter, ensuring a near-zero rate of
+  false positives
+
+## Version 2.0.2 (June 20, 2013)
+
+- Fix breaking up of long lines, so it can't go into an infinite loop
+
+## Version 2.0.1 (March 19, 2013)
+
+- Restored Python 2.6 support
+
+## Version 2.0 (January 30, 2013)
+
+- Python 3 support
+- Use fast Python built-ins to speed up fixes
+- Bugfixes
+
+## Version 1.0 (August 24, 2012)
+
+- Made into its own package with no dependencies, instead of a part of
+  `metanl`
+
