@@ -262,7 +262,7 @@ def remove_terminal_escapes(text):
     r"""
     Strip out "ANSI" terminal escape sequences, such as those that produce
     colored text on Unix.
-        
+
         >>> print(remove_terminal_escapes(
         ...     "\033[36;44mI'm blue, da ba dee da ba doo...\033[0m"
         ... ))
@@ -271,8 +271,8 @@ def remove_terminal_escapes(text):
     return ANSI_RE.sub('', text)
 
 
-SINGLE_QUOTE_RE = re.compile('[\u2018-\u201b]')
-DOUBLE_QUOTE_RE = re.compile('[\u201c-\u201f]')
+SINGLE_QUOTE_RE = re.compile(u'[\u2018-\u201b]')
+DOUBLE_QUOTE_RE = re.compile(u'[\u201c-\u201f]')
 def uncurl_quotes(text):
     r"""
     Replace curly quotation marks with straight equivalents.
@@ -303,8 +303,8 @@ def remove_control_chars(text):
     - U+000B
     - U+000E to U+001F
     - U+007F
-    
-    it leaves alone these characters that are commonly used for formatting:
+
+    It leaves alone these characters that are commonly used for formatting:
 
     - TAB (U+0009)
     - LF (U+000A)
@@ -337,7 +337,7 @@ def fix_java_encoding(bytestring):
 
         >>> len(fix_java_encoding(b'\xed\xa0\xbd\xed\xb8\x8d'))
         4
-        
+
         >>> ends_with_null = fix_java_encoding(b'Here comes a null! \xc0\x80')
         >>> bytes_to_ints(ends_with_null)[-1]
         0
