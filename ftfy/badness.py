@@ -89,22 +89,35 @@ def sequence_weirdness(text):
     We start by normalizing text in NFC form, so that penalties for
     diacritical marks don't apply to characters that know what to do with
     them.
+
+    The following things are deemed weird:
+
+    - Lowercase letters followed by non-ASCII uppercase letters
+    - Non-Latin characters next to Latin characters
+    - Un-combined diacritical marks, unless they're stacking on non-alphabetic
+      characters (in languages that do that kind of thing a lot) or other
+      marks
+    - C1 control characters
+    - Adjacent symbols from any different pair of these categories:
+
+        - Modifier marks
+        - Letter modifiers
+        - Non-digit numbers
+        - Symbols (including math and currency)
+
+    The return value is the number of instances of weirdness.
     """
     text2 = unicodedata.normalize('NFC', text)
     return len(WEIRDNESS_RE.findall(chars_to_classes(text2)))
 
 
-def better_text(newtext, oldtext):
-    """
-    Is newtext better than oldtext?
-    """
-    return text_cost(newtext) < text_cost(oldtext)
-
-
 def text_cost(text):
     """
-    An overall cost function for text. All else being equal, shorter strings
-    are better.
+    An overall cost function for text. Weirder is worse, but all else being
+    equal, shorter strings are better.
+
+    The overall cost is measured as twice the "weirdness"
+    (see :func:`sequence_weirdness`) plus the length.
     """
     return sequence_weirdness(text) * 2 + len(text)
 

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-This file contains the gritty details about characters and the encodings that
-use them.
+This gives other modules access to the gritty details about characters and the
+encodings that use them.
 """
 
 from __future__ import unicode_literals
