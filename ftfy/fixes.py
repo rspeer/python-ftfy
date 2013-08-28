@@ -32,7 +32,7 @@ If you're confused by this, please read the Python Unicode HOWTO:
 
 
 def fix_text_encoding(text):
-    """
+    r"""
     Something you will find all over the place, in real-world text, is text
     that's mistakenly encoded as utf-8, decoded in some ugly format like
     latin-1 or even Windows codepage 1252, and encoded as utf-8 again.
@@ -49,9 +49,13 @@ def fix_text_encoding(text):
     The input to the function must be Unicode. If you don't have Unicode text,
     you're not using the right tool to solve your problem.
 
-    NOTE: the following examples are written using unmarked literal strings,
-    but they are Unicode text. In Python 2 we have "unicode_literals" turned
-    on, and in Python 3 this is always the case.
+    .. note::
+        The following examples are written using unmarked literal strings,
+        but they are Unicode text. In Python 2 we have "unicode_literals" turned
+        on, and in Python 3 this is always the case.
+
+    ftfy decodes text that looks like it was decoded incorrectly. It leaves
+    alone text that doesn't.
 
         >>> print(fix_text_encoding('Ãºnico'))
         único
@@ -68,7 +72,8 @@ def fix_text_encoding(text):
 
     We might have to deal with both Windows characters and raw control
     characters at the same time, especially when dealing with characters like
-    \x81 that have no mapping in Windows.
+    \x81 that have no mapping in Windows. This is a string that Python's
+    standard `.encode` and `.decode` methods cannot correct.
 
         >>> print(fix_text_encoding('This text is sad .â\x81”.'))
         This text is sad .⁔.
@@ -91,6 +96,9 @@ def fix_text_encoding(text):
 
         >>> print(fix_text_encoding('This text was never UTF-8 at all\x85'))
         This text was never UTF-8 at all…
+
+    The best version of the text is found using
+    :func:`ftfy.badness.text_cost`.
     """
     best_version = text
     best_cost = text_cost(text)
@@ -251,9 +259,14 @@ def unescape_html(text):
 
 ANSI_RE = re.compile('\033\\[((?:\\d|;)*)([a-zA-Z])')
 def remove_terminal_escapes(text):
-    """
+    r"""
     Strip out "ANSI" terminal escape sequences, such as those that produce
     colored text on Unix.
+        
+        >>> print(remove_terminal_escapes(
+        ...     "\033[36;44mI'm blue, da ba dee da ba doo...\033[0m"
+        ... ))
+        I'm blue, da ba dee da ba doo...
     """
     return ANSI_RE.sub('', text)
 
@@ -261,7 +274,7 @@ def remove_terminal_escapes(text):
 SINGLE_QUOTE_RE = re.compile('[\u2018-\u201b]')
 DOUBLE_QUOTE_RE = re.compile('[\u201c-\u201f]')
 def uncurl_quotes(text):
-    """
+    r"""
     Replace curly quotation marks with straight equivalents.
 
         >>> print(uncurl_quotes('\u201chere\u2019s a test\u201d'))
@@ -274,31 +287,38 @@ def fix_line_breaks(text):
     r"""
     Convert line breaks to Unix style.
 
-    In particular, this replaces CRLF (\r\n) with LF (\n), then
-    additionally replaces CR (\r) with LF (\n).
+    In particular, this replaces CRLF (\\r\\n) with LF (\\n), then
+    additionally replaces CR (\\r) with LF (\\n).
     """
     return text.replace('\r\n', '\n').replace('\r', '\n')
 
 
 def remove_control_chars(text):
-    r"""
+    """
     Remove all control characters except for the important ones.
 
-    This removes characters from U+0000 to U+001F and U+0080 to U+009F, except
+    This removes characters in these ranges:
+
+    - U+0000 to U+0008
+    - U+000B
+    - U+000E to U+001F
+    - U+007F
+    
     it leaves alone these characters that are commonly used for formatting:
 
-    - TAB (\t, U+0009)
-    - LF (\n, U+000A)
-    - FF (\f, U+000C)
-    - CR (\r, U+000D)
+    - TAB (U+0009)
+    - LF (U+000A)
+    - FF (U+000C)
+    - CR (U+000D)
     """
     return text.translate(CONTROL_CHARS)
 
 
 CESU8_RE = re.compile(b'\xed[\xa0-\xaf][\x80-\xbf]\xed[\xb0-\xbf][\x80-\xbf]')
 def fix_java_encoding(bytestring):
-    """
-    Convert a bytestring that might contain "Java UTF8" into valid UTF-8.
+    r"""
+    Convert a bytestring that might contain "Java Modified UTF8" into valid
+    UTF-8.
 
     There are two things that Java is known to do with its "UTF8" encoder
     that are incompatible with UTF-8. (If you happen to be writing Java
@@ -314,6 +334,12 @@ def fix_java_encoding(bytestring):
       outputting a null byte by breaking the UTF shortest-form rule.
       Unicode does not even deign to give this scheme a name, and no version
       of Python will decode it.
+
+        >>> fix_java_encoding(b'\xed\xa0\xbd\xed\xb8\x8d')
+        b'\xf0\x9f\x98\x8d'
+        
+        >>> fix_java_encoding(b'Here comes a null! \xc0\x80')
+        b'Here comes a null! \x00'
     """
     assert isinstance(bytestring, bytes)
     # Replace the sloppy encoding of U+0000 with the correct one.
@@ -354,7 +380,10 @@ def fix_java_encoding(bytestring):
 
 
 def remove_bom(text):
-    """
+    r"""
     Remove a left-over byte-order mark.
+
+    >>> print(remove_bom(unichr(0xfeff) + "Where do you want to go today?"))
+    Where do you want to go today?
     """
     return text.lstrip(unichr(0xfeff))
