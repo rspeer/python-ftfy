@@ -5,7 +5,22 @@
 
 Full documentation: **http://ftfy.readthedocs.org**
 
-This is a module for making text less broken and more consistent. It works in
+## Testimonials
+
+- “My life is livable again!”
+  — [@planarrowspace](http://twitter.com/planarrowspace)
+- “A handy piece of magic”
+  — [@simonw](http://twitter.com/simonw)
+- “This package might help you skip the legwork?”
+  — [@batouchu](http://twitter.com/batouchu)
+- “I have no idea when I’m gonna need this, but I’m definitely bookmarking it.”
+  — [/u/ocrow](http://reddit.com/u/ocrow)
+- “9.64/10”
+  — [pylint](https://bitbucket.org/logilab/pylint/)
+
+## What it does
+
+ftfy makes Unicode text less broken and more consistent. It works in
 Python 2.6, Python 3.2, or later.
 
 The most interesting kind of brokenness that this resolves is when someone
@@ -18,9 +33,9 @@ This often shows up as characters that turn into nonsense sequences:
   instead enclosed in `â€œ` and `â€` (and that last character
   probably won't even display as anything meaningful).
 
-This happens very often to real text. Fortunately, the nonsense sequences
-usually contain all the information you need to reconstruct what character was
-supposed to be there.
+This is called "mojibake", and it happens very often to real text. Fortunately,
+the nonsense sequences usually contain all the information you need to
+reconstruct what character was supposed to be there.
 
 Any given text string might have other irritating properties, possibly even
 interacting with the erroneous decoding:
