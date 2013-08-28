@@ -23,7 +23,7 @@ def fix_text(text,
              remove_control_chars=True,
              remove_bom=True,
              max_decode_length=2**16):
-    ur"""
+    r"""
     Given Unicode text as input, make its representation consistent and
     possibly less broken.
     
