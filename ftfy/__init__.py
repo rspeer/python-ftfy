@@ -23,43 +23,12 @@ def fix_text(text,
              remove_control_chars=True,
              remove_bom=True,
              max_decode_length=2**16):
-    """
+    ur"""
     Given Unicode text as input, make its representation consistent and
-    possibly less broken, by applying these steps in order:
-
-    - If `remove_terminal_escapes` is True, remove sequences of bytes that are
-      instructions for Unix terminals, such as the codes that make text appear
-      in different colors.
-    - If `fix_entities` is True, consider replacing HTML entities with their
-      equivalent characters. However, this never applies to text with a pair
-      of angle brackets in it already; you're probably not supposed to decode
-      entities there, and you'd make things ambiguous if you did.
-    - If `fix_encoding` is True, look for common mistakes that come from
-      encoding or decoding Unicode text incorrectly, and fix them if they are
-      reasonably fixable. See `fix_text_encoding` for details.
-    - If `normalization` is not None, apply the specified form of Unicode
-      normalization, which can be one of 'NFC', 'NFKC', 'NFD', and 'NFKD'.
-      The default, 'NFKC', applies the following relevant transformations:
-      - C: Combine characters and diacritics that are written using separate
-        code points, such as converting "e" plus an acute accent modifier
-        into "é", or converting "ka" (か) plus a dakuten into the
-        single character "ga" (が).
-      - K: Replace characters that are functionally equivalent with the most
-        common form. For example, half-width katakana will be replaced with
-        full-width versions, full-width Roman characters will be replaced with
-        ASCII characters, ellipsis characters will be replaced with three
-        periods, and the ligature 'ﬂ' will be replaced with 'fl'.
-    - If `uncurl_quotes` is True, replace various curly quotation marks with
-      plain-ASCII straight quotes.
-    - If `fix_line_breaks` is true, convert all line breaks to Unix style
-      (CRLF and CR line breaks become LF line breaks).
-    - If `fix_control_characters` is true, remove all C0 control characters
-      except the common useful ones: TAB, CR, LF, and FF. (CR characters
-      may have already been removed by the `fix_line_breaks` step.)
-    - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
-    - If anything was changed, repeat all the steps, so that the function is
-      idempotent. "&amp;amp;" will become "&", for example, not "&amp;".
-
+    possibly less broken.
+    
+    Let's start with some examples:
+    
         >>> print(fix_text('uÌˆnicode'))
         ünicode
 
@@ -76,7 +45,9 @@ def fix_text(text,
         ...               'doo&#133;\033[0m'))
         I'm blue, da ba dee da ba doo...
 
-        >>> print(fix_text('\\ufeffParty like\\nit&rsquo;s 1999!'))
+        >>> # This example string starts with a byte-order mark, even if you can't
+        >>> # see it on the Web.
+        >>> print(fix_text('\ufeffParty like\nit&rsquo;s 1999!'))
         Party like
         it's 1999!
 
@@ -86,8 +57,47 @@ def fix_text(text,
         >>> len(fix_text(''))
         0
 
+    Based on the options you provide, ftfy applies these steps in order:
+
+    - If `remove_terminal_escapes` is True, remove sequences of bytes that are
+      instructions for Unix terminals, such as the codes that make text appear
+      in different colors.
+    - If `fix_entities` is True, consider replacing HTML entities with their
+      equivalent characters. However, this never applies to text with a pair
+      of angle brackets in it already; you're probably not supposed to decode
+      entities there, and you'd make things ambiguous if you did.
+    - If `fix_encoding` is True, look for common mistakes that come from
+      encoding or decoding Unicode text incorrectly, and fix them if they are
+      reasonably fixable. See `fix_text_encoding` for details.
+    - If `normalization` is not None, apply the specified form of Unicode
+      normalization, which can be one of 'NFC', 'NFKC', 'NFD', and 'NFKD'.
+      The default, 'NFKC', applies the following relevant transformations:
+
+      - C: Combine characters and diacritics that are written using separate
+        code points, such as converting "e" plus an acute accent modifier
+        into "é", or converting "ka" (か) plus a dakuten into the
+        single character "ga" (が).
+      - K: Replace characters that are functionally equivalent with the most
+        common form. For example, half-width katakana will be replaced with
+        full-width versions, full-width Roman characters will be replaced with
+        ASCII characters, ellipsis characters will be replaced with three
+        periods, and the ligature 'ﬂ' will be replaced with 'fl'.
+
+    - If `uncurl_quotes` is True, replace various curly quotation marks with
+      plain-ASCII straight quotes.
+    - If `fix_line_breaks` is true, convert all line breaks to Unix style
+      (CRLF and CR line breaks become LF line breaks).
+    - If `fix_control_characters` is true, remove all C0 control characters
+      except the common useful ones: TAB, CR, LF, and FF. (CR characters
+      may have already been removed by the `fix_line_breaks` step.)
+    - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
+    - If anything was changed, repeat all the steps, so that the function is
+      idempotent. "&amp;amp;" will become "&", for example, not "&amp;".
+
     `fix_text` will work one line at a time, with the possibility that some
-    lines are in different encodings.
+    lines are in different encodings. When it encounters lines longer than
+    `max_decode_length`, it will not run the `fix_encoding` step, to avoid
+    unbounded slowdowns.
 
     If you are certain your entire text is in the same encoding (though that
     encoding is possibly flawed), and do not mind performing operations on
