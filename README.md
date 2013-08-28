@@ -17,6 +17,7 @@ Full documentation: **http://ftfy.readthedocs.org**
   — [/u/ocrow](http://reddit.com/u/ocrow)
 - “9.41/10”
   — [pylint](https://bitbucket.org/logilab/pylint/)
+
 ## What it does
 
 ftfy makes Unicode text less broken and more consistent. It works in
