@@ -26,9 +26,9 @@ def fix_text(text,
     r"""
     Given Unicode text as input, make its representation consistent and
     possibly less broken.
-    
+
     Let's start with some examples:
-    
+
         >>> print(fix_text('uÌˆnicode'))
         ünicode
 
@@ -142,7 +142,7 @@ def fix_text(text,
 ftfy = fix_text
 
 
-def fix_file(file, normalization='NFKC'):
+def fix_file(input_file, normalization='NFKC'):
     """
     Fix text that is found in a file.
 
@@ -156,7 +156,7 @@ def fix_file(file, normalization='NFKC'):
     The output is a stream of fixed lines of text.
     """
     entities = True
-    for line in file:
+    for line in input_file:
         if isinstance(line, bytes):
             line = line.decode('latin-1')
         if '<' in line and '>' in line:
