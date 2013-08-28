@@ -3,6 +3,8 @@
 [![Downloads](https://pypip.in/d/ftfy/badge.png)](https://crate.io/packages/ftfy)
 [![Version](https://pypip.in/v/ftfy/badge.png)](https://crate.io/packages/ftfy)
 
+Full documentation: **http://ftfy.readthedocs.org**
+
 This is a module for making text less broken and more consistent. It works in
 Python 2.6, Python 3.2, or later.
 
@@ -208,3 +210,11 @@ Luminoso provides ftfy as free, open source software under the extremely
 permissive MIT license.
 
 You can report bugs regarding ftfy on GitHub and we'll handle them.
+
+## More details
+
+To learn how the pieces of ftfy work:
+
+- You could just read the code. I recommend it. There are copious comments and
+  everything has a docstring.
+- You can read nicely-formatted documentation at http://ftfy.readthedocs.org.
