@@ -335,11 +335,12 @@ def fix_java_encoding(bytestring):
       Unicode does not even deign to give this scheme a name, and no version
       of Python will decode it.
 
-        >>> fix_java_encoding(b'\xed\xa0\xbd\xed\xb8\x8d')
-        b'\xf0\x9f\x98\x8d'
+        >>> len(fix_java_encoding(b'\xed\xa0\xbd\xed\xb8\x8d'))
+        4
         
-        >>> fix_java_encoding(b'Here comes a null! \xc0\x80')
-        b'Here comes a null! \x00'
+        >>> ends_with_null = fix_java_encoding(b'Here comes a null! \xc0\x80')
+        >>> bytes_to_ints(ends_with_null)[-1]
+        0
     """
     assert isinstance(bytestring, bytes)
     # Replace the sloppy encoding of U+0000 with the correct one.
