@@ -13,10 +13,10 @@ The most interesting kind of brokenness that this resolves is when someone
 has encoded Unicode with one standard and decoded it with a different one.
 This often shows up as characters that turn into nonsense sequences:
 
-- The word `schön` might appear as `schÃ¶n`.
-- An em dash (`—`) might appear as `â€”`.
+- The word ``schön`` might appear as ``schÃ¶n``.
+- An em dash (``—``) might appear as ``â€”``.
 - Text that was meant to be enclosed in quotation marks might end up
-  instead enclosed in `â€œ` and `â€` (and that last character
+  instead enclosed in ``â€œ`` and ``â€`` (and that last character
   probably won't even display as anything meaningful).
 
 This happens very often to real text. Fortunately, the nonsense sequences
@@ -26,14 +26,14 @@ supposed to be there.
 Any given text string might have other irritating properties, possibly even
 interacting with the erroneous decoding:
 
-- The text could contain HTML entities such as `&amp;` in place of certain
+- The text could contain HTML entities such as ``&amp;`` in place of certain
   characters, when you would rather see what the characters actually are.
 - For that matter, it could contain instructions for a text terminal to
   do something like change colors, but you are not sending the text to a
-  terminal, so those instructions are just going to look like `^[[30m;`
+  terminal, so those instructions are just going to look like ``^[[30m;``
   or something in the middle of the text.
 - The text could write words in non-standard ways for display purposes,
-  such as using the three characters `ﬂ` `o` `p` for the word "flop".
+  such as using the three characters ``ﬂ`` ``o`` ``p`` for the word "flop".
   This can happen when you copy text out of a PDF, for example.
 
 Of course you're better off if all the text you take as input is decoded
