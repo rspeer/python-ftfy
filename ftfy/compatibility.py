@@ -9,12 +9,12 @@ if sys.hexversion >= 0x03000000:
     htmlentitydefs = entities
     unichr = chr
     xrange = range
-    PYTHON3 = True
+    PYTHON2 = False
 else:
     import htmlentitydefs
     unichr = unichr
     xrange = xrange
-    PYTHON3 = False
+    PYTHON2 = True
 
 
 def _narrow_unichr_workaround(codepoint):
@@ -36,7 +36,7 @@ def bytes_to_ints(bytestring):
     a bytestring. On Python 3, this is easy, because a 'bytes' object _is_ a
     sequence of integers.
     """
-    if PYTHON3:
-        return bytestring
-    else:
+    if PYTHON2:
         return [ord(b) for b in bytestring]
+    else:
+        return bytestring
