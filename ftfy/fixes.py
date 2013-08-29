@@ -271,8 +271,8 @@ def remove_terminal_escapes(text):
     return ANSI_RE.sub('', text)
 
 
-SINGLE_QUOTE_RE = re.compile(u'[\u2018-\u201b]')
-DOUBLE_QUOTE_RE = re.compile(u'[\u201c-\u201f]')
+SINGLE_QUOTE_RE = re.compile('[\u2018-\u201b]')
+DOUBLE_QUOTE_RE = re.compile('[\u201c-\u201f]')
 def uncurl_quotes(text):
     r"""
     Replace curly quotation marks with straight equivalents.
@@ -388,3 +388,31 @@ def remove_bom(text):
     Where do you want to go today?
     """
     return text.lstrip(unichr(0xfeff))
+
+UNSAFE_3_3_RE = re.compile('[\U00100000-\U0010ffff]')
+def remove_unsafe_private_use(text):
+    r"""
+    Python 3.3's Unicode support isn't perfect, and in fact there are certain
+    string operations that will crash it with a SystemError:
+    http://bugs.python.org/issue18183
+
+    You can trigger the bug by running `` '\U00010000\U00100000'.lower() ``.
+
+    The best solution on Python 3.3 is to remove all characters from
+    Supplementary Private Use Area B, using a regex that is known not to crash
+    given those characters.
+    
+    These are the characters from U+100000 to U+10FFFF. It's sad to lose an
+    entire plane of Unicode, but on the other hand, these characters are not
+    assigned and never will be. If you get one of these characters and don't
+    know what its purpose is, its purpose is probably to crash your code.
+    
+    If you were using these for actual private use, this might be inconvenient.
+    You can turn off this fixer, of course, but I kind of encourage using
+    Supplementary Private Use Area A instead.
+
+        >>> print(remove_unsafe_private_use('\U0001F4A9\U00100000'))
+        💩
+    """
+    return UNSAFE_3_3_RE.sub('', text)
+
