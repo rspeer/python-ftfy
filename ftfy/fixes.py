@@ -375,7 +375,7 @@ def fix_java_encoding(bytestring):
         new_bytes = unichr(codepoint).encode('utf-8')
         fixed_pieces.append(bytestring[:pos] + new_bytes)
         bytestring = bytestring[pos + 6:]
-        match = CESU8_RE.match(bytestring)
+        match = CESU8_RE.search(bytestring)
 
     return b''.join(fixed_pieces) + bytestring
 
