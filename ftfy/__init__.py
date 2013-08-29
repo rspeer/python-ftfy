@@ -9,11 +9,13 @@ for more information.
 from __future__ import unicode_literals
 from ftfy import fixes
 from ftfy.fixes import fix_text_encoding
+from ftfy.compatibility import PYTHON34_OR_LATER
 import unicodedata
 import warnings
 
 
 def fix_text(text,
+             remove_unsafe_private_use=(not PYTHON34_OR_LATER),
              fix_entities=True,
              remove_terminal_escapes=True,
              fix_encoding=True,
@@ -59,13 +61,16 @@ def fix_text(text,
 
     Based on the options you provide, ftfy applies these steps in order:
 
-    - If `remove_terminal_escapes` is True, remove sequences of bytes that are
-      instructions for Unix terminals, such as the codes that make text appear
-      in different colors.
+    - If `remove_unsafe_private_use` is True, it removes a range of unassigned
+      characters that could trigger Python `bug 18183`_. This will default
+      to False starting on Python 3.4, when the bugfix will be released.
     - If `fix_entities` is True, consider replacing HTML entities with their
       equivalent characters. However, this never applies to text with a pair
       of angle brackets in it already; you're probably not supposed to decode
       entities there, and you'd make things ambiguous if you did.
+    - If `remove_terminal_escapes` is True, remove sequences of bytes that are
+      instructions for Unix terminals, such as the codes that make text appear
+      in different colors.
     - If `fix_encoding` is True, look for common mistakes that come from
       encoding or decoding Unicode text incorrectly, and fix them if they are
       reasonably fixable. See `fix_text_encoding` for details.
@@ -102,6 +107,8 @@ def fix_text(text,
     If you are certain your entire text is in the same encoding (though that
     encoding is possibly flawed), and do not mind performing operations on
     the whole text at once, use `fix_text_segment`.
+      
+    _`bug 18183`: http://bugs.python.org/issue18183
     """
     if isinstance(text, bytes):
         raise UnicodeError(fixes.BYTES_ERROR_TEXT)
@@ -125,6 +132,7 @@ def fix_text(text,
         out.append(
             fix_text_segment(
                 substring,
+                remove_unsafe_private_use=remove_unsafe_private_use,
                 fix_entities=fix_entities,
                 remove_terminal_escapes=remove_terminal_escapes,
                 fix_encoding=fix_encoding_this_time,
@@ -165,6 +173,7 @@ def fix_file(input_file, normalization='NFKC'):
 
 
 def fix_text_segment(text,
+                     remove_unsafe_private_use=True,
                      fix_entities=True,
                      remove_terminal_escapes=True,
                      fix_encoding=True,
@@ -186,6 +195,8 @@ def fix_text_segment(text,
     unsafe_entities = ('<' in text and '>' in text)
     while True:
         origtext = text
+        if remove_unsafe_private_use:
+            text = fixes.remove_unsafe_private_use(text)
         if fix_entities and not unsafe_entities:
             text = fixes.unescape_html(text)
         if remove_terminal_escapes:

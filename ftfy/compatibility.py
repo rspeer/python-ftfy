@@ -16,6 +16,8 @@ else:
     xrange = xrange
     PYTHON2 = True
 
+PYTHON34_OR_LATER = (sys.hexversion >= 0x03040000)
+
 
 def _narrow_unichr_workaround(codepoint):
     """
