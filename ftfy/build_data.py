@@ -27,6 +27,7 @@ if sys.hexversion >= 0x03000000:
 # m = Letter modifier (Lm)
 # M = Mark (Mc, Me, Mn)
 # N = Miscellaneous numbers (No)
+# P = Private use (Co)
 # 0 = Math symbol (Sm)
 # 1 = Currency symbol (Sc)
 # 2 = Symbol modifier (Sk)
@@ -86,6 +87,8 @@ def make_char_data_file():
             cclasses[codepoint] = 'X'
         elif category == 'Cs':
             cclasses[codepoint] = 'S'
+        elif category == 'Co':
+            cclasses[codepoint] = 'P'
         elif category.startswith('Z'):
             cclasses[codepoint] = ' '
         else:

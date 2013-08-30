@@ -27,6 +27,7 @@ TEST_CASES = [
      "Beta Haber: Hırsızı Büyü Korkuttu http://t.co/rMkt5yz7Si"),
     ("Blog Traffic Tip 2 вЂ“ Broadcast Email Your Blog",
      "Blog Traffic Tip 2 – Broadcast Email Your Blog"),
+    ("Ôôô VIDA MINHA", "Ôôô VIDA MINHA"),
 ]
 
 def test_real_tweets():
