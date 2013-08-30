@@ -1,3 +1,10 @@
+## Version 3.0.1 (August 30, 2013)
+
+- Fix bug in `fix_java_encoding` that led to only the first instance of
+  CESU-8 badness per line being fixed
+- Add a fixer that removes unassigned characters that can break Python 3.3
+  (http://bugs.python.org/issue18183)
+
 ## Version 3.0 (August 26, 2013)
 
 - Generally runs faster
