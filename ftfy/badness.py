@@ -62,6 +62,10 @@ def _make_weirdness_regex():
     # decoding Latin-1 that was meant to be Windows-1252.
     groups.append('X')
 
+    # Match private use and unassigned characters.
+    groups.append('P')
+    groups.append('_')
+
     # Match adjacent characters from any different pair of these categories:
     # - Modifier marks (M)
     # - Letter modifiers (m)
