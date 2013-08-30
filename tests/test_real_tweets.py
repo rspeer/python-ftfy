@@ -25,6 +25,8 @@ TEST_CASES = [
      "@rakryanM hihi RT damnitstrue: ☺😘 http://t.co/DqSCy26POe"),
     ("Beta Haber: HÄ±rsÄ±zÄ± BÃ¼yÃ¼ Korkuttu http://t.co/rMkt5yz7Si",
      "Beta Haber: Hırsızı Büyü Korkuttu http://t.co/rMkt5yz7Si"),
+    ("Blog Traffic Tip 2 вЂ“ Broadcast Email Your Blog",
+     "Blog Traffic Tip 2 – Broadcast Email Your Blog"),
 ]
 
 def test_real_tweets():
