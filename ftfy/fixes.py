@@ -102,15 +102,19 @@ def fix_text_encoding(text):
     """
     best_version = text
     best_cost = text_cost(text)
+    plan_so_far = []
     while True:
         prevtext = text
         text, plan = fix_text_and_explain(text)
+        plan_so_far.extend(plan)
         cost = text_cost(text)
 
-        # Add a small penalty if we used a particularly obsolete encoding.
-        if ('sloppy_encode', 'macroman') in plan or\
-           ('sloppy_encode', 'cp437') in plan:
-            cost += 1
+        # Add a penalty if we used a particularly obsolete encoding. The result
+        # is that we won't use these encodings unless they can successfully
+        # replace multiple characters.
+        if ('sloppy_encode', 'macroman') in plan_so_far or\
+           ('sloppy_encode', 'cp437') in plan_so_far:
+            cost += 2
 
         if cost < best_cost:
             best_cost = cost
