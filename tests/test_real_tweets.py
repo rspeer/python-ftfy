@@ -4,11 +4,11 @@ from ftfy import fix_text
 from nose.tools import eq_
 
 TEST_CASES = [
+    ## These are excerpts from tweets actually seen on the public Twitter
+    ## stream. Usernames and links have been removed.
     ("He's Justinâ¤", "He's Justin❤"),
     ("Le Schtroumpf Docteur conseille g√¢teaux et baies schtroumpfantes pour un r√©gime √©quilibr√©.",
      "Le Schtroumpf Docteur conseille gâteaux et baies schtroumpfantes pour un régime équilibré."),
-    #("Deja dos heridos hundimiento de barco tur\x92stico en Acapulco.",
-    # "Deja dos heridos hundimiento de barco turístico en Acapulco."),
     ("âœ” No problems", "✔ No problems"),
     ('4288×…', '4288×...'),
     ('RETWEET SE VOCÊ…', 'RETWEET SE VOCÊ...'),
@@ -16,18 +16,32 @@ TEST_CASES = [
     ('TEM QUE SEGUIR, SDV SÓ…', 'TEM QUE SEGUIR, SDV SÓ...'),
     ('Join ZZAJÉ’s Official Fan List and receive news, events, and more!', "Join ZZAJÉ's Official Fan List and receive news, events, and more!"),
     ('L’épisode 8 est trop fou ouahh', "L'épisode 8 est trop fou ouahh"),
-    ("РґРѕСЂРѕРіРµ РР·-РїРѕРґ http://t.co/A0eJAMTuJ1 #С„СѓС‚Р±РѕР»",
-     "дороге Из-под http://t.co/A0eJAMTuJ1 #футбол"),
+    ("РґРѕСЂРѕРіРµ РР·-РїРѕРґ #С„СѓС‚Р±РѕР»",
+     "дороге Из-под #футбол"),
     ("\x84Handwerk bringt dich \xfcberall hin\x93: Von der YOU bis nach Monaco",
      '"Handwerk bringt dich überall hin": Von der YOU bis nach Monaco'),
     ("Hi guys í ½í¸", "Hi guys 😍"),
-    ("@rakryanM hihi RT damnitstrue: âºí ½í¸ http://t.co/DqSCy26POe",
-     "@rakryanM hihi RT damnitstrue: ☺😘 http://t.co/DqSCy26POe"),
-    ("Beta Haber: HÄ±rsÄ±zÄ± BÃ¼yÃ¼ Korkuttu http://t.co/rMkt5yz7Si",
-     "Beta Haber: Hırsızı Büyü Korkuttu http://t.co/rMkt5yz7Si"),
+    ("hihi RT username: âºí ½í¸",
+     "hihi RT username: ☺😘"),
+    ("Beta Haber: HÄ±rsÄ±zÄ± BÃ¼yÃ¼ Korkuttu",
+     "Beta Haber: Hırsızı Büyü Korkuttu"),
     ("Blog Traffic Tip 2 вЂ“ Broadcast Email Your Blog",
      "Blog Traffic Tip 2 – Broadcast Email Your Blog"),
     ("Ôôô VIDA MINHA", "Ôôô VIDA MINHA"),
+    ('[x]\xa0©', '[x] ©'),
+    ('2012—∞', '2012—∞'),
+    ('Con il corpo e lo spirito ammaccato,\xa0è come se nel cuore avessi un vetro conficcato.',
+     'Con il corpo e lo spirito ammaccato, è come se nel cuore avessi un vetro conficcato.')
+    
+    ## Current false positives:
+    #("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´",
+    # "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´"),
+    #('HUHLL Õ…', 'HUHLL Õ...'),
+    #("├┤a┼┐a┼┐a┼┐a┼┐a", "├┤a┼┐a┼┐a┼┐a┼┐a"),
+    
+    ## This kind of tweet can't be fixed without a full-blown encoding detector.
+    #("Deja dos heridos hundimiento de barco tur\x92stico en Acapulco.",
+    # "Deja dos heridos hundimiento de barco turístico en Acapulco."),
 ]
 
 def test_real_tweets():
