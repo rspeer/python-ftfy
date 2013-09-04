@@ -1,3 +1,13 @@
+## Version 3.0.2 (September 4, 2013)
+
+- Fixed some false positives.
+  - Basically, 3.0.1 was too eager to treat text as MacRoman or cp437 when
+    three consecutive characters coincidentally decoded as UTF-8. Increased the
+    cost of those encodings so that they have to successfully decode multiple
+    UTF-8 characters.
+  - See tests/test_real_tweets.py for the new test cases that were added as a
+    result.
+
 ## Version 3.0.1 (August 30, 2013)
 
 - Fix bug in `fix_java_encoding` that led to only the first instance of
