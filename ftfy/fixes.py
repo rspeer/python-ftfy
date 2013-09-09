@@ -10,7 +10,8 @@ from ftfy.chardata import (possible_encoding, CHARMAPS, CHARMAP_ENCODINGS,
 from ftfy.badness import text_cost
 import re
 import sys
-from ftfy.compatibility import htmlentitydefs, unichr, bytes_to_ints
+from ftfy.compatibility import (htmlentitydefs, unichr, bytes_to_ints,
+                                UNSAFE_PRIVATE_USE_RE)
 
 
 BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
@@ -393,7 +394,6 @@ def remove_bom(text):
     """
     return text.lstrip(unichr(0xfeff))
 
-UNSAFE_3_3_RE = re.compile('[\U00100000-\U0010ffff]')
 def remove_unsafe_private_use(text):
     r"""
     Python 3.3's Unicode support isn't perfect, and in fact there are certain
@@ -418,5 +418,5 @@ def remove_unsafe_private_use(text):
         >>> print(remove_unsafe_private_use('\U0001F4A9\U00100000'))
         💩
     """
-    return UNSAFE_3_3_RE.sub('', text)
+    return UNSAFE_PRIVATE_USE_RE.sub('', text)
 
