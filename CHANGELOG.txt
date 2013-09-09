@@ -1,3 +1,8 @@
+## Version 3.0.3 (September 9, 2013)
+
+- Fixed an ugly regular expression bug that prevented ftfy from importing on a
+  narrow build of Python.
+
 ## Version 3.0.2 (September 4, 2013)
 
 - Fixed some false positives.
