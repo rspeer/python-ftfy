@@ -5,13 +5,14 @@ can perform.
 """
 
 from __future__ import unicode_literals
-from ftfy.chardata import (possible_encoding, CHARMAPS, CHARMAP_ENCODINGS,
-                           CONTROL_CHARS)
+from ftfy.chardata import (possible_encoding,
+                           CHARMAP_ENCODINGS, CONTROL_CHARS)
 from ftfy.badness import text_cost
-import re
-import sys
 from ftfy.compatibility import (htmlentitydefs, unichr, bytes_to_ints,
                                 UNSAFE_PRIVATE_USE_RE)
+import ftfy.bad_codecs
+import re
+import sys
 
 
 BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
@@ -113,8 +114,8 @@ def fix_text_encoding(text):
         # Add a penalty if we used a particularly obsolete encoding. The result
         # is that we won't use these encodings unless they can successfully
         # replace multiple characters.
-        if ('sloppy_encode', 'macroman') in plan_so_far or\
-           ('sloppy_encode', 'cp437') in plan_so_far:
+        if ('encode', 'macroman') in plan_so_far or\
+           ('encode', 'cp437') in plan_so_far:
             cost += 2
 
         # We need pretty solid evidence to decode from Windows-1251 (Cyrillic).
@@ -155,35 +156,16 @@ def fix_text_and_explain(text):
     # are usually the correct thing to do, so try them next.
     for encoding in CHARMAP_ENCODINGS:
         if possible_encoding(text, encoding):
-            # This is an ugly-looking way to get the bytes that represent
-            # the text in this encoding. The reason we can't necessarily
-            # use .encode(encoding) is that the decoder is very likely
-            # to have been sloppier than Python.
-            #
-            # The decoder might have left bytes unchanged when they're not
-            # part of the encoding. It might represent b'\x81' as u'\x81'
-            # in Windows-1252, while Python would claim that using byte
-            # 0x81 in Windows-1252 is an error.
-            #
-            # So what we do here is we use the .translate method of Unicode
-            # strings. Using it with the character maps we have computed will
-            # give us back a Unicode string using only code
-            # points up to 0xff. This can then be converted into the intended
-            # bytes by encoding it as Latin-1.
-            sorta_encoded_text = text.translate(CHARMAPS[encoding])
+            encoded_bytes = text.encode(encoding)
 
-            # When we get the bytes, run them through fix_java_encoding,
-            # because we can only reliably do that at the byte level. (See
-            # its documentation for details.)
-            encoded_bytes = fix_java_encoding(
-                sorta_encoded_text.encode('latin-1')
-            )
-
-            # Now, find out if it's UTF-8. Otherwise, remember the encoding
-            # for later.
+            # Now, find out if it's UTF-8 (or close enough). Otherwise,
+            # remember the encoding for later.
             try:
-                fixed = encoded_bytes.decode('utf-8')
-                steps = [('sloppy_encode', encoding), ('decode', 'utf-8')]
+                decoding = 'utf-8'
+                if b'\xed' in encoded_bytes or b'\xc0' in encoded_bytes:
+                    decoding = 'utf-8-variants'
+                fixed = encoded_bytes.decode(decoding)
+                steps = [('encode', encoding), ('decode', decoding)]
                 return fixed, steps
             except UnicodeDecodeError:
                 possible_1byte_encodings.append(encoding)
@@ -203,7 +185,9 @@ def fix_text_and_explain(text):
         else:
             # Otherwise, it means we have characters that are in Latin-1 but
             # not in Windows-1252. Those are C1 control characters. Nobody
-            # wants those. Assume they were meant to be Windows-1252.
+            # wants those. Assume they were meant to be Windows-1252. Don't
+            # use the sloppy codec, because bad Windows-1252 characters are
+            # a bad sign.
             encoded = text.encode('latin-1')
             try:
                 fixed = encoded.decode('windows-1252')
@@ -324,71 +308,6 @@ def remove_control_chars(text):
     """
     return text.translate(CONTROL_CHARS)
 
-
-CESU8_RE = re.compile(b'\xed[\xa0-\xaf][\x80-\xbf]\xed[\xb0-\xbf][\x80-\xbf]')
-def fix_java_encoding(bytestring):
-    r"""
-    Convert a bytestring that might contain "Java Modified UTF8" into valid
-    UTF-8.
-
-    There are two things that Java is known to do with its "UTF8" encoder
-    that are incompatible with UTF-8. (If you happen to be writing Java
-    code, apparently the standards-compliant encoder is named "AS32UTF8".)
-
-    - Every UTF-16 character is separately encoded as UTF-8. This is wrong
-      when the UTF-16 string contains surrogates; the character they actually
-      represent should have been encoded as UTF-8 instead. Unicode calls this
-      "CESU-8", the Compatibility Encoding Scheme for Unicode. Python 2 will
-      decode it as if it's UTF-8, but Python 3 refuses to.
-
-    - The null codepoint, U+0000, is encoded as 0xc0 0x80, which avoids
-      outputting a null byte by breaking the UTF shortest-form rule.
-      Unicode does not even deign to give this scheme a name, and no version
-      of Python will decode it.
-
-        >>> len(fix_java_encoding(b'\xed\xa0\xbd\xed\xb8\x8d'))
-        4
-
-        >>> ends_with_null = fix_java_encoding(b'Here comes a null! \xc0\x80')
-        >>> bytes_to_ints(ends_with_null)[-1]
-        0
-    """
-    assert isinstance(bytestring, bytes)
-    # Replace the sloppy encoding of U+0000 with the correct one.
-    bytestring = bytestring.replace(b'\xc0\x80', b'\x00')
-
-    # When we have improperly encoded surrogates, we can still see the
-    # bits that they were meant to represent.
-    #
-    # The surrogates were meant to encode a 20-bit number, to which we
-    # add 0x10000 to get a codepoint. That 20-bit number now appears in
-    # this form:
-    #
-    #   11101101 1010abcd 10efghij 11101101 1011klmn 10opqrst
-    #
-    # The CESU8_RE above matches byte sequences of this form. Then we need
-    # to extract the bits and assemble a codepoint number from them.
-    match = CESU8_RE.search(bytestring)
-    fixed_pieces = []
-    while match:
-        pos = match.start()
-        cesu8_sequence = bytes_to_ints(bytestring[pos:pos + 6])
-        assert cesu8_sequence[0] == cesu8_sequence[3] == 0xed
-        codepoint = (
-            ((cesu8_sequence[1] & 0x0f) << 16) +
-            ((cesu8_sequence[2] & 0x3f) << 10) +
-            ((cesu8_sequence[4] & 0x0f) << 6) +
-            (cesu8_sequence[5] & 0x3f) +
-            0x10000
-        )
-        # For the reason why this will work on all Python builds, see
-        # compatibility.py.
-        new_bytes = unichr(codepoint).encode('utf-8')
-        fixed_pieces.append(bytestring[:pos] + new_bytes)
-        bytestring = bytestring[pos + 6:]
-        match = CESU8_RE.search(bytestring)
-
-    return b''.join(fixed_pieces) + bytestring
 
 
 def remove_bom(text):
