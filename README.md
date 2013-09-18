@@ -3,25 +3,36 @@
 This is a module for making text less broken and more consistent. It works in
 Python 2.6, Python 3.2, or later.
 
-What does it mean for text to be broken?
+The most interesting kind of brokenness that this resolves is when someone
+has encoded Unicode with one standard and decoded it with a different one.
+This often shows up as characters that turn into nonsense sequences:
 
-- The text could have been encoded with one encoding standard, and decoded
-  with a different one. The result is that some characters turn into
-  nonsense sequences that look like this: `â€”`
-- The text could contain HTML entities, but be passed into a system that
-  was not designed to read HTML.
+- The word `schön` might appear as `schÃ¶n`.
+- An em dash (`—`) might appear as `â€”`.
+- Text that was meant to be enclosed in quotation marks might end up
+  instead enclosed in `â€œ` and `â€` (and that last character
+  probably won't even display as anything meaningful).
+
+This happens very often to real text. Fortunately, the nonsense sequences
+usually contain all the information you need to reconstruct what character was
+supposed to be there.
+
+Any given text string might have other irritating properties, possibly even
+interacting with the erroneous decoding:
+
+- The text could contain HTML entities such as `&amp;` in place of certain
+  characters, when you would rather see what the characters actually are.
 - For that matter, it could contain instructions for a text terminal to
-  move the cursor or change colors or something, but you are not sending
-  the text to a terminal.
+  do something like change colors, but you are not sending the text to a
+  terminal, so those instructions are just going to look like `^[[30m;`
+  or something in the middle of the text.
 - The text could write words in non-standard ways for display purposes,
   such as using the three characters `ﬂ` `o` `p` for the word "flop".
-- The text could contain control characters that are designed for a
-  certain operating system.
+  This can happen when you copy text out of a PDF, for example.
 
-Of course you're better off if all the text you take as input is in the right
-format for your application and operating system. But often, your input is
-something you have no control over. Somebody else's minor mistake becomes
-your problem.
+Of course you're better off if all the text you take as input is decoded
+properly and written in standard ways. But often, your input is something you
+have no control over. Somebody else's minor mistake becomes your problem.
 
 ftfy will do everything it can to fix the problem.
 
@@ -95,14 +106,14 @@ All the fixes are on by default, but you can pass options to turn them off.
   except the common useful ones: TAB, CR, LF, and FF. (CR characters
   may have already been removed by the `fix_line_breaks` step.)
 - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
-  (It's an instruction to a UTF-16 decoder. It's not meant to actually
+  (It's a hint for a UTF-16 decoder. It's not meant to actually
   end up in your string.)
 - If anything was changed, repeat all the steps, so that the function is
   idempotent. `"&amp;amp;"` will become `"&"`, for example, not `"&amp;"`.
 
 ### Encodings ftfy can handle
 
-`ftfy` can understand text that was decoded as any of these single-byte
+ftfy can understand text that was decoded as any of these single-byte
 encodings:
 
 - Latin-1 (ISO-8859-1)
@@ -111,16 +122,17 @@ encodings:
 - MacRoman (used on Mac OS 9 and earlier)
 - cp437 (used in MS-DOS)
 
-when it was actually intended to be decoded as a variable-length encoding:
+when it was actually intended to be decoded as one of these variable-length
+encodings:
 
 - UTF-8
-- CESU-8 (what some programmers think is UTF-8)
+- CESU-8 (what some people think is UTF-8)
 
 It can also understand text that was intended as Windows-1252 but decoded as
-Latin-1 -- that's the very common case where things like smart-quotes and
-bullets turn into weird control characters.
+Latin-1. That's the very common case where things like smart-quotes and
+bullets turn into single weird control characters.
 
-However, `ftfy` cannot understand other mixups between single-byte encodings,
+However, ftfy cannot understand other mixups between single-byte encodings,
 because it is extremely difficult to detect which mixup in particular is the
 one that happened.
 
