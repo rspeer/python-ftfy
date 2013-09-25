@@ -31,6 +31,7 @@ phrases = [
     u"\u2039ALLÍ ESTÁ\u203A",
     u"\u2014ALLÍ ESTÁ\u2014",
     u"AHÅ™, the new sofa from IKEA®",
+    u"ВІКІ is Ukrainian for WIKI",
     #u"\u2014a radius of 10 Å\u2014",
 ]
 # These phrases should not be erroneously "fixed"
