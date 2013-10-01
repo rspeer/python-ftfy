@@ -61,7 +61,7 @@ def _build_charmaps():
 
         charlist = [unichr(codept) for codept in sorted(charmap.keys())
                     if codept >= 0x80]
-        regex = '^[\x00-\x7f{}]*$'.format(''.join(charlist))
+        regex = '^[\x00-\x7f{0}]*$'.format(''.join(charlist))
         charmaps[encoding] = charmap
         encoding_regexes[encoding] = re.compile(regex)
     return charmaps, encoding_regexes
