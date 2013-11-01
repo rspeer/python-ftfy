@@ -150,7 +150,16 @@ def fix_text(text,
 ftfy = fix_text
 
 
-def fix_file(input_file, normalization='NFKC'):
+def fix_file(input_file,
+             remove_unsafe_private_use=True,
+             fix_entities=True,
+             remove_terminal_escapes=True,
+             fix_encoding=True,
+             normalization='NFKC',
+             uncurl_quotes=True,
+             fix_line_breaks=True,
+             remove_control_chars=True,
+             remove_bom=True):
     """
     Fix text that is found in a file.
 
@@ -163,13 +172,24 @@ def fix_file(input_file, normalization='NFKC'):
 
     The output is a stream of fixed lines of text.
     """
-    entities = True
+    entities = fix_entities
     for line in input_file:
         if isinstance(line, bytes):
             line = line.decode('latin-1')
         if '<' in line and '>' in line:
             entities = False
-        yield fix_text_segment(line, normalization, entities)
+        yield fix_text_segment(
+            line,
+            remove_unsafe_private_use=remove_unsafe_private_use,
+            fix_entities=fix_entities,
+            remove_terminal_escapes=remove_terminal_escapes,
+            fix_encoding=entities,
+            normalization=normalization,
+            uncurl_quotes=uncurl_quotes,
+            fix_line_breaks=fix_line_breaks,
+            remove_control_chars=remove_control_chars,
+            remove_bom=remove_bom
+        )
 
 
 def fix_text_segment(text,
