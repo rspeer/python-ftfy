@@ -1,3 +1,11 @@
+## Version 3.0.5 (November 1, 2013)
+
+- Fix the arguments to `fix_file`, because they were totally wrong.
+
+## Version 3.0.4 (October 1, 2013)
+
+- Restore compatibility with Python 2.6.
+
 ## Version 3.0.3 (September 9, 2013)
 
 - Fixed an ugly regular expression bug that prevented ftfy from importing on a
