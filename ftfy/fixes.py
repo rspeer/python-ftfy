@@ -210,11 +210,13 @@ def fix_text_and_explain(text):
                 steps = [('encode', 'latin-1'), ('decode', 'windows-1252')]
                 return fixed, steps
             except UnicodeDecodeError:
-                # Well, never mind.
+                # This text contained characters that don't even make sense
+                # if you assume they were supposed to be Windows-1252. In
+                # that case, let's not assume anything.
                 pass
 
     # The cases that remain are mixups between two different single-byte
-    # encodings, neither of which is Latin-1.
+    # encodings, and not the common case of Latin-1 vs. Windows-1252.
     #
     # Those cases are somewhat rare, and impossible to solve without false
     # positives. If you're in one of these situations, you don't need an
