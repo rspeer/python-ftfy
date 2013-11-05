@@ -1,3 +1,11 @@
+## Version 3.0.6 (November 5, 2013)
+
+- `fix_entities` can now be True, False, or 'auto'. The new case is True, which
+  will decode all entities, even in text that already contains angle brackets.
+  This may also be faster, because it doesn't have to check.
+- `build_data.py` will refuse to run on Python < 3.3, to prevent building
+  an inconsistent data file.
+
 ## Version 3.0.5 (November 1, 2013)
 
 - Fix the arguments to `fix_file`, because they were totally wrong.
