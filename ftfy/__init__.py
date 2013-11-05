@@ -16,7 +16,7 @@ import warnings
 
 def fix_text(text,
              remove_unsafe_private_use=(not PYTHON34_OR_LATER),
-             fix_entities=True,
+             fix_entities='auto',
              remove_terminal_escapes=True,
              fix_encoding=True,
              normalization='NFKC',
@@ -64,10 +64,11 @@ def fix_text(text,
     - If `remove_unsafe_private_use` is True, it removes a range of unassigned
       characters that could trigger Python `bug 18183`_. This will default
       to False starting on Python 3.4, when the bugfix will be released.
-    - If `fix_entities` is True, consider replacing HTML entities with their
-      equivalent characters. However, this never applies to text with a pair
-      of angle brackets in it already; you're probably not supposed to decode
-      entities there, and you'd make things ambiguous if you did.
+    - If `fix_entities` is True, replace HTML entities with their equivalent
+      characters. If it's "auto" (the default), then consider replacing HTML
+      entities, but don't do so in text where you have seen a pair of actual
+      angle brackets (that's probably actually HTML and you shouldn't mess
+      with the entities).
     - If `remove_terminal_escapes` is True, remove sequences of bytes that are
       instructions for Unix terminals, such as the codes that make text appear
       in different colors.
@@ -125,7 +126,7 @@ def fix_text(text,
 
         substring = text[pos:textbreak]
 
-        if '<' in substring and '>' in substring:
+        if fix_entities == 'auto' and '<' in substring and '>' in substring:
             # we see angle brackets together; this could be HTML
             fix_entities = False
 
@@ -152,7 +153,7 @@ ftfy = fix_text
 
 def fix_file(input_file,
              remove_unsafe_private_use=True,
-             fix_entities=True,
+             fix_entities='auto',
              remove_terminal_escapes=True,
              fix_encoding=True,
              normalization='NFKC',
@@ -176,7 +177,7 @@ def fix_file(input_file,
     for line in input_file:
         if isinstance(line, bytes):
             line = line.decode('latin-1')
-        if '<' in line and '>' in line:
+        if fix_entities == 'auto' and '<' in line and '>' in line:
             entities = False
         yield fix_text_segment(
             line,
@@ -194,7 +195,7 @@ def fix_file(input_file,
 
 def fix_text_segment(text,
                      remove_unsafe_private_use=True,
-                     fix_entities=True,
+                     fix_entities='auto',
                      remove_terminal_escapes=True,
                      fix_encoding=True,
                      normalization='NFKC',
@@ -212,12 +213,13 @@ def fix_text_segment(text,
     if isinstance(text, bytes):
         raise UnicodeError(fixes.BYTES_ERROR_TEXT)
 
-    unsafe_entities = ('<' in text and '>' in text)
+    if fix_entities == 'auto' and '<' in text and '>' in text:
+        fix_entities = False
     while True:
         origtext = text
         if remove_unsafe_private_use:
             text = fixes.remove_unsafe_private_use(text)
-        if fix_entities and not unsafe_entities:
+        if fix_entities:
             text = fixes.unescape_html(text)
         if remove_terminal_escapes:
             text = fixes.remove_terminal_escapes(text)
