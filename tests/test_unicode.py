@@ -45,3 +45,6 @@ def check_phrase(text):
     eq_(fix_text_encoding(text), text)
     eq_(fix_text_encoding(text.encode('utf-8').decode('latin-1')), text)
 
+if __name__ == '__main__':
+    test_all_bmp_characters()
+
