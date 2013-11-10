@@ -24,7 +24,7 @@ def search_function(encoding):
         codec = CODEC_INFO
     elif norm_encoding.startswith('sloppy_'):
         from ftfy.bad_codecs.sloppy import CODECS
-        return CODECS.get(norm_encoding)
+        codec = CODECS.get(norm_encoding)
 
     if codec is not None:
         _cache[encoding] = codec
