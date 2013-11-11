@@ -24,23 +24,7 @@ CHARMAP_ENCODINGS = [
 
 def _build_regexes():
     """
-    [outdated docs]
-
-    CHARMAPS contains mappings from bytes to characters, for each single-byte
-    encoding we know about.
-
-    We don't use Python's decoders here because they're too strict. Many
-    non-Python programs will leave mysterious bytes alone instead of raising
-    an error or removing them. For example, Python will not decode 0x81 in
-    Windows-1252 because it doesn't map to anything. Other systems will decode
-    it to U+0081, which actually makes no sense because that's a meaningless
-    control character from Latin-1, but I guess at least it preserves some
-    information that ftfy can take advantage of.
-
-    So that's what we do. When other systems decode 0x81 as U+0081, we match
-    their behavior in case it helps us get reasonable text.
-
-    Meanwhile, ENCODING_REGEXES contain reasonably fast ways to detect if we
+    ENCODING_REGEXES contain reasonably fast ways to detect if we
     could represent a given string in a given encoding. The simplest one is
     the 'ascii' detector, which of course just determines if all characters
     are between U+0000 and U+007F.
@@ -50,9 +34,6 @@ def _build_regexes():
     # Define a regex that matches ASCII text.
     encoding_regexes = {'ascii': re.compile('^[\x00-\x7f]*$')}
 
-    # For each character map encoding we care about, make a regex that contains
-    # all the characters that that encoding supports, and a mapping from those
-    # characters to sorta-bytes.
     for encoding in CHARMAP_ENCODINGS:
         latin1table = ''.join(unichr(i) for i in range(256))
         charlist = latin1table.encode('latin-1').decode(encoding)
