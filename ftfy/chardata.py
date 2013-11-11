@@ -46,44 +46,14 @@ def _build_regexes():
     are between U+0000 and U+007F.
     """
     charmaps = {}
-    inverse_charmaps = {}
-    encoding_regexes = {
-        'ascii': re.compile('^[\x00-\x7f]*$'),
-    }
+
+    # Define a regex that matches ASCII text.
+    encoding_regexes = {'ascii': re.compile('^[\x00-\x7f]*$')}
+
+    # For each character map encoding we care about, make a regex that contains
+    # all the characters that that encoding supports, and a mapping from those
+    # characters to sorta-bytes.
     for encoding in CHARMAP_ENCODINGS:
-        charmap = {}
-        inverse_charmap = {}
-        for codepoint in range(0, 0x80):
-            # ASCII characters map to themselves.
-            charmap[codepoint] = unichr(codepoint)
-            inverse_charmap[codepoint] = unichr(codepoint)
-        for codepoint in range(0x80, 0x100):
-            # The other characters map to characters from U+0080 to U+00FF,
-            # standing in for bytes. We call these sorta-bytes.
-            char = unichr(codepoint)
-
-            # Turn the sorta-byte into a byte, and try decoding it.
-            encoded_char = char.encode('latin-1')
-            try:
-                # It decoded, so that's the character we need to add to our
-                # character map.
-                decoded_char = encoded_char.decode(encoding)
-            except ValueError:
-                # It didn't decode, so we should be "sloppy" and add the
-                # sorta-byte itself to the character map.
-                decoded_char = char
-            charmap[ord(decoded_char)] = char
-            inverse_charmap[ord(char)] = decoded_char
-
-        # Put together all the characters we got, and make a regular expression
-        # that matches all of them.
-        charlist = [unichr(codept) for codept in sorted(charmap.keys())
-                    if codept >= 0x80]
-        regex = '^[\x00-\x7f{0}]*$'.format(''.join(charlist))
-
-        # Store the mapping and the regex in the dictionaries we're returning.
-        charmaps[encoding] = charmap
-        inverse_charmaps[encoding] = inverse_charmap
         latin1table = ''.join(unichr(i) for i in range(256))
         charlist = latin1table.encode('latin-1').decode(encoding)
         regex = '^[\x00-\x7f{}]*$'.format(charlist)
