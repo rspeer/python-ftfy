@@ -119,7 +119,7 @@ def fix_text_encoding(text):
             cost += 2
 
         # We need pretty solid evidence to decode from Windows-1251 (Cyrillic).
-        if ('sloppy_encode', 'windows-1251') in plan_so_far:
+        if ('encode', 'sloppy-windows-1251') in plan_so_far:
             cost += 5
 
         if cost < best_cost:
