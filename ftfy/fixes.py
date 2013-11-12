@@ -102,12 +102,17 @@ def fix_text_encoding(text):
     The best version of the text is found using
     :func:`ftfy.badness.text_cost`.
     """
+    text, plan = fix_text_and_explain(text)
+    return text
+
+
+def fix_text_and_explain(text):
     best_version = text
     best_cost = text_cost(text)
     plan_so_far = []
     while True:
         prevtext = text
-        text, plan = fix_text_and_explain(text)
+        text, plan = fix_one_step_and_explain(text)
         plan_so_far.extend(plan)
         cost = text_cost(text)
 
@@ -126,12 +131,14 @@ def fix_text_encoding(text):
             best_cost = cost
             best_version = text
         if text == prevtext:
-            return best_version
+            return best_version, plan_so_far
 
-def fix_text_and_explain(text):
+
+def fix_one_step_and_explain(text):
     """
     Performs a single step of re-encoding text that's been decoded incorrectly.
-    It returns the decoded text, plus a structure explaining what it did.
+    It returns the decoded text, plus a 'plan' for how to reproduce what it
+    did. (`apply_plan` can use this object.)
 
     This structure could be used for more than it currently is, but we at least
     use it to track whether we had to intepret text as an old encoding such as
@@ -212,8 +219,21 @@ def fix_text_and_explain(text):
     # such an ambiguous case, but perhaps a version of it with better
     # heuristics would. Anyway, ftfy should not claim to solve it.
 
-    return text, [('give up', None)]
+    # Return the text unchanged; the plan is empty.
+    return text, []
 
+
+def apply_plan(obj, plan):
+    for operation, encoding in plan:
+        if operation == 'encode':
+            obj = obj.encode(encoding)
+        elif operation == 'decode':
+            obj = obj.decode(encoding)
+        else:
+            raise ValueError("Unknown plan step: %s" % operation)
+
+    return obj
+    
 
 HTML_ENTITY_RE = re.compile(r"&#?\w{0,8};")
 def unescape_html(text):
