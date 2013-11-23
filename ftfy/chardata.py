@@ -37,7 +37,7 @@ def _build_regexes():
     for encoding in CHARMAP_ENCODINGS:
         latin1table = ''.join(unichr(i) for i in range(256))
         charlist = latin1table.encode('latin-1').decode(encoding)
-        regex = '^[\x00-\x7f{}]*$'.format(charlist)
+        regex = '^[{}]*$'.format(charlist)
         encoding_regexes[encoding] = re.compile(regex)
     return encoding_regexes
 ENCODING_REGEXES = _build_regexes()
