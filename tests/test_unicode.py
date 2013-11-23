@@ -22,7 +22,7 @@ def test_all_bmp_characters():
         if unicodedata.category(char) not in ('Co', 'Cn', 'Cs', 'Mc', 'Mn'):
             garble = char.encode('utf-8').decode('latin-1')
             garble2 = char.encode('utf-8').decode('latin-1').encode('utf-8').decode('latin-1')
-            eq_(char_names(fix_text_encoding(garble)), char_names(char), fix_text_and_explain(garble))
+            eq_(char_names(fix_text_encoding(garble)), char_names(char))
             eq_(char_names(fix_text_encoding(garble2)), char_names(char))
 
 phrases = [
