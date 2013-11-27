@@ -342,14 +342,14 @@ def remove_bom(text):
 def remove_unsafe_private_use(text):
     r"""
     Python 3.3's Unicode support isn't perfect, and in fact there are certain
-    string operations that will crash it with a SystemError:
+    string operations that will crash some versions of it with a SystemError:
     http://bugs.python.org/issue18183
 
     You can trigger the bug by running `` '\U00010000\U00100000'.lower() ``.
 
-    The best solution on Python 3.3 is to remove all characters from
-    Supplementary Private Use Area B, using a regex that is known not to crash
-    given those characters.
+    The best solution is to remove all characters from Supplementary Private
+    Use Area B, using a regex that is known not to crash given those
+    characters.
     
     These are the characters from U+100000 to U+10FFFF. It's sad to lose an
     entire plane of Unicode, but on the other hand, these characters are not
@@ -362,6 +362,10 @@ def remove_unsafe_private_use(text):
 
         >>> print(remove_unsafe_private_use('\U0001F4A9\U00100000'))
         💩
+    
+    This fixer is off by default in Python 3.4 or later. (The bug is actually
+    fixed in 3.3.3 and 2.7.6, but I don't want the default behavior to change
+    based on a micro version upgrade of Python.)
     """
     return UNSAFE_PRIVATE_USE_RE.sub('', text)
 
