@@ -8,6 +8,7 @@ for more information.
 
 from __future__ import unicode_literals
 from ftfy import fixes
+from ftfy.guess_bytes import guess_bytes
 from ftfy.fixes import fix_text_encoding
 from ftfy.compatibility import PYTHON34_OR_LATER
 import unicodedata
@@ -165,18 +166,16 @@ def fix_file(input_file,
     Fix text that is found in a file.
 
     If the file is being read as Unicode text, use that. If it's being read as
-    bytes, then we'll try to decode each line as Latin-1, and then fix it if it
-    was really UTF-8 or something.
-
-    That's kind of awful, but it will have to suffice until we have a working
-    encoding detector.
+    bytes, then unfortunately, we have to guess what encoding it is. We'll try
+    a few common encodings, but we make no promises. See `guess_bytes.py` for
+    how this is done.
 
     The output is a stream of fixed lines of text.
     """
     entities = fix_entities
     for line in input_file:
         if isinstance(line, bytes):
-            line = line.decode('latin-1')
+            line, encoding = guess_bytes(line)
         if fix_entities == 'auto' and '<' in line and '>' in line:
             entities = False
         yield fix_text_segment(
