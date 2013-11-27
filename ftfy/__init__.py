@@ -62,9 +62,10 @@ def fix_text(text,
 
     Based on the options you provide, ftfy applies these steps in order:
 
-    - If `remove_unsafe_private_use` is True, it removes a range of unassigned
-      characters that could trigger Python `bug 18183`_. This will default
-      to False starting on Python 3.4, when the bugfix will be released.
+    - If `remove_unsafe_private_use` is True, it removes a range of private-use
+      characters that could trigger a Python bug. The bug is fixed in
+      the most recent versions of Python, so this will default to False
+      starting on Python 3.4.
     - If `fix_entities` is True, replace HTML entities with their equivalent
       characters. If it's "auto" (the default), then consider replacing HTML
       entities, but don't do so in text where you have seen a pair of actual
