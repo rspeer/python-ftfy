@@ -119,6 +119,7 @@ def fix_encoding_and_explain(text):
     """
     best_version = text
     best_cost = text_cost(text)
+    best_plan = []
     plan_so_far = []
     while True:
         prevtext = text
@@ -140,8 +141,9 @@ def fix_encoding_and_explain(text):
         if cost < best_cost:
             best_cost = cost
             best_version = text
+            best_plan = list(plan_so_far)
         if text == prevtext:
-            return best_version, plan_so_far
+            return best_version, best_plan
 
 
 def fix_one_step_and_explain(text):
@@ -201,7 +203,9 @@ def fix_one_step_and_explain(text):
             encoded = text.encode('latin-1')
             try:
                 fixed = encoded.decode('windows-1252')
-                steps = [('encode', 'latin-1'), ('decode', 'windows-1252')]
+                steps = []
+                if fixed != text:
+                    steps = [('encode', 'latin-1'), ('decode', 'windows-1252')]
                 return fixed, steps
             except UnicodeDecodeError:
                 # This text contained characters that don't even make sense
