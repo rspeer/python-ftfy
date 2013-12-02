@@ -1,9 +1,41 @@
-import codecs
+r"""
+Give Python the ability to decode some common, flawed encodings.
+
+Python does not want you to be sloppy with your text. Its encoders and decoders
+("codecs") follow the relevant standards whenever possible, which means that
+when you get text that *doesn't* follow those standards, you'll probably fail
+to decode it. Or you might succeed at decoding it for implementation-specific
+reasons, which is perhaps worse.
+
+There are some encodings out there that Python wishes didn't exist, which are
+widely used outside of Python:
+
+- "utf-8-variants", a family of not-quite-UTF-8 encodings, including the
+  ever-popular CESU-8 and "Java modified UTF-8".
+- "Sloppy" versions of character map encodings, where bytes that don't map to
+  anything will instead map to the Unicode character with the same number.
+
+Simply importing this module, or in fact any part of the `ftfy` package, will
+make these new "bad codecs" available to Python through the standard Codecs
+API. You never have to actually call any functions inside `ftfy.bad_codecs`.
+
+However, if you want to call something because your code checker insists on it,
+you can call ``ftfy.bad_codecs.ok()``.
+
+A quick example of decoding text that's encoded in CESU-8:
+
+    >>> import ftfy.bad_codecs
+    >>> print(b'\xed\xa0\xbd\xed\xb8\x8d'.decode('utf-8-variants'))
+    😍
+"""
+from __future__ import unicode_literals
 from encodings import normalize_encoding
+import codecs
 
 _cache = {}
 
-# Define some aliases for 'utf-8-variants'
+# Define some aliases for 'utf-8-variants'. All hyphens get turned into
+# underscores, because of `normalize_encoding`.
 UTF8_VAR_NAMES = (
     'utf_8_variants', 'utf8_variants',
     'utf_8_variant', 'utf8_variant',
@@ -14,6 +46,19 @@ UTF8_VAR_NAMES = (
 
 
 def search_function(encoding):
+    """
+    Register our "bad codecs" with Python's codecs API. This involves adding
+    a search function that takes in an encoding name, and returns a codec
+    for that encoding if it knows one, or None if it doesn't.
+
+    The encodings this will match are:
+
+    - Encodings of the form 'sloppy-windows-NNNN' or 'sloppy-iso-8859-N',
+      where the non-sloppy version is an encoding that leaves some bytes
+      unmapped to characters.
+    - The 'utf-8-variants' encoding, which has the several aliases seen
+      above.
+    """
     if encoding in _cache:
         return _cache[encoding]
 
@@ -32,4 +77,18 @@ def search_function(encoding):
     return codec
 
 
+def ok():
+    """
+    A feel-good function that gives you something to call after importing
+    this package.
+
+    Why is this here? Pyflakes. Pyflakes gets upset when you import a module
+    and appear not to use it. It doesn't know that you're using it when
+    you use the ``unicode.encode`` and ``bytes.decode`` methods with certain
+    encodings.
+    """
+    pass
+
+
 codecs.register(search_function)
+

@@ -11,8 +11,10 @@ from ftfy import fixes
 from ftfy.guess_bytes import guess_bytes
 from ftfy.fixes import fix_text_encoding
 from ftfy.compatibility import PYTHON34_OR_LATER
+import ftfy.bad_codecs
 import unicodedata
 import warnings
+ftfy.bad_codecs.ok()
 
 
 def fix_text(text,
@@ -237,6 +239,23 @@ def fix_text_segment(text,
             text = fixes.remove_bom(text)
         if text == origtext:
             return text
+
+
+def explain_unicode(text):
+    """
+    A utility method that's useful for debugging mysterious Unicode.
+    """
+    for char in text:
+        if char.isprintable():
+            display = char
+        else:
+            display = char.encode('unicode-escape').decode('ascii')
+        print('U+{code:04X}  {display:<7} {name}'.format(
+            display=display,
+            code=ord(char),
+            name=unicodedata.name(char, '<unknown>')
+        ))
+
 
 
 def fix_bad_encoding(text):
