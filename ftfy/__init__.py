@@ -7,14 +7,17 @@ for more information.
 """
 
 from __future__ import unicode_literals
+
+# See the docstring for ftfy.bad_codecs to see what we're doing here.
+import ftfy.bad_codecs
+ftfy.bad_codecs.ok()
+
 from ftfy import fixes
 from ftfy.guess_bytes import guess_bytes
 from ftfy.fixes import fix_text_encoding
 from ftfy.compatibility import PYTHON34_OR_LATER
-import ftfy.bad_codecs
 import unicodedata
 import warnings
-ftfy.bad_codecs.ok()
 
 
 def fix_text(text,
@@ -50,8 +53,8 @@ def fix_text(text,
         ...               'doo&#133;\033[0m'))
         I'm blue, da ba dee da ba doo...
 
-        >>> # This example string starts with a byte-order mark, even if you can't
-        >>> # see it on the Web.
+        >>> # This example string starts with a byte-order mark, even if
+        >>> # you can't see it on the Web.
         >>> print(fix_text('\ufeffParty like\nit&rsquo;s 1999!'))
         Party like
         it's 1999!
@@ -112,7 +115,7 @@ def fix_text(text,
     If you are certain your entire text is in the same encoding (though that
     encoding is possibly flawed), and do not mind performing operations on
     the whole text at once, use `fix_text_segment`.
-      
+
     _`bug 18183`: http://bugs.python.org/issue18183
     """
     if isinstance(text, bytes):
@@ -257,7 +260,6 @@ def explain_unicode(text):
         ))
 
 
-
 def fix_bad_encoding(text):
     """
     Kept for compatibility with previous versions of ftfy.
@@ -267,4 +269,3 @@ def fix_bad_encoding(text):
         DeprecationWarning
     )
     return fix_text_encoding(text)
-

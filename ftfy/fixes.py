@@ -56,8 +56,8 @@ def fix_text_encoding(text):
 
     .. note::
         The following examples are written using unmarked literal strings,
-        but they are Unicode text. In Python 2 we have "unicode_literals" turned
-        on, and in Python 3 this is always the case.
+        but they are Unicode text. In Python 2 we have "unicode_literals"
+        turned on, and in Python 3 this is always the case.
 
     ftfy decodes text that looks like it was decoded incorrectly. It leaves
     alone text that doesn't.
@@ -149,7 +149,7 @@ def fix_encoding_and_explain(text):
 def fix_one_step_and_explain(text):
     """
     Performs a single step of re-decoding text that's been decoded incorrectly.
-    
+
     Returns the decoded text, plus a "plan" for how to reproduce what it
     did.
     """
@@ -218,7 +218,7 @@ def fix_one_step_and_explain(text):
     #
     # Those cases are somewhat rare, and impossible to solve without false
     # positives. If you're in one of these situations, you should try using
-    # the `ftfy.guess_bytes` function. 
+    # the `ftfy.guess_bytes` function.
 
     # Return the text unchanged; the plan is empty.
     return text, []
@@ -246,9 +246,11 @@ def apply_plan(text, plan):
             raise ValueError("Unknown plan step: %s" % operation)
 
     return obj
-    
+
 
 HTML_ENTITY_RE = re.compile(r"&#?\w{0,8};")
+
+
 def unescape_html(text):
     """
     Decode all three types of HTML entities/character references.
@@ -286,6 +288,7 @@ def unescape_html(text):
 
 
 ANSI_RE = re.compile('\033\\[((?:\\d|;)*)([a-zA-Z])')
+
 def remove_terminal_escapes(text):
     r"""
     Strip out "ANSI" terminal escape sequences, such as those that produce
@@ -301,6 +304,7 @@ def remove_terminal_escapes(text):
 
 SINGLE_QUOTE_RE = re.compile('[\u2018-\u201b]')
 DOUBLE_QUOTE_RE = re.compile('[\u201c-\u201f]')
+
 def uncurl_quotes(text):
     r"""
     Replace curly quotation marks with straight equivalents.
@@ -363,22 +367,21 @@ def remove_unsafe_private_use(text):
     The best solution is to remove all characters from Supplementary Private
     Use Area B, using a regex that is known not to crash given those
     characters.
-    
+
     These are the characters from U+100000 to U+10FFFF. It's sad to lose an
     entire plane of Unicode, but on the other hand, these characters are not
     assigned and never will be. If you get one of these characters and don't
     know what its purpose is, its purpose is probably to crash your code.
-    
+
     If you were using these for actual private use, this might be inconvenient.
     You can turn off this fixer, of course, but I kind of encourage using
     Supplementary Private Use Area A instead.
 
         >>> print(remove_unsafe_private_use('\U0001F4A9\U00100000'))
         💩
-    
+
     This fixer is off by default in Python 3.4 or later. (The bug is actually
     fixed in 3.3.3 and 2.7.6, but I don't want the default behavior to change
     based on a micro version upgrade of Python.)
     """
     return UNSAFE_PRIVATE_USE_RE.sub('', text)
-
