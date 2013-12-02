@@ -1,5 +1,5 @@
 # coding: utf-8
-from ftfy.guess_bytes import guess_bytes
+from ftfy import guess_bytes
 from nose.tools import eq_
 
 TEST_ENCODINGS = [
