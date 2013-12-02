@@ -8,7 +8,7 @@ codepoint 0.
 This is particularly relevant in Python 3, which provides no other way of
 decoding CESU-8 or Java's encoding. [1]
 
-The easiest way to use the codec is simply to import `ftfy.bad_codecs`:
+The easiest way to use the codec is to simply import `ftfy.bad_codecs`:
 
     >>> import ftfy.bad_codecs
     >>> b'here comes a null! \xc0\x80'.decode('utf-8-var')
@@ -29,7 +29,7 @@ in Java.
 If you encode with this codec, you get legitimate UTF-8. Decoding with this
 codec and then re-encoding is not idempotent, although encoding and then
 decoding is. So this module won't produce CESU-8 for you. Look for that
-functionality in the sister module, "Broke That For You", coming approximately
+functionality in the sister module, "Breaks Text For You", coming approximately
 never.
 
 [1] In a pinch, you can decode CESU-8 in Python 2 using the UTF-8 codec: first
@@ -44,33 +44,85 @@ import re
 import codecs
 
 NAME = 'utf-8-variants'
+# This regular expression matches all possible six-byte CESU-8 sequences.
 CESU8_RE = re.compile(b'\xed[\xa0-\xaf][\x80-\xbf]\xed[\xb0-\xbf][\x80-\xbf]')
 
 
-# TODO: document and write tests
 class IncrementalDecoder(UTF8IncrementalDecoder):
+    """
+    An incremental decoder that extends Python's built-in UTF-8 decoder.
+
+    This encoder needs to take in bytes, possibly arriving in a stream, and
+    output the correctly decoded text. The general strategy for doing this
+    is to fall back on the real UTF-8 decoder whenever possible, because
+    the real UTF-8 decoder is way optimized, but to call specialized methods
+    we define here for the cases the real encoder isn't expecting.
+    """
     def _buffer_decode(self, input, errors, final):
+        """
+        Decode bytes that may be arriving in a stream, following the Codecs
+        API.
+
+        `input` is the incoming sequence of bytes. `errors` tells us how to
+        handle errors, though we delegate all error-handling cases to the real
+        UTF-8 decoder to ensure correct behavior. `final` indicates whether
+        this is the end of the sequence, in which case we should raise an
+        error given incomplete input.
+
+        Returns as much decoded text as possible, and the number of bytes
+        consumed.
+        """
+        # decoded_segments are the pieces of text we have decoded so far,
+        # and position is our current position in the byte string. (Bytes
+        # before this position have been consumed, and bytes after it have
+        # yet to be decoded.)
         decoded_segments = []
         position = 0
         while True:
+            # Use _buffer_decode_step to decode a segment of text.
             decoded, consumed = self._buffer_decode_step(
                 input[position:],
                 errors,
                 final
             )
             if consumed == 0:
+                # Either there's nothing left to decode, or we need to wait
+                # for more input. Either way, we're done for now.
                 break
+            
+            # Append the decoded text to the list, and update our position.
             decoded_segments.append(decoded)
             position += consumed
 
         if final:
+            # _buffer_decode_step must consume all the bytes when `final` is
+            # true.
             assert position == len(input)
+
         return ''.join(decoded_segments), position
 
     def _buffer_decode_step(self, input, errors, final):
+        """
+        There are three possibilities for each decoding step:
+
+        - Decode as much real UTF-8 as possible.
+        - Decode a six-byte CESU-8 sequence at the current position.
+        - Decode a Java-style null at the current position.
+
+        This method figures out which step is appropriate, and does it.
+        """
+        # Get a reference to the superclass method that we'll be using for
+        # most of the real work.
         sup = UTF8IncrementalDecoder._buffer_decode
+
+        # Find the next byte position that indicates a variant of UTF-8.
+        # CESU-8 sequences always start with 0xed, and Java nulls always
+        # start with 0xc0, both of which are conveniently impossible in
+        # real UTF-8.
         cutoff1 = input.find(b'\xed')
         cutoff2 = input.find(b'\xc0')
+
+        # Set `cutoff` to whichever cutoff comes first.
         if cutoff1 != -1 and cutoff2 != -1:
             cutoff = min(cutoff1, cutoff2)
         elif cutoff1 != -1:
@@ -78,29 +130,43 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
         elif cutoff2 != -1:
             cutoff = cutoff2
         else:
-            # The UTF-8 decoder can handle it from here.
+            # The entire input can be decoded as UTF-8, so just do so.
             return sup(input, errors, final)
 
-        if input.startswith(b'\xc0'):
-            return self._buffer_decode_null(sup, input, errors, final)
-        elif input.startswith(b'\xed'):
+        if cutoff1 == 0:
+            # Decode a possible six-byte sequence starting with 0xed.
             return self._buffer_decode_surrogates(sup, input, errors, final)
+        elif cutoff2 == 0:
+            # Decode a possible two-byte sequence, 0xc0 0x80.
+            return self._buffer_decode_null(sup, input, errors, final)
         else:
-            # at this point, we know cutoff > 0
+            # Decode the bytes up until the next weird thing as UTF-8.
             return sup(input[:cutoff], errors, False)
 
     @staticmethod
     def _buffer_decode_null(sup, input, errors, final):
-        nextchar = input[1:2]
-        if nextchar == b'':
+        """
+        Decode the bytes 0xc0 0x80 as U+0000, like Java does.
+        """
+        nextbyte = input[1:2]
+        if nextbyte == b'':
             if final:
-                return sup(input, errors, True)
+                # We found 0xc0 at the end of the stream, which is an error.
+                # Delegate to the superclass method to handle that error.
+                return sup(input, errors, final)
             else:
+                # We found 0xc0 and we don't know what comes next, so consume
+                # no bytes and wait.
                 return '', 0
-        elif nextchar == b'\x80':
+        elif nextbyte == b'\x80':
+            # We found the usual 0xc0 0x80 sequence, so decode it and consume
+            # two bytes.
             return '\u0000', 2
         else:
-            return sup(b'\xc0', errors, True)
+            # We found 0xc0 followed by something else, which is an error.
+            # Whatever should happen is equivalent to what happens when the
+            # superclass is given just the byte 0xc0, with final=True.
+            return sup(b'\xc0', errors, final=True)
 
     @staticmethod
     def _buffer_decode_surrogates(sup, input, errors, final):
@@ -119,11 +185,19 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
         """
         if len(input) < 6:
             if final:
-                return sup(input, errors, True)
+                # We found 0xed near the end of the stream, and there aren't
+                # six bytes to decode. Delegate to the superclass method
+                # to handle this error.
+                return sup(input, errors, final)
             else:
+                # We found 0xed, the stream isn't over yet, and we don't know
+                # enough of the following bytes to decode anything, so consume
+                # zero bytes and wait.
                 return '', 0
         else:
             if CESU8_RE.match(input):
+                # If this is a CESU-8 sequence, do some math to pull out
+                # the intended 20-bit value, and consume six bytes.
                 bytenums = bytes_to_ints(input[:6])
                 codepoint = (
                     ((bytenums[1] & 0x0f) << 16) +
@@ -134,14 +208,20 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
                 )
                 return unichr(codepoint), 6
             else:
+                # This looked like a CESU-8 sequence, but it wasn't one.
+                # 0xed indicates the start of a three-byte sequence, so give
+                # three bytes to the superclass, so it can either decode them
+                # as a surrogate codepoint (on Python 2) or handle the error
+                # (on Python 3).
                 return sup(input[:3], errors, False)
 
 
-# The encoder is identical to UTF8.
+# The encoder is identical to UTF-8.
 IncrementalEncoder = UTF8IncrementalEncoder
 
 
-# Everything below here is basically boilerplate.
+# Everything below here is boilerplate that matches the modules in the
+# built-in `encodings` package.
 def encode(input, errors='strict'):
     return IncrementalEncoder(errors).encode(input, final=True), len(input)
 
