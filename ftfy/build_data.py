@@ -37,6 +37,7 @@ if sys.hexversion >= 0x03000000:
 #   = Whitespace
 # o = Other
 
+
 def make_char_data_file(do_it_anyway=False):
     """
     Build the compressed data file 'char_classes.dat' and write it to the
@@ -59,13 +60,15 @@ def make_char_data_file(do_it_anyway=False):
         category = unicodedata.category(char)
 
         if category.startswith('L'):  # letters
-            if unicodedata.name(char).startswith('LATIN')\
-            and codepoint < 0x200:
+            if (
+                unicodedata.name(char).startswith('LATIN')
+                and codepoint < 0x20
+            ):
                 if category == 'Lu':
                     cclasses[codepoint] = 'L'
                 else:
                     cclasses[codepoint] = 'l'
-            else: # non-Latin letter, or close enough
+            else:  # non-Latin letter, or close enough
                 if category == 'Lu' or category == 'Lt':
                     cclasses[codepoint] = 'A'
                 elif category == 'Ll':

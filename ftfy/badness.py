@@ -30,6 +30,7 @@ import unicodedata
 #   = Whitespace
 # o = Other
 
+
 def _make_weirdness_regex():
     """
     Creates a list of regexes that match 'weird' character sequences.
@@ -124,4 +125,3 @@ def text_cost(text):
     (see :func:`sequence_weirdness`) plus the length.
     """
     return sequence_weirdness(text) * 2 + len(text)
-
