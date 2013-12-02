@@ -14,7 +14,7 @@ ftfy.bad_codecs.ok()
 
 from ftfy import fixes
 from ftfy.fixes import fix_text_encoding
-from ftfy.compatibility import PYTHON34_OR_LATER
+from ftfy.compatibility import PYTHON34_OR_LATER, is_printable
 import unicodedata
 import warnings
 
@@ -291,7 +291,7 @@ def explain_unicode(text):
     A utility method that's useful for debugging mysterious Unicode.
     """
     for char in text:
-        if char.isprintable():
+        if is_printable(char):
             display = char
         else:
             display = char.encode('unicode-escape').decode('ascii')
