@@ -12,7 +12,7 @@ The easiest way to use the codec is to simply import `ftfy.bad_codecs`:
 
     >>> import ftfy.bad_codecs
     >>> result = b'here comes a null! \xc0\x80'.decode('utf-8-var')
-    >>> print repr(result).lstrip('u')
+    >>> print(repr(result).lstrip('u'))
     'here comes a null! \x00'
 
 The codec does not at all enforce "correct" CESU-8. For example, the Unicode
