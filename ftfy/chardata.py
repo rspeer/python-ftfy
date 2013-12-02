@@ -9,7 +9,6 @@ import re
 import zlib
 from pkg_resources import resource_string
 from ftfy.compatibility import unichr
-import ftfy.bad_codecs
 
 # These are the five encodings we will try to fix in ftfy, in the
 # order that they should be tried.
@@ -29,8 +28,6 @@ def _build_regexes():
     the 'ascii' detector, which of course just determines if all characters
     are between U+0000 and U+007F.
     """
-    charmaps = {}
-
     # Define a regex that matches ASCII text.
     encoding_regexes = {'ascii': re.compile('^[\x00-\x7f]*$')}
 
@@ -57,6 +54,7 @@ def possible_encoding(text, encoding):
 CHAR_CLASS_STRING = zlib.decompress(
     resource_string(__name__, 'char_classes.dat')
 ).decode('ascii')
+
 def chars_to_classes(string):
     """
     Convert each Unicode character to a letter indicating which of many

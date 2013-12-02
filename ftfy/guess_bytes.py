@@ -1,6 +1,6 @@
-from ftfy.chardata import possible_encoding
-import codecs
-import ftfy.bad_codecs.utf8_variants
+import ftfy.bad_codecs
+ftfy.bad_codecs.ok()
+
 
 def guess_bytes(bstring):
     """
@@ -11,7 +11,7 @@ def guess_bytes(bstring):
     This is not a magic bullet. If the bytes are coming from some MySQL
     database with the "character set" set to ISO Elbonian, this won't figure
     it out.
-    
+
     The encodings we try are:
 
     - UTF-16 with a byte order mark, because a UTF-16 byte order mark looks
@@ -27,7 +27,7 @@ def guess_bytes(bstring):
     """
     if bstring.startswith(b'\xfe\xff') or bstring.startswith(b'\xff\xfe'):
         return bstring.decode('utf-16'), 'utf-16'
-    
+
     byteset = set(bytes(bstring))
     byte_ed, byte_c0, byte_CR, byte_LF = b'\xed\xc0\r\n'
 
@@ -43,5 +43,3 @@ def guess_bytes(bstring):
         return bstring.decode('macroman'), 'macroman'
     else:
         return bstring.decode('sloppy-windows-1252'), 'sloppy-windows-1252'
-
-
