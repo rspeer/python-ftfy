@@ -8,9 +8,7 @@ from __future__ import unicode_literals
 from ftfy.chardata import (possible_encoding,
                            CHARMAP_ENCODINGS, CONTROL_CHARS)
 from ftfy.badness import text_cost
-from ftfy.compatibility import (htmlentitydefs, unichr, bytes_to_ints,
-                                UNSAFE_PRIVATE_USE_RE)
-import ftfy.bad_codecs
+from ftfy.compatibility import (htmlentitydefs, unichr, UNSAFE_PRIVATE_USE_RE)
 import re
 import sys
 
@@ -23,9 +21,12 @@ fact that you just gave a pile of bytes to a function that fixes text means
 that your code is *also* handling Unicode incorrectly.
 
 ftfy takes Unicode text as input. You should take these bytes and decode
-them from the encoding you think they are in. If you're not sure, you can
-try decoding it as 'latin-1' and letting ftfy take it from there. This may
-or may not work, but at least it shouldn't make the situation worse.
+them from the encoding you think they are in. If you're not sure what encoding
+they're in:
+
+- First, try to find out. 'utf-8' is a good assumption.
+- If the encoding is simply unknowable, try running your bytes through
+  ftfy.guess_bytes. As the name implies, this may not always be accurate.
 
 If you're confused by this, please read the Python Unicode HOWTO:
 
@@ -35,6 +36,8 @@ If you're confused by this, please read the Python Unicode HOWTO:
 
 def fix_text_encoding(text):
     r"""
+    Fix text with incorrectly-decoded garbage ("mojibake") whenever possible.
+
     Something you will find all over the place, in real-world text, is text
     that's mistakenly encoded as utf-8, decoded in some ugly format like
     latin-1 or even Windows codepage 1252, and encoded as utf-8 again.
@@ -74,7 +77,7 @@ def fix_text_encoding(text):
 
     We might have to deal with both Windows characters and raw control
     characters at the same time, especially when dealing with characters like
-    \x81 that have no mapping in Windows. This is a string that Python's
+    0x81 that have no mapping in Windows. This is a string that Python's
     standard `.encode` and `.decode` methods cannot correct.
 
         >>> print(fix_text_encoding('This text is sad .â\x81”.'))
@@ -102,11 +105,18 @@ def fix_text_encoding(text):
     The best version of the text is found using
     :func:`ftfy.badness.text_cost`.
     """
-    text, plan = fix_text_and_explain(text)
+    text, plan = fix_encoding_and_explain(text)
     return text
 
 
-def fix_text_and_explain(text):
+def fix_encoding_and_explain(text):
+    """
+    Re-decodes text that has been decoded incorrectly, and also return a
+    "plan" indicating all the steps required to fix it.
+
+    To fix similar text in the same way, without having to detect anything,
+    you can use the ``apply_plan`` function.
+    """
     best_version = text
     best_cost = text_cost(text)
     plan_so_far = []
@@ -136,13 +146,10 @@ def fix_text_and_explain(text):
 
 def fix_one_step_and_explain(text):
     """
-    Performs a single step of re-encoding text that's been decoded incorrectly.
-    It returns the decoded text, plus a 'plan' for how to reproduce what it
-    did. (`apply_plan` can use this object.)
-
-    This structure could be used for more than it currently is, but we at least
-    use it to track whether we had to intepret text as an old encoding such as
-    MacRoman or cp437.
+    Performs a single step of re-decoding text that's been decoded incorrectly.
+    
+    Returns the decoded text, plus a "plan" for how to reproduce what it
+    did.
     """
     if isinstance(text, bytes):
         raise UnicodeError(BYTES_ERROR_TEXT)
@@ -180,10 +187,6 @@ def fix_one_step_and_explain(text):
     # The next most likely case is that this is Latin-1 that was intended to
     # be read as Windows-1252, because those two encodings in particular are
     # easily confused.
-    #
-    # We don't need to check for possibilities such as Latin-1 that was
-    # intended to be read as MacRoman, because it is unlikely that any
-    # software has that confusion.
     if 'latin-1' in possible_1byte_encodings:
         if 'windows-1252' in possible_1byte_encodings:
             # This text is in the intersection of Latin-1 and
@@ -210,20 +213,26 @@ def fix_one_step_and_explain(text):
     # encodings, and not the common case of Latin-1 vs. Windows-1252.
     #
     # Those cases are somewhat rare, and impossible to solve without false
-    # positives. If you're in one of these situations, you don't need an
-    # encoding fixer. You need something that heuristically guesses what
-    # the encoding is in the first place.
-    #
-    # It's a different problem, the one that the 'chardet' module is
-    # theoretically designed to solve. It probably *won't* solve it in
-    # such an ambiguous case, but perhaps a version of it with better
-    # heuristics would. Anyway, ftfy should not claim to solve it.
+    # positives. If you're in one of these situations, you should try using
+    # the `ftfy.guess_bytes` function. 
 
     # Return the text unchanged; the plan is empty.
     return text, []
 
 
-def apply_plan(obj, plan):
+def apply_plan(text, plan):
+    """
+    Apply a plan for fixing the encoding of text.
+
+    The plan is a list of tuples of the form (operation, encoding), where
+    `operation` is either 'encode' or 'decode', and `encoding` is an encoding
+    name such as 'utf-8' or 'latin-1'.
+
+    Because only text can be encoded, and only bytes can be decoded, the plan
+    should alternate 'encode' and 'decode' steps, or else this function will
+    encounter an error.
+    """
+    obj = text
     for operation, encoding in plan:
         if operation == 'encode':
             obj = obj.encode(encoding)
@@ -329,7 +338,6 @@ def remove_control_chars(text):
     return text.translate(CONTROL_CHARS)
 
 
-
 def remove_bom(text):
     r"""
     Remove a left-over byte-order mark.
@@ -338,6 +346,7 @@ def remove_bom(text):
     Where do you want to go today?
     """
     return text.lstrip(unichr(0xfeff))
+
 
 def remove_unsafe_private_use(text):
     r"""

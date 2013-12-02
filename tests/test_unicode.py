@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ftfy.fixes import fix_text_encoding, fix_text_and_explain
+from ftfy.fixes import fix_text_encoding, fix_encoding_and_explain
 import unicodedata
 import sys
 from nose.tools import eq_
