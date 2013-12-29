@@ -142,7 +142,9 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
             return self._buffer_decode_null(sup, input, errors, final)
         else:
             # Decode the bytes up until the next weird thing as UTF-8.
-            return sup(input[:cutoff], errors, False)
+            # Set final=True because 0xc0 and 0xed don't make sense in the
+            # middle of a sequence, in any variant.
+            return sup(input[:cutoff], errors, True)
 
     @staticmethod
     def _buffer_decode_null(sup, input, errors, final):
