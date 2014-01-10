@@ -295,9 +295,10 @@ def explain_unicode(text):
             display = char
         else:
             display = char.encode('unicode-escape').decode('ascii')
-        print('U+{code:04X}  {display:<7} {name}'.format(
+        print('U+{code:04X}  {display:<7} [{category}] {name}'.format(
             display=display,
             code=ord(char),
+            category=unicodedata.category(char),
             name=unicodedata.name(char, '<unknown>')
         ))
 

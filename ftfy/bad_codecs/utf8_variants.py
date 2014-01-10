@@ -169,7 +169,7 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
             # We found 0xc0 followed by something else, which is an error.
             # Whatever should happen is equivalent to what happens when the
             # superclass is given just the byte 0xc0, with final=True.
-            return sup(b'\xc0', errors, final=True)
+            return sup(b'\xc0', errors, True)
 
     @staticmethod
     def _buffer_decode_surrogates(sup, input, errors, final):
