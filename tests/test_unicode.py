@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ftfy.fixes import fix_text_encoding
+from ftfy.fixes import fix_text_encoding, fix_encoding_and_explain, apply_plan
 import unicodedata
 import sys
 from nose.tools import eq_
@@ -22,8 +22,10 @@ def test_all_bmp_characters():
         if unicodedata.category(char) not in ('Co', 'Cn', 'Cs', 'Mc', 'Mn'):
             garble = char.encode('utf-8').decode('latin-1')
             garble2 = char.encode('utf-8').decode('latin-1').encode('utf-8').decode('latin-1')
-            eq_(char_names(fix_text_encoding(garble)), char_names(char))
-            eq_(char_names(fix_text_encoding(garble2)), char_names(char))
+            for garb in (garble, garble2):
+                fixed, plan = fix_encoding_and_explain(garb)
+                eq_(fixed, char)
+                eq_(apply_plan(garb, plan), char)
 
 phrases = [
     u"\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
@@ -44,4 +46,7 @@ def test_valid_phrases():
 def check_phrase(text):
     eq_(fix_text_encoding(text), text)
     eq_(fix_text_encoding(text.encode('utf-8').decode('latin-1')), text)
+
+if __name__ == '__main__':
+    test_all_bmp_characters()
 

@@ -5,13 +5,12 @@ can perform.
 """
 
 from __future__ import unicode_literals
-from ftfy.chardata import (possible_encoding, CHARMAPS, CHARMAP_ENCODINGS,
-                           CONTROL_CHARS)
+from ftfy.chardata import (possible_encoding,
+                           CHARMAP_ENCODINGS, CONTROL_CHARS)
 from ftfy.badness import text_cost
+from ftfy.compatibility import (htmlentitydefs, unichr, UNSAFE_PRIVATE_USE_RE)
 import re
 import sys
-from ftfy.compatibility import (htmlentitydefs, unichr, bytes_to_ints,
-                                UNSAFE_PRIVATE_USE_RE)
 
 
 BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
@@ -22,9 +21,12 @@ fact that you just gave a pile of bytes to a function that fixes text means
 that your code is *also* handling Unicode incorrectly.
 
 ftfy takes Unicode text as input. You should take these bytes and decode
-them from the encoding you think they are in. If you're not sure, you can
-try decoding it as 'latin-1' and letting ftfy take it from there. This may
-or may not work, but at least it shouldn't make the situation worse.
+them from the encoding you think they are in. If you're not sure what encoding
+they're in:
+
+- First, try to find out. 'utf-8' is a good assumption.
+- If the encoding is simply unknowable, try running your bytes through
+  ftfy.guess_bytes. As the name implies, this may not always be accurate.
 
 If you're confused by this, please read the Python Unicode HOWTO:
 
@@ -34,6 +36,8 @@ If you're confused by this, please read the Python Unicode HOWTO:
 
 def fix_text_encoding(text):
     r"""
+    Fix text with incorrectly-decoded garbage ("mojibake") whenever possible.
+
     Something you will find all over the place, in real-world text, is text
     that's mistakenly encoded as utf-8, decoded in some ugly format like
     latin-1 or even Windows codepage 1252, and encoded as utf-8 again.
@@ -52,8 +56,8 @@ def fix_text_encoding(text):
 
     .. note::
         The following examples are written using unmarked literal strings,
-        but they are Unicode text. In Python 2 we have "unicode_literals" turned
-        on, and in Python 3 this is always the case.
+        but they are Unicode text. In Python 2 we have "unicode_literals"
+        turned on, and in Python 3 this is always the case.
 
     ftfy decodes text that looks like it was decoded incorrectly. It leaves
     alone text that doesn't.
@@ -73,7 +77,7 @@ def fix_text_encoding(text):
 
     We might have to deal with both Windows characters and raw control
     characters at the same time, especially when dealing with characters like
-    \x81 that have no mapping in Windows. This is a string that Python's
+    0x81 that have no mapping in Windows. This is a string that Python's
     standard `.encode` and `.decode` methods cannot correct.
 
         >>> print(fix_text_encoding('This text is sad .â\x81”.'))
@@ -101,40 +105,53 @@ def fix_text_encoding(text):
     The best version of the text is found using
     :func:`ftfy.badness.text_cost`.
     """
+    text, plan = fix_encoding_and_explain(text)
+    return text
+
+
+def fix_encoding_and_explain(text):
+    """
+    Re-decodes text that has been decoded incorrectly, and also return a
+    "plan" indicating all the steps required to fix it.
+
+    To fix similar text in the same way, without having to detect anything,
+    you can use the ``apply_plan`` function.
+    """
     best_version = text
     best_cost = text_cost(text)
+    best_plan = []
     plan_so_far = []
     while True:
         prevtext = text
-        text, plan = fix_text_and_explain(text)
+        text, plan = fix_one_step_and_explain(text)
         plan_so_far.extend(plan)
         cost = text_cost(text)
 
         # Add a penalty if we used a particularly obsolete encoding. The result
         # is that we won't use these encodings unless they can successfully
         # replace multiple characters.
-        if ('sloppy_encode', 'macroman') in plan_so_far or\
-           ('sloppy_encode', 'cp437') in plan_so_far:
+        if ('encode', 'macroman') in plan_so_far or\
+           ('encode', 'cp437') in plan_so_far:
             cost += 2
 
         # We need pretty solid evidence to decode from Windows-1251 (Cyrillic).
-        if ('sloppy_encode', 'windows-1251') in plan_so_far:
+        if ('encode', 'sloppy-windows-1251') in plan_so_far:
             cost += 5
 
         if cost < best_cost:
             best_cost = cost
             best_version = text
+            best_plan = list(plan_so_far)
         if text == prevtext:
-            return best_version
+            return best_version, best_plan
 
-def fix_text_and_explain(text):
+
+def fix_one_step_and_explain(text):
     """
-    Performs a single step of re-encoding text that's been decoded incorrectly.
-    It returns the decoded text, plus a structure explaining what it did.
+    Performs a single step of re-decoding text that's been decoded incorrectly.
 
-    This structure could be used for more than it currently is, but we at least
-    use it to track whether we had to intepret text as an old encoding such as
-    MacRoman or cp437.
+    Returns the decoded text, plus a "plan" for how to reproduce what it
+    did.
     """
     if isinstance(text, bytes):
         raise UnicodeError(BYTES_ERROR_TEXT)
@@ -155,35 +172,16 @@ def fix_text_and_explain(text):
     # are usually the correct thing to do, so try them next.
     for encoding in CHARMAP_ENCODINGS:
         if possible_encoding(text, encoding):
-            # This is an ugly-looking way to get the bytes that represent
-            # the text in this encoding. The reason we can't necessarily
-            # use .encode(encoding) is that the decoder is very likely
-            # to have been sloppier than Python.
-            #
-            # The decoder might have left bytes unchanged when they're not
-            # part of the encoding. It might represent b'\x81' as u'\x81'
-            # in Windows-1252, while Python would claim that using byte
-            # 0x81 in Windows-1252 is an error.
-            #
-            # So what we do here is we use the .translate method of Unicode
-            # strings. Using it with the character maps we have computed will
-            # give us back a Unicode string using only code
-            # points up to 0xff. This can then be converted into the intended
-            # bytes by encoding it as Latin-1.
-            sorta_encoded_text = text.translate(CHARMAPS[encoding])
+            encoded_bytes = text.encode(encoding)
 
-            # When we get the bytes, run them through fix_java_encoding,
-            # because we can only reliably do that at the byte level. (See
-            # its documentation for details.)
-            encoded_bytes = fix_java_encoding(
-                sorta_encoded_text.encode('latin-1')
-            )
-
-            # Now, find out if it's UTF-8. Otherwise, remember the encoding
-            # for later.
+            # Now, find out if it's UTF-8 (or close enough). Otherwise,
+            # remember the encoding for later.
             try:
-                fixed = encoded_bytes.decode('utf-8')
-                steps = [('sloppy_encode', encoding), ('decode', 'utf-8')]
+                decoding = 'utf-8'
+                if b'\xed' in encoded_bytes or b'\xc0' in encoded_bytes:
+                    decoding = 'utf-8-variants'
+                fixed = encoded_bytes.decode(decoding)
+                steps = [('encode', encoding), ('decode', decoding)]
                 return fixed, steps
             except UnicodeDecodeError:
                 possible_1byte_encodings.append(encoding)
@@ -191,10 +189,6 @@ def fix_text_and_explain(text):
     # The next most likely case is that this is Latin-1 that was intended to
     # be read as Windows-1252, because those two encodings in particular are
     # easily confused.
-    #
-    # We don't need to check for possibilities such as Latin-1 that was
-    # intended to be read as MacRoman, because it is unlikely that any
-    # software has that confusion.
     if 'latin-1' in possible_1byte_encodings:
         if 'windows-1252' in possible_1byte_encodings:
             # This text is in the intersection of Latin-1 and
@@ -203,11 +197,15 @@ def fix_text_and_explain(text):
         else:
             # Otherwise, it means we have characters that are in Latin-1 but
             # not in Windows-1252. Those are C1 control characters. Nobody
-            # wants those. Assume they were meant to be Windows-1252.
+            # wants those. Assume they were meant to be Windows-1252. Don't
+            # use the sloppy codec, because bad Windows-1252 characters are
+            # a bad sign.
             encoded = text.encode('latin-1')
             try:
                 fixed = encoded.decode('windows-1252')
-                steps = [('encode', 'latin-1'), ('decode', 'windows-1252')]
+                steps = []
+                if fixed != text:
+                    steps = [('encode', 'latin-1'), ('decode', 'windows-1252')]
                 return fixed, steps
             except UnicodeDecodeError:
                 # This text contained characters that don't even make sense
@@ -219,19 +217,40 @@ def fix_text_and_explain(text):
     # encodings, and not the common case of Latin-1 vs. Windows-1252.
     #
     # Those cases are somewhat rare, and impossible to solve without false
-    # positives. If you're in one of these situations, you don't need an
-    # encoding fixer. You need something that heuristically guesses what
-    # the encoding is in the first place.
-    #
-    # It's a different problem, the one that the 'chardet' module is
-    # theoretically designed to solve. It probably *won't* solve it in
-    # such an ambiguous case, but perhaps a version of it with better
-    # heuristics would. Anyway, ftfy should not claim to solve it.
+    # positives. If you're in one of these situations, you should try using
+    # the `ftfy.guess_bytes` function.
 
-    return text, [('give up', None)]
+    # Return the text unchanged; the plan is empty.
+    return text, []
+
+
+def apply_plan(text, plan):
+    """
+    Apply a plan for fixing the encoding of text.
+
+    The plan is a list of tuples of the form (operation, encoding), where
+    `operation` is either 'encode' or 'decode', and `encoding` is an encoding
+    name such as 'utf-8' or 'latin-1'.
+
+    Because only text can be encoded, and only bytes can be decoded, the plan
+    should alternate 'encode' and 'decode' steps, or else this function will
+    encounter an error.
+    """
+    obj = text
+    for operation, encoding in plan:
+        if operation == 'encode':
+            obj = obj.encode(encoding)
+        elif operation == 'decode':
+            obj = obj.decode(encoding)
+        else:
+            raise ValueError("Unknown plan step: %s" % operation)
+
+    return obj
 
 
 HTML_ENTITY_RE = re.compile(r"&#?\w{0,8};")
+
+
 def unescape_html(text):
     """
     Decode all three types of HTML entities/character references.
@@ -269,6 +288,7 @@ def unescape_html(text):
 
 
 ANSI_RE = re.compile('\033\\[((?:\\d|;)*)([a-zA-Z])')
+
 def remove_terminal_escapes(text):
     r"""
     Strip out "ANSI" terminal escape sequences, such as those that produce
@@ -284,6 +304,7 @@ def remove_terminal_escapes(text):
 
 SINGLE_QUOTE_RE = re.compile('[\u2018-\u201b]')
 DOUBLE_QUOTE_RE = re.compile('[\u201c-\u201f]')
+
 def uncurl_quotes(text):
     r"""
     Replace curly quotation marks with straight equivalents.
@@ -325,72 +346,6 @@ def remove_control_chars(text):
     return text.translate(CONTROL_CHARS)
 
 
-CESU8_RE = re.compile(b'\xed[\xa0-\xaf][\x80-\xbf]\xed[\xb0-\xbf][\x80-\xbf]')
-def fix_java_encoding(bytestring):
-    r"""
-    Convert a bytestring that might contain "Java Modified UTF8" into valid
-    UTF-8.
-
-    There are two things that Java is known to do with its "UTF8" encoder
-    that are incompatible with UTF-8. (If you happen to be writing Java
-    code, apparently the standards-compliant encoder is named "AS32UTF8".)
-
-    - Every UTF-16 character is separately encoded as UTF-8. This is wrong
-      when the UTF-16 string contains surrogates; the character they actually
-      represent should have been encoded as UTF-8 instead. Unicode calls this
-      "CESU-8", the Compatibility Encoding Scheme for Unicode. Python 2 will
-      decode it as if it's UTF-8, but Python 3 refuses to.
-
-    - The null codepoint, U+0000, is encoded as 0xc0 0x80, which avoids
-      outputting a null byte by breaking the UTF shortest-form rule.
-      Unicode does not even deign to give this scheme a name, and no version
-      of Python will decode it.
-
-        >>> len(fix_java_encoding(b'\xed\xa0\xbd\xed\xb8\x8d'))
-        4
-
-        >>> ends_with_null = fix_java_encoding(b'Here comes a null! \xc0\x80')
-        >>> bytes_to_ints(ends_with_null)[-1]
-        0
-    """
-    assert isinstance(bytestring, bytes)
-    # Replace the sloppy encoding of U+0000 with the correct one.
-    bytestring = bytestring.replace(b'\xc0\x80', b'\x00')
-
-    # When we have improperly encoded surrogates, we can still see the
-    # bits that they were meant to represent.
-    #
-    # The surrogates were meant to encode a 20-bit number, to which we
-    # add 0x10000 to get a codepoint. That 20-bit number now appears in
-    # this form:
-    #
-    #   11101101 1010abcd 10efghij 11101101 1011klmn 10opqrst
-    #
-    # The CESU8_RE above matches byte sequences of this form. Then we need
-    # to extract the bits and assemble a codepoint number from them.
-    match = CESU8_RE.search(bytestring)
-    fixed_pieces = []
-    while match:
-        pos = match.start()
-        cesu8_sequence = bytes_to_ints(bytestring[pos:pos + 6])
-        assert cesu8_sequence[0] == cesu8_sequence[3] == 0xed
-        codepoint = (
-            ((cesu8_sequence[1] & 0x0f) << 16) +
-            ((cesu8_sequence[2] & 0x3f) << 10) +
-            ((cesu8_sequence[4] & 0x0f) << 6) +
-            (cesu8_sequence[5] & 0x3f) +
-            0x10000
-        )
-        # For the reason why this will work on all Python builds, see
-        # compatibility.py.
-        new_bytes = unichr(codepoint).encode('utf-8')
-        fixed_pieces.append(bytestring[:pos] + new_bytes)
-        bytestring = bytestring[pos + 6:]
-        match = CESU8_RE.search(bytestring)
-
-    return b''.join(fixed_pieces) + bytestring
-
-
 def remove_bom(text):
     r"""
     Remove a left-over byte-order mark.
@@ -400,29 +355,33 @@ def remove_bom(text):
     """
     return text.lstrip(unichr(0xfeff))
 
+
 def remove_unsafe_private_use(text):
     r"""
     Python 3.3's Unicode support isn't perfect, and in fact there are certain
-    string operations that will crash it with a SystemError:
+    string operations that will crash some versions of it with a SystemError:
     http://bugs.python.org/issue18183
 
     You can trigger the bug by running `` '\U00010000\U00100000'.lower() ``.
 
-    The best solution on Python 3.3 is to remove all characters from
-    Supplementary Private Use Area B, using a regex that is known not to crash
-    given those characters.
-    
+    The best solution is to remove all characters from Supplementary Private
+    Use Area B, using a regex that is known not to crash given those
+    characters.
+
     These are the characters from U+100000 to U+10FFFF. It's sad to lose an
     entire plane of Unicode, but on the other hand, these characters are not
     assigned and never will be. If you get one of these characters and don't
     know what its purpose is, its purpose is probably to crash your code.
-    
+
     If you were using these for actual private use, this might be inconvenient.
     You can turn off this fixer, of course, but I kind of encourage using
     Supplementary Private Use Area A instead.
 
         >>> print(remove_unsafe_private_use('\U0001F4A9\U00100000'))
         💩
+
+    This fixer is off by default in Python 3.4 or later. (The bug is actually
+    fixed in 3.3.3 and 2.7.6, but I don't want the default behavior to change
+    based on a micro version upgrade of Python.)
     """
     return UNSAFE_PRIVATE_USE_RE.sub('', text)
-

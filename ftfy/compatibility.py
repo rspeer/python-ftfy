@@ -5,18 +5,19 @@ Python 3, and also between narrow and wide builds.
 from __future__ import unicode_literals
 import sys
 import re
+import unicodedata
 
 if sys.hexversion >= 0x03000000:
     from html import entities
-    htmlentitydefs = entities
     unichr = chr
     xrange = range
     PYTHON2 = False
 else:
-    import htmlentitydefs
+    import htmlentitydefs as entities
     unichr = unichr
     xrange = xrange
     PYTHON2 = True
+htmlentitydefs = entities
 
 PYTHON34_OR_LATER = (sys.hexversion >= 0x03040000)
 
@@ -65,3 +66,14 @@ def bytes_to_ints(bytestring):
         return [ord(b) for b in bytestring]
     else:
         return bytestring
+
+
+def is_printable(char):
+    """
+    str.isprintable() is new in Python 3. It's useful in `explain_unicode`, so
+    let's make a crude approximation in Python 2.
+    """
+    if PYTHON2:
+        return not unicodedata.category(char).startswith('C') 
+    else:
+        return char.isprintable()
