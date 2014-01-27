@@ -336,19 +336,26 @@ def remove_control_chars(text):
     - U+000E to U+001F
     - U+007F
 
-    It leaves alone these characters that are commonly used for formatting:
+    It leaves alone these characters that are used for formatting:
 
-    - TAB (U+0009)
-    - LF (U+000A)
-    - FF (U+000C)
-    - CR (U+000D)
+    - Tab (U+0009)
+    - Line Feed (U+000A)
+    - Form Feed (U+000C)
+    - Carriage Return (U+000D)
+
+    Form Feed is the most borderline of these, but I've seen it used in
+    plain text files -- for example, as a large whitespace to separate
+    major sections of code. It has a purpose in text that it's still
+    used for, so we might as well leave it alone.
     """
     return text.translate(CONTROL_CHARS)
 
 
 def remove_bom(text):
     r"""
-    Remove a left-over byte-order mark.
+    Remove a left-over byte-order mark. Byte-order marks are metadata about
+    UTF-16 encoded text and shouldn't appear in the text itself, but they can
+    arise due to Microsoft's confusion between UTF-16 and Unicode.
 
     >>> print(remove_bom(unichr(0xfeff) + "Where do you want to go today?"))
     Where do you want to go today?
