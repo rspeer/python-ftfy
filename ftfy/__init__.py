@@ -14,13 +14,12 @@ ftfy.bad_codecs.ok()
 
 from ftfy import fixes
 from ftfy.fixes import fix_text_encoding
-from ftfy.compatibility import PYTHON34_OR_LATER, is_printable
+from ftfy.compatibility import is_printable
 import unicodedata
 import warnings
 
 
 def fix_text(text,
-             remove_unsafe_private_use=(not PYTHON34_OR_LATER),
              fix_entities='auto',
              remove_terminal_escapes=True,
              fix_encoding=True,
@@ -66,10 +65,6 @@ def fix_text(text,
 
     Based on the options you provide, ftfy applies these steps in order:
 
-    - If `remove_unsafe_private_use` is True, it removes a range of private-use
-      characters that could trigger a Python bug. The bug is fixed in
-      the most recent versions of Python, so this will default to False
-      starting on Python 3.4.
     - If `fix_entities` is True, replace HTML entities with their equivalent
       characters. If it's "auto" (the default), then consider replacing HTML
       entities, but don't do so in text where you have seen a pair of actual
@@ -139,7 +134,6 @@ def fix_text(text,
         out.append(
             fix_text_segment(
                 substring,
-                remove_unsafe_private_use=remove_unsafe_private_use,
                 fix_entities=fix_entities,
                 remove_terminal_escapes=remove_terminal_escapes,
                 fix_encoding=fix_encoding_this_time,
@@ -158,7 +152,6 @@ ftfy = fix_text
 
 
 def fix_file(input_file,
-             remove_unsafe_private_use=True,
              fix_entities='auto',
              remove_terminal_escapes=True,
              fix_encoding=True,
@@ -185,7 +178,6 @@ def fix_file(input_file,
             entities = False
         yield fix_text_segment(
             line,
-            remove_unsafe_private_use=remove_unsafe_private_use,
             fix_entities=fix_entities,
             remove_terminal_escapes=remove_terminal_escapes,
             fix_encoding=entities,
@@ -198,7 +190,6 @@ def fix_file(input_file,
 
 
 def fix_text_segment(text,
-                     remove_unsafe_private_use=True,
                      fix_entities='auto',
                      remove_terminal_escapes=True,
                      fix_encoding=True,
@@ -221,8 +212,6 @@ def fix_text_segment(text,
         fix_entities = False
     while True:
         origtext = text
-        if remove_unsafe_private_use:
-            text = fixes.remove_unsafe_private_use(text)
         if fix_entities:
             text = fixes.unescape_html(text)
         if remove_terminal_escapes:
@@ -266,14 +255,33 @@ def guess_bytes(bstring):
     - "sloppy-windows-1252", the Latin-1-like encoding that is the most common
       single-byte encoding
     """
+    # Look for a byte-order mark to recognize UTF-16
     if bstring.startswith(b'\xfe\xff') or bstring.startswith(b'\xff\xfe'):
         return bstring.decode('utf-16'), 'utf-16'
 
+    # Make a set out of the bytes, so we can quickly test for the presence of
+    # certain bytes
     byteset = set(bytes(bstring))
     byte_ed, byte_c0, byte_CR, byte_LF = b'\xed\xc0\r\n'
 
     try:
         if byte_ed in byteset or byte_c0 in byteset:
+            # Byte 0xed can only be used to encode a range of codepoints that
+            # are UTF-16 surrogates. UTF-8 does not use UTF-16 surrogates, so
+            # this byte is impossible in real UTF-8. Therefore, if we see
+            # bytes that look like UTF-8 but contain 0xed, what we're seeing
+            # is CESU-8, the variant that encodes UTF-16 surrogates instead
+            # of the original characters themselves.
+            #
+            # Byte 0xc0 is impossible because, numerically, it would only
+            # encode characters lower than U+40. Those already have single-byte
+            # representations, and UTF-8 requires using the shortest possible
+            # representation. However, Java hides the null codepoint, U+0, in a
+            # non-standard longer representation -- it encodes it as 0xc0 0x80
+            # instead of 0x00, guaranteeing that 0x00 will never appear in the
+            # encoded bytes.
+            #
+            # The 'utf-8-variants' decoder can handle both of these cases.
             return bstring.decode('utf-8-variants'), 'utf-8-variants'
         else:
             return bstring.decode('utf-8'), 'utf-8'
