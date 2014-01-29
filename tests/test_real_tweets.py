@@ -31,7 +31,8 @@ TEST_CASES = [
     ('[x]\xa0©', '[x] ©'),
     ('2012—∞', '2012—∞'),
     ('Con il corpo e lo spirito ammaccato,\xa0è come se nel cuore avessi un vetro conficcato.',
-     'Con il corpo e lo spirito ammaccato, è come se nel cuore avessi un vetro conficcato.')
+     'Con il corpo e lo spirito ammaccato, è come se nel cuore avessi un vetro conficcato.'),
+    ('Р С—РЎР‚Р С‘РЎРЏРЎвЂљР Р…Р С•РЎРѓРЎвЂљР С‘. РІСњВ¤', 'приятности. ❤'),
     
     ## Current false positives:
     #("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´",
