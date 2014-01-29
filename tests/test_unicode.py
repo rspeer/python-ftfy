@@ -53,7 +53,7 @@ def test_possible_encoding():
         assert possible_encoding(char, 'latin-1')
 
 def test_fix_with_backslash():
-    eq_(fix_text_encoding(u"<40\\% vs \xe2\x89\xa540\\%"), "<40\\% vs ≥40\\%")
+    eq_(fix_text_encoding(u"<40\\% vs \xe2\x89\xa540\\%"), u"<40\\% vs ≥40\\%")
 
 if __name__ == '__main__':
     test_all_bmp_characters()
