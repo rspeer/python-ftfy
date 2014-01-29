@@ -33,6 +33,8 @@ TEST_CASES = [
     ('Con il corpo e lo spirito ammaccato,\xa0è come se nel cuore avessi un vetro conficcato.',
      'Con il corpo e lo spirito ammaccato, è come se nel cuore avessi un vetro conficcato.'),
     ('Р С—РЎР‚Р С‘РЎРЏРЎвЂљР Р…Р С•РЎРѓРЎвЂљР С‘. РІСњВ¤', 'приятности. ❤'),
+    ('Kayanya laptopku error deh, soalnya tiap mau ngetik deket-deket kamu font yg keluar selalu Times New Ã¢â‚¬Å“ RomanceÃ¢â‚¬Â.',
+     'Kayanya laptopku error deh, soalnya tiap mau ngetik deket-deket kamu font yg keluar selalu Times New " Romance".'),
     
     ## Current false positives:
     #("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´",
