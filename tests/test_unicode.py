@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ftfy.fixes import fix_text_encoding, fix_encoding_and_explain, apply_plan
+from ftfy.fixes import fix_text_encoding, fix_encoding_and_explain, apply_plan, possible_encoding
 import unicodedata
 import sys
 from nose.tools import eq_
@@ -46,6 +46,14 @@ def test_valid_phrases():
 def check_phrase(text):
     eq_(fix_text_encoding(text), text)
     eq_(fix_text_encoding(text.encode('utf-8').decode('latin-1')), text)
+
+def test_possible_encoding():
+    for codept in range(256):
+        char = chr(codept)
+        assert possible_encoding(char, 'latin-1')
+
+def test_fix_with_backslash():
+    eq_(fix_text_encoding(u"<40\\% vs \xe2\x89\xa540\\%"), "<40\\% vs ≥40\\%")
 
 if __name__ == '__main__':
     test_all_bmp_characters()
