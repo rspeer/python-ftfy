@@ -55,19 +55,19 @@ sloppy-windows-1252 merges Windows-1252 with Latin-1:
     >>> from ftfy import explain_unicode
     >>> some_bytes = b'\x80\x81\x82'
     >>> explain_unicode(some_bytes.decode('latin-1'))
-    U+0080  \x80    <unknown>
-    U+0081  \x81    <unknown>
-    U+0082  \x82    <unknown>
+    U+0080  \x80    [Cc] <unknown>
+    U+0081  \x81    [Cc] <unknown>
+    U+0082  \x82    [Cc] <unknown>
 
     >>> explain_unicode(some_bytes.decode('windows-1252', 'replace'))
-    U+20AC  €       EURO SIGN
-    U+FFFD  �       REPLACEMENT CHARACTER
-    U+201A  ‚       SINGLE LOW-9 QUOTATION MARK
+    U+20AC  €       [Sc] EURO SIGN
+    U+FFFD  �       [So] REPLACEMENT CHARACTER
+    U+201A  ‚       [Ps] SINGLE LOW-9 QUOTATION MARK
 
     >>> explain_unicode(some_bytes.decode('sloppy-windows-1252'))
-    U+20AC  €       EURO SIGN
-    U+0081  \x81    <unknown>
-    U+201A  ‚       SINGLE LOW-9 QUOTATION MARK
+    U+20AC  €       [Sc] EURO SIGN
+    U+0081  \x81    [Cc] <unknown>
+    U+201A  ‚       [Ps] SINGLE LOW-9 QUOTATION MARK
 """
 from __future__ import unicode_literals
 import codecs
