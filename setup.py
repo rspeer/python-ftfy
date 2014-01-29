@@ -9,7 +9,7 @@ setup(
     url='http://github.com/LuminosoInsight/python-ftfy',
     platforms=["any"],
     description="Fixes some problems with Unicode text after the fact",
-    packages=['ftfy'],
+    packages=['ftfy', 'ftfy.bad_codecs'],
     package_data={'ftfy': ['char_classes.dat']},
     classifiers=[
         "Programming Language :: Python :: 2",
