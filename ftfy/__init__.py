@@ -274,12 +274,12 @@ def guess_bytes(bstring):
             # of the original characters themselves.
             #
             # Byte 0xc0 is impossible because, numerically, it would only
-            # encode characters lower than U+40. Those already have single-byte
-            # representations, and UTF-8 requires using the shortest possible
-            # representation. However, Java hides the null codepoint, U+0, in a
-            # non-standard longer representation -- it encodes it as 0xc0 0x80
-            # instead of 0x00, guaranteeing that 0x00 will never appear in the
-            # encoded bytes.
+            # encode characters lower than U+0040. Those already have
+            # single-byte representations, and UTF-8 requires using the
+            # shortest possible representation. However, Java hides the null
+            # codepoint, U+0000, in a non-standard longer representation -- it
+            # encodes it as 0xc0 0x80 instead of 0x00, guaranteeing that 0x00
+            # will never appear in the encoded bytes.
             #
             # The 'utf-8-variants' decoder can handle both of these cases.
             return bstring.decode('utf-8-variants'), 'utf-8-variants'
