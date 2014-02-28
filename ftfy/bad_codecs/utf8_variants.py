@@ -189,8 +189,9 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
         if len(input) < 6:
             if final:
                 # We found 0xed near the end of the stream, and there aren't
-                # six bytes to decode. Delegate to the superclass method
-                # to handle this error.
+                # six bytes to decode. Delegate to the superclass method to
+                # handle it as normal UTF-8. It might be a Hangul character
+                # or an error.
                 return sup(input, errors, final)
             else:
                 # We found 0xed, the stream isn't over yet, and we don't know
@@ -213,9 +214,7 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
             else:
                 # This looked like a CESU-8 sequence, but it wasn't one.
                 # 0xed indicates the start of a three-byte sequence, so give
-                # three bytes to the superclass, so it can either decode them
-                # as a surrogate codepoint (on Python 2) or handle the error
-                # (on Python 3).
+                # three bytes to the superclass to decode as usual.
                 return sup(input[:3], errors, False)
 
 
