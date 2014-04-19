@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from ftfy.fixes import fix_text_encoding, fix_encoding_and_explain, apply_plan, possible_encoding
+from ftfy.badness import ENDING_PUNCT_RE
 import unicodedata
 import sys
 from nose.tools import eq_
@@ -21,11 +22,12 @@ def test_all_bmp_characters():
         # Exclude code points that are not assigned
         if unicodedata.category(char) not in ('Co', 'Cn', 'Cs', 'Mc', 'Mn'):
             garble = char.encode('utf-8').decode('latin-1')
-            garble2 = char.encode('utf-8').decode('latin-1').encode('utf-8').decode('latin-1')
-            for garb in (garble, garble2):
-                fixed, plan = fix_encoding_and_explain(garb)
-                eq_(fixed, char)
-                eq_(apply_plan(garb, plan), char)
+            if not (index < 0x800 and ENDING_PUNCT_RE.search(garble)):
+                garble2 = char.encode('utf-8').decode('latin-1').encode('utf-8').decode('latin-1')
+                for garb in (garble, garble2):
+                    fixed, plan = fix_encoding_and_explain(garb)
+                    eq_(fixed, char)
+                    eq_(apply_plan(garb, plan), char)
 
 phrases = [
     u"\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
