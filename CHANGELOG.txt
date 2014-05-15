@@ -1,3 +1,21 @@
+## Version 3.1.3 (May 15, 2014)
+
+- Fix `utf-8-variants` so it never outputs surrogate codepoints, even on
+  Python 2 where that would otherwise be possible.
+
+## Version 3.1.2 (January 29, 2014)
+
+- Fix bug in 3.1.1 where strings with backslashes in them could never be fixed
+
+## Version 3.1.1 (January 29, 2014)
+
+- Add the `ftfy.bad_codecs` package, which registers new codecs that can
+  decoding things that Python may otherwise refuse to decode:
+  - `utf-8-variants`, which decodes CESU-8 and its Java lookalike
+  - `sloppy-windows-*`, which decodes character-map encodings while treating
+    unmapped characters as Latin-1
+- Simplify the code using `ftfy.bad_codecs`.
+
 ## Version 3.0.6 (November 5, 2013)
 
 - `fix_entities` can now be True, False, or 'auto'. The new case is True, which
