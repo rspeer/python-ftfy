@@ -34,11 +34,12 @@ functionality in the sister module, "Breaks Text For You", coming approximately
 never.
 
 [1] In a pinch, you can decode CESU-8 in Python 2 using the UTF-8 codec: first
-decode the bytes (incorrectly), then encode them, then decode them again.
+decode the bytes (incorrectly), then encode them, then decode them again, using
+UTF-8 as the codec every time.
 """
 
 from __future__ import unicode_literals
-from ftfy.compatibility import bytes_to_ints, unichr
+from ftfy.compatibility import bytes_to_ints, unichr, PYTHON2
 from encodings.utf_8 import (IncrementalDecoder as UTF8IncrementalDecoder,
                              IncrementalEncoder as UTF8IncrementalEncoder)
 import re
@@ -192,6 +193,10 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
                 # six bytes to decode. Delegate to the superclass method to
                 # handle it as normal UTF-8. It might be a Hangul character
                 # or an error.
+                if PYTHON2 and len(input) >= 3:
+                    # We can't trust Python 2 to raise an error when it's
+                    # asked to decode a surrogate, so let's force the issue.
+                    input = mangle_surrogates(input)
                 return sup(input, errors, final)
             else:
                 # We found 0xed, the stream isn't over yet, and we don't know
@@ -214,9 +219,34 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
             else:
                 # This looked like a CESU-8 sequence, but it wasn't one.
                 # 0xed indicates the start of a three-byte sequence, so give
-                # three bytes to the superclass to decode as usual.
+                # three bytes to the superclass to decode as usual -- except
+                # for working around the Python 2 discrepancy as before.
+                if PYTHON2:
+                    input = mangle_surrogates(input)
                 return sup(input[:3], errors, False)
 
+
+def mangle_surrogates(bytestring):
+    """
+    When Python 3 sees the UTF-8 encoding of a surrogate codepoint, it treats
+    it as an error (which it is). In 'replace' mode, it will decode as three
+    replacement characters. But Python 2 will just output the surrogate
+    codepoint.
+    
+    To ensure consistency between Python 2 and Python 3, and protect downstream
+    applications from malformed strings, we turn surrogate sequences at the
+    start of the string into the bytes `ff ff ff`, which we're *sure* won't
+    decode, and which turn into three replacement characters in 'replace' mode.
+    """
+    if PYTHON2:
+        if bytestring.startswith(b'\xed') and len(bytestring) >= 3:
+            decoded = bytestring[:3].decode('utf-8', 'replace')
+            if '\ud800' <= decoded <= '\udfff':
+                return b'\xff\xff\xff' + mangle_surrogates(bytestring[3:])
+        return bytestring
+    else:
+        # On Python 3, nothing needs to be done.
+        return bytestring
 
 # The encoder is identical to UTF-8.
 IncrementalEncoder = UTF8IncrementalEncoder
