@@ -7,12 +7,14 @@ from nose.tools import eq_
 if sys.hexversion >= 0x03000000:
     unichr = chr
 
+
 def char_names(text):
     """
     Show the names of the characters involved. Helpful for debugging when
     characters themselves are not visually distinguishable.
     """
     return [unicodedata.name(c) for c in text]
+
 
 # Most single-character strings which have been misencoded should be restored.
 def test_all_bmp_characters():
@@ -26,6 +28,7 @@ def test_all_bmp_characters():
                 fixed, plan = fix_encoding_and_explain(garb)
                 eq_(fixed, char)
                 eq_(apply_plan(garb, plan), char)
+
 
 phrases = [
     u"\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
@@ -43,18 +46,21 @@ def test_valid_phrases():
         # make it not just confirm based on the opening punctuation
         yield check_phrase, phrase[1:]
 
+
 def check_phrase(text):
     eq_(fix_text_encoding(text), text)
     eq_(fix_text_encoding(text.encode('utf-8').decode('latin-1')), text)
+
 
 def test_possible_encoding():
     for codept in range(256):
         char = chr(codept)
         assert possible_encoding(char, 'latin-1')
 
+
 def test_fix_with_backslash():
     eq_(fix_text_encoding(u"<40\\% vs \xe2\x89\xa540\\%"), u"<40\\% vs ≥40\\%")
 
+
 if __name__ == '__main__':
     test_all_bmp_characters()
-
