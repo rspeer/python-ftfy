@@ -1,12 +1,10 @@
 """
 A command-line utility for fixing text found in a file.
 """
-
 import sys
 import io
 import codecs
 from ftfy import fix_file, __version__
-from ftfy.compatibility import PYTHON2
 
 
 ENCODE_ERROR_TEXT_UNIX = """ftfy error:
@@ -75,10 +73,7 @@ def main():
     if args.filename == '-':
         # Get a standard input stream made of bytes, so we can decode it as
         # whatever encoding is necessary.
-        if PYTHON2:
-            file = sys.stdin
-        else:
-            file = sys.stdin.buffer
+        file = sys.stdin.buffer
     else:
         file = open(args.filename, 'rb')
 

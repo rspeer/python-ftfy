@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 from ftfy import fix_text, fix_text_segment
 from nose.tools import eq_
 

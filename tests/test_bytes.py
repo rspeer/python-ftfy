@@ -1,12 +1,8 @@
 # coding: utf-8
-from __future__ import unicode_literals
 from ftfy import guess_bytes
-from ftfy.bad_codecs.utf8_variants import mangle_surrogates, IncrementalDecoder
+from ftfy.bad_codecs.utf8_variants import IncrementalDecoder
 from nose.tools import eq_
-import sys
 
-
-PYTHON2 = sys.hexversion < 0x03000000
 
 TEST_ENCODINGS = [
     'utf-16', 'utf-8', 'sloppy-windows-1252'
@@ -36,6 +32,7 @@ def test_guess_bytes():
 
     bowdlerized_null = b'null\xc0\x80separated'
     result_str, result_encoding = guess_bytes(bowdlerized_null)
+<<<<<<< HEAD
     eq_(result_str, u'null\x00separated')
     eq_(result_encoding, u'utf-8-variants')
 
@@ -77,4 +74,8 @@ def test_incomplete_sequences():
         got = decoder.decode(left, final=False)
         got += decoder.decode(right)
         eq_(got, test_string)
+=======
+    eq_(result_str, 'null\x00separated')
+    eq_(result_encoding, 'utf-8-variants')
+>>>>>>> 0485ed5... Simplify code by removing compatibility with Python <= 3.3.
 
