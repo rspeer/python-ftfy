@@ -4,7 +4,6 @@ This module contains the individual fixes that the main fix_text function
 can perform.
 """
 
-from __future__ import unicode_literals
 import re
 import sys
 import codecs
@@ -35,8 +34,8 @@ they're in:
 
 If you're confused by this, please read the Python Unicode HOWTO:
 
-    http://docs.python.org/%d/howto/unicode.html
-""" % sys.version_info[0]
+    http://docs.python.org/3/howto/unicode.html
+"""
 
 
 def fix_encoding(text):
@@ -295,7 +294,6 @@ def apply_plan(text, plan):
 
 HTML_ENTITY_RE = re.compile(r"&#?\w{0,8};")
 
-
 def unescape_html(text):
     """
     Decode all three types of HTML entities/character references.
@@ -317,9 +315,9 @@ def unescape_html(text):
             # character reference
             try:
                 if text[:3] == "&#x":
-                    return unichr(int(text[3:-1], 16))
+                    return chr(int(text[3:-1], 16))
                 else:
-                    return unichr(int(text[2:-1]))
+                    return chr(int(text[2:-1]))
             except ValueError:
                 pass
         else:
@@ -519,11 +517,13 @@ def remove_bom(text):
     Remove a byte-order mark that was accidentally decoded as if it were part
     of the text.
 
-    >>> print(remove_bom("\ufeffWhere do you want to go today?"))
+    >>> print(remove_bom(chr(0xfeff) + "Where do you want to go today?"))
     Where do you want to go today?
     """
-    return text.lstrip(unichr(0xfeff))
+    return text.lstrip(chr(0xfeff))
 
+
+UNSAFE_PRIVATE_USE_RE = re.compile('[\U00100000-\U0010ffff]')
 
 # Define a regex to match valid escape sequences in Python string literals.
 ESCAPE_SEQUENCE_RE = re.compile(r'''
