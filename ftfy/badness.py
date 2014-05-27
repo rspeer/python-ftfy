@@ -4,7 +4,6 @@ Heuristics to determine whether re-encoding text is actually making it
 more reasonable.
 """
 
-from __future__ import unicode_literals
 import re
 import unicodedata
 from ftfy.chardata import chars_to_classes
