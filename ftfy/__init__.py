@@ -6,12 +6,10 @@ This is a module for making text less broken. See the `fix_text` function
 for more information.
 """
 
-from __future__ import unicode_literals
 import unicodedata
 import ftfy.bad_codecs
 from ftfy import fixes
 from ftfy.formatting import display_ljust
-from ftfy.compatibility import is_printable
 
 __version__ = '4.4'
 
@@ -399,7 +397,7 @@ def explain_unicode(text):
         U+253B  ┻       [So] BOX DRAWINGS HEAVY UP AND HORIZONTAL
     """
     for char in text:
-        if is_printable(char):
+        if char.isprintable():
             display = char
         else:
             display = char.encode('unicode-escape').decode('ascii')

@@ -69,7 +69,6 @@ sloppy-windows-1252 merges Windows-1252 with Latin-1:
     U+0081  \x81    [Cc] <unknown>
     U+201A  ‚       [Ps] SINGLE LOW-9 QUOTATION MARK
 """
-from __future__ import unicode_literals
 import codecs
 from encodings import normalize_encoding
 import sys
@@ -87,8 +86,8 @@ def make_sloppy_codec(encoding):
     `codecs.charmap_decode` and `charmap_encode`. This function, given an
     encoding name, *defines* those boilerplate classes.
     """
-    # Make an array of all 256 possible bytes.
-    all_bytes = bytearray(range(256))
+    # Make a bytestring of all 256 possible bytes.
+    all_bytes = bytes(range(256))
 
     # Get a list of what they would decode to in Latin-1.
     sloppy_chars = list(all_bytes.decode('latin-1'))

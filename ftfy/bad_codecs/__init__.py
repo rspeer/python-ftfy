@@ -29,7 +29,6 @@ A quick example of decoding text that's encoded in CESU-8:
     >>> print(b'\xed\xa0\xbd\xed\xb8\x8d'.decode('utf-8-variants'))
     😍
 """
-from __future__ import unicode_literals
 from encodings import normalize_encoding
 import codecs
 

@@ -4,13 +4,11 @@ This gives other modules access to the gritty details about characters and the
 encodings that use them.
 """
 
-from __future__ import unicode_literals
 import re
 import zlib
 import unicodedata
 import itertools
 from pkg_resources import resource_string
-from ftfy.compatibility import unichr
 
 # These are the encodings we will try to fix in ftfy, in the
 # order that they should be tried.
@@ -39,7 +37,7 @@ def _build_regexes():
         # Make a sequence of characters that bytes \x80 to \xFF decode to
         # in each encoding, as well as byte \x1A, which is used to represent
         # the replacement character � in the sloppy-* encodings.
-        latin1table = ''.join(unichr(i) for i in range(128, 256)) + '\x1a'
+        latin1table = ''.join(chr(i) for i in range(128, 256)) + '\x1a'
         charlist = latin1table.encode('latin-1').decode(encoding)
 
         # The rest of the ASCII bytes -- bytes \x00 to \x19 and \x1B
