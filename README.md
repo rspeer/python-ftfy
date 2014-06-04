@@ -18,6 +18,20 @@ Full documentation: **http://ftfy.readthedocs.org**
 - “Too many branches”
   — [pylint](https://bitbucket.org/logilab/pylint/)
 
+## Developed at Luminoso
+
+[Luminoso](http://www.luminoso.com) makes groundbreaking software for text
+analytics that really understands what words mean, in many languages. Our
+software is used by enterprise customers such as Sony, Intel, Mars, and Scotts,
+and it's built on Python and open-source technologies.
+
+We use ftfy every day at Luminoso, because the first step in understanding text
+is making sure it has the correct characters in it!
+
+Luminoso is growing fast and hiring in all areas. If you're interested in
+joining us, take a look at [our careers
+page](http://www.luminoso.com/careers.html).
+
 ## What it does
 
 ftfy makes Unicode text less broken and more consistent. It works in
