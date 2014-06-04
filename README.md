@@ -106,9 +106,9 @@ the output ends up in a standard form that will be unchanged by `fix_text`.
 All the fixes are on by default, but you can pass options to turn them off.
 
 - If `remove_unsafe_private_use` is True, remove a range of unassigned
-  characters that can crash Python via
-  [bug 18183](http://bugs.python.org/issue18183). This fix will turn itself
-  off when you're using Python 3.4 or better, which you probably aren't.
+  characters that can crash Python < 3.3.3 via
+  [bug 18183](http://bugs.python.org/issue18183). (This fix is off by
+  default on Python 3.4, because it's no longer necessary.)
 - If `fix_entities` is True, consider replacing HTML entities with their
   equivalent characters. However, this never applies to text with a pair
   of angle brackets in it already; you're probably not supposed to decode
