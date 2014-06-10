@@ -90,8 +90,13 @@ Unicode strings as input.
     >>> print(fix_text('HTML entities &lt;3'))
     HTML entities <3
 
+If any HTML tags appear in your input, ftfy will make sure to leave the HTML
+entities alone:
+
     >>> print(fix_text('<em>HTML entities &lt;3</em>'))
     <em>HTML entities &lt;3</em>
+
+ftfy repeats its process until it reaches a result that it won't change:
 
     >>> wtf = '\xc3\xa0\xc2\xb2\xc2\xa0_\xc3\xa0\xc2\xb2\xc2\xa0'
     >>> print(fix_text(wtf))
