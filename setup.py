@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name="ftfy",
-    version='3.1.2',
+    version='3.1.3',
     maintainer='Luminoso Technologies, Inc.',
     maintainer_email='dev@lumino.so',
     license="MIT",
