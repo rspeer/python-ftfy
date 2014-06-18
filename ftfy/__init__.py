@@ -266,12 +266,15 @@ def guess_bytes(bstring):
 
     try:
         if byte_ed in byteset or byte_c0 in byteset:
-            # Byte 0xed can only be used to encode a range of codepoints that
-            # are UTF-16 surrogates. UTF-8 does not use UTF-16 surrogates, so
-            # this byte is impossible in real UTF-8. Therefore, if we see
-            # bytes that look like UTF-8 but contain 0xed, what we're seeing
-            # is CESU-8, the variant that encodes UTF-16 surrogates instead
-            # of the original characters themselves.
+            # Byte 0xed can be used to encode a range of codepoints that
+            # are UTF-16 surrogates. UTF-8 does not use UTF-16 surrogates,
+            # so when we see 0xed, it's very likely we're being asked to
+            # decode CESU-8, the variant that encodes UTF-16 surrogates
+            # instead of the original characters themselves.
+            #
+            # This will occasionally trigger on standard UTF-8, as there
+            # are some Korean characters that also use byte 0xed, but that's
+            # not harmful.
             #
             # Byte 0xc0 is impossible because, numerically, it would only
             # encode characters lower than U+0040. Those already have
@@ -281,7 +284,8 @@ def guess_bytes(bstring):
             # encodes it as 0xc0 0x80 instead of 0x00, guaranteeing that 0x00
             # will never appear in the encoded bytes.
             #
-            # The 'utf-8-variants' decoder can handle both of these cases.
+            # The 'utf-8-variants' decoder can handle both of these cases, as
+            # well as standard UTF-8, at the cost of a bit of speed.
             return bstring.decode('utf-8-variants'), 'utf-8-variants'
         else:
             return bstring.decode('utf-8'), 'utf-8'
