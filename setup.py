@@ -2,9 +2,9 @@ from setuptools import setup
 
 setup(
     name="ftfy",
-    version='3.1.3',
+    version='3.2.0',
     maintainer='Luminoso Technologies, Inc.',
-    maintainer_email='dev@lumino.so',
+    maintainer_email='info@luminoso.com',
     license="MIT",
     url='http://github.com/LuminosoInsight/python-ftfy',
     platforms=["any"],
