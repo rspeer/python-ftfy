@@ -114,8 +114,6 @@ def fix_text(text,
     If you are certain your entire text is in the same encoding (though that
     encoding is possibly flawed), and do not mind performing operations on
     the whole text at once, use `fix_text_segment`.
-
-    _`bug 18183`: http://bugs.python.org/issue18183
     """
     if isinstance(text, bytes):
         raise UnicodeError(fixes.BYTES_ERROR_TEXT)
@@ -172,8 +170,8 @@ def fix_file(input_file,
 
     If the file is being read as Unicode text, use that. If it's being read as
     bytes, then unfortunately, we have to guess what encoding it is. We'll try
-    a few common encodings, but we make no promises. See `guess_bytes.py` for
-    how this is done.
+    a few common encodings, but we make no promises. See the `guess_bytes`
+    function for how this is done.
 
     The output is a stream of fixed lines of text.
     """
@@ -251,7 +249,8 @@ def guess_bytes(bstring):
 
     This is not a magic bullet. If the bytes are coming from some MySQL
     database with the "character set" set to ISO Elbonian, this won't figure
-    it out.
+    it out. Perhaps more relevantly, this currently doesn't try East Asian
+    encodings.
 
     The encodings we try are:
 
