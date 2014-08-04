@@ -90,8 +90,13 @@ Unicode strings as input.
     >>> print(fix_text('HTML entities &lt;3'))
     HTML entities <3
 
+If any HTML tags appear in your input, ftfy will make sure to leave the HTML
+entities alone:
+
     >>> print(fix_text('<em>HTML entities &lt;3</em>'))
     <em>HTML entities &lt;3</em>
+
+ftfy repeats its process until it reaches a result that it won't change:
 
     >>> wtf = '\xc3\xa0\xc2\xb2\xc2\xa0_\xc3\xa0\xc2\xb2\xc2\xa0'
     >>> print(fix_text(wtf))
@@ -135,7 +140,7 @@ All the fixes are on by default, but you can pass options to turn them off.
   plain-ASCII straight quotes.
 - If `fix_line_breaks` is true, convert all line breaks to Unix style
   (CRLF and CR line breaks become LF line breaks).
-- If `fix_control_characters` is true, remove all C0 control characters
+- If `remove_control_chars` is true, remove all C0 control characters
   except the common useful ones: TAB, CR, LF, and FF. (CR characters
   may have already been removed by the `fix_line_breaks` step.)
 - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
