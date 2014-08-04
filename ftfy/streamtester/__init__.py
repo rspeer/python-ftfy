@@ -34,6 +34,6 @@ class StreamTester:
 
         # Print status updates once in a while
         if self.count % 100 == 0:
-            print('.', end='')
+            print('.', end='', flush=True)
         if self.count % 10000 == 0:
             print('\n%d/%d fixed' % (self.num_fixed, self.count))
