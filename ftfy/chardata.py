@@ -34,7 +34,7 @@ def _build_regexes():
     for encoding in CHARMAP_ENCODINGS:
         latin1table = ''.join(unichr(i) for i in range(128, 256))
         charlist = latin1table.encode('latin-1').decode(encoding)
-        
+
         # Build a regex from the ASCII range, followed by the decodings of
         # bytes 0x80-0xff in this character set. (This uses the fact that all
         # regex special characters are ASCII, and therefore won't appear in the
