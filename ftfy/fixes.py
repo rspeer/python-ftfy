@@ -106,7 +106,7 @@ def fix_text_encoding(text):
     The best version of the text is found using
     :func:`ftfy.badness.text_cost`.
     """
-    text, plan = fix_encoding_and_explain(text)
+    text, _plan = fix_encoding_and_explain(text)
     return text
 
 
@@ -438,7 +438,7 @@ ESCAPE_SEQUENCE_RE = re.compile(r'''
     )''', re.UNICODE | re.VERBOSE)
 
 
-def decode_escapes(s):
+def decode_escapes(text):
     r"""
     Decode backslashed escape sequences, including \x, \u, and \U character
     references, even in the presence of other Unicode.
@@ -469,6 +469,7 @@ def decode_escapes(s):
     to distinguish text that's supposed to be escaped from text that isn't.
     """
     def decode_match(match):
+        "Given a regex match, decode the escape sequence it contains."
         return codecs.decode(match.group(0), 'unicode-escape')
 
-    return ESCAPE_SEQUENCE_RE.sub(decode_match, s)
+    return ESCAPE_SEQUENCE_RE.sub(decode_match, text)
