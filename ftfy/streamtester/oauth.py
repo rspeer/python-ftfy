@@ -1,4 +1,8 @@
 # coding: utf-8
+"""
+Do what is necessary to authenticate this tester as a Twitter "app", using
+somebody's Twitter account.
+"""
 from __future__ import unicode_literals
 from twitter.oauth import OAuth
 from twitter import oauth_dance, read_token_file
@@ -35,12 +39,12 @@ def get_auth():
     secret behind a fig leaf like everybody else does. So that's what we've
     done.
     """
-    def unhide(s):
+    def unhide(secret):
         """
         Do something mysterious and exactly as secure as every other Twitter
         app.
         """
-        return ''.join([chr(ord(c) - 0x2800) for c in s])
+        return ''.join([chr(ord(c) - 0x2800) for c in secret])
 
     fig_leaf = '⠴⡹⠹⡩⠶⠴⡶⡅⡂⡩⡅⠳⡏⡉⡈⠰⠰⡹⡥⡶⡈⡐⡍⡂⡫⡍⡗⡬⡒⡧⡶⡣⡰⡄⡧⡸⡑⡣⠵⡓⠶⠴⡁'
     consumer_key = 'OFhyNd2Zt4Ba6gJGJXfbsw'

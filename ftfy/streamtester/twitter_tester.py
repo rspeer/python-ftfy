@@ -1,7 +1,14 @@
+"""
+Implements a StreamTester that runs over Twitter data. See the class
+docstring.
+
+This module is written for Python 3 only. The __future__ imports you see here
+are just to let Python 2 scan the file without crashing with a SyntaxError.
+"""
 from __future__ import print_function, unicode_literals
 import os
-from ftfy.streamtester import StreamTester
 from collections import defaultdict
+from ftfy.streamtester import StreamTester
 
 
 class TwitterTester(StreamTester):
@@ -49,8 +56,9 @@ class TwitterTester(StreamTester):
 
     def run_sample(self):
         """
-        Listen to live data from Twitter, and pass on the fully-formed tweets to
-        `check_ftfy`. This requires the `twitter` Python package as a dependency.
+        Listen to live data from Twitter, and pass on the fully-formed tweets
+        to `check_ftfy`. This requires the `twitter` Python package as a
+        dependency.
         """
         from twitter import TwitterStream
         from ftfy.streamtester.oauth import get_auth
@@ -67,6 +75,11 @@ class TwitterTester(StreamTester):
 
 
 def main():
+    """
+    When run from the command line, this script connects to the Twitter stream
+    and runs the TwitterTester on it forever. Or at least until the stream
+    drops.
+    """
     tester = TwitterTester()
     tester.run_sample()
 
