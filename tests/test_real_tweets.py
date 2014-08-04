@@ -35,6 +35,7 @@ TEST_CASES = [
      'Kayanya laptopku error deh, soalnya tiap mau ngetik deket-deket kamu font yg keluar selalu Times New " Romance".'),
     ("``toda produzida pronta pra assa aí´´", "``toda produzida pronta pra assa aí \u0301 \u0301"),
     ('HUHLL Õ…', 'HUHLL Õ...'),
+    ('Iggy Pop (nÃƒÂ© Jim Osterberg)', 'Iggy Pop (né Jim Osterberg)'),
     
     ## Current false positives:
     #("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´",
