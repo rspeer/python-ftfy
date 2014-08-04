@@ -402,8 +402,6 @@ def remove_unsafe_private_use(text):
     string operations that will crash some versions of it with a SystemError:
     http://bugs.python.org/issue18183
 
-    You can trigger the bug by running `` '\U00010000\U00100000'.lower() ``.
-
     The best solution is to remove all characters from Supplementary Private
     Use Area B, using a regex that is known not to crash given those
     characters.
@@ -440,7 +438,7 @@ ESCAPE_SEQUENCE_RE = re.compile(r'''
 
 def decode_escapes(text):
     r"""
-    Decode backslashed escape sequences, including \x, \u, and \U character
+    Decode backslashed escape sequences, including \\x, \\u, and \\U character
     references, even in the presence of other Unicode.
 
     This is what Python's "string-escape" and "unicode-escape" codecs were
