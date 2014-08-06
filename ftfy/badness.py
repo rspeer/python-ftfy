@@ -138,7 +138,7 @@ def text_cost(text):
     An overall cost function for text. Weirder is worse, but all else being
     equal, shorter strings are better.
 
-    The overall cost is measured as twice the "weirdness"
-    (see :func:`sequence_weirdness`) plus the length.
+    The overall cost is measured as the "weirdness" (see
+    :func:`sequence_weirdness`) plus the length.
     """
     return sequence_weirdness(text) + len(text)
