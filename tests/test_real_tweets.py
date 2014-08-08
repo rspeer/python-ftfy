@@ -41,6 +41,7 @@ TEST_CASES = [
     #("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´",
     # "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´"),
     #("├┤a┼┐a┼┐a┼┐a┼┐a", "├┤a┼┐a┼┐a┼┐a┼┐a"),
+    #("ESSE CARA AI QUEM É¿", "ESSE CARA AI QUEM É¿")
     
     ## This kind of tweet can't be fixed without a full-blown encoding detector.
     #("Deja dos heridos hundimiento de barco tur\x92stico en Acapulco.",
