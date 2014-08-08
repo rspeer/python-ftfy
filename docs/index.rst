@@ -43,25 +43,6 @@ have no control over. Somebody else's minor mistake becomes your problem.
 
 ftfy will do everything it can to fix the problem.
 
-Using ftfy
-----------
-
-The main function, `fix_text`, will run text through a sequence of fixes. If
-the text changed, it will run them through again, so that you can be sure
-the output ends up in a standard form that will be unchanged by `fix_text`.
-
-All the fixes are on by default, but you can pass options to turn them off.
-
-.. autofunction:: ftfy.fix_text
-
-.. autofunction:: ftfy.fix_text_segment
-
-.. autofunction:: ftfy.fix_file
-
-.. autofunction:: ftfy.guess_bytes
-
-.. autofunction:: ftfy.explain_unicode
-
 Encodings ftfy can handle
 -------------------------
 
@@ -88,6 +69,25 @@ However, ftfy cannot understand other mixups between single-byte encodings,
 because it is extremely difficult to detect which mixup in particular is the
 one that happened.
 
+Using ftfy
+----------
+
+The main function, `fix_text`, will run text through a sequence of fixes. If
+the text changed, it will run them through again, so that you can be sure
+the output ends up in a standard form that will be unchanged by `fix_text`.
+
+All the fixes are on by default, but you can pass options to turn them off.
+
+.. autofunction:: ftfy.fix_text
+
+.. autofunction:: ftfy.fix_text_segment
+
+.. autofunction:: ftfy.fix_file
+
+.. autofunction:: ftfy.guess_bytes
+
+.. autofunction:: ftfy.explain_unicode
+
 Non-Unicode strings
 -------------------
 
@@ -103,19 +103,6 @@ Unicode string, ftfy will point you to the `Python Unicode HOWTO`_.
 Reasonable ways that you might exchange data, such as JSON or XML, already have
 perfectly good ways of expressing Unicode strings. Given a Unicode string, ftfy
 can apply fixes that are very likely to work without false positives.
-
-But what if you all you actually have is a mess of bytes on a disk? Well,
-you've got a problem, and ftfy is not quite the right tool to solve it.
-
-As a sort of half-measure that covers a few common cases, you can decode the
-bytes as Latin-1 and let ftfy take it from there, which might include
-reinterpreting the Latin-1 text as Windows-1252 or UTF-8.
-
-    >>> print(fix_text(b'\x85test'))
-    UnicodeError: [informative error message]
-
-    >>> print(fix_text(b'\x85test'.decode('latin-1')))
-    —test
 
 A note on encoding detection
 ----------------------------
@@ -137,6 +124,10 @@ ftfy's `guess_bytes` doesn't even try the East Asian encodings, so the ideal thi
 would combine the simple heuristic of `guess_bytes` with the multibyte character
 set detection of `chardet`. This ideal thing doesn't exist yet.
 
+
+Accuracy
+--------
+.. include:: accuracy.rst
 
 Module documentation
 ====================
