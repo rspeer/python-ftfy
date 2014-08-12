@@ -232,7 +232,7 @@ def mangle_surrogates(bytestring):
     it as an error (which it is). In 'replace' mode, it will decode as three
     replacement characters. But Python 2 will just output the surrogate
     codepoint.
-    
+
     To ensure consistency between Python 2 and Python 3, and protect downstream
     applications from malformed strings, we turn surrogate sequences at the
     start of the string into the bytes `ff ff ff`, which we're *sure* won't

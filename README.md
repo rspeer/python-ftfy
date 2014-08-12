@@ -15,7 +15,7 @@ Full documentation: **http://ftfy.readthedocs.org**
   — [Bruno Ranieri](http://yrrsinn.de/2012/09/17/gelesen-kw37/)
 - “I have no idea when I’m gonna need this, but I’m definitely bookmarking it.”
   — [/u/ocrow](http://reddit.com/u/ocrow)
-- “Too many branches”
+- “9.2/10”
   — [pylint](https://bitbucket.org/logilab/pylint/)
 
 ## Developed at Luminoso

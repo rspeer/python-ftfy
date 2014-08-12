@@ -114,8 +114,6 @@ def fix_text(text,
     If you are certain your entire text is in the same encoding (though that
     encoding is possibly flawed), and do not mind performing operations on
     the whole text at once, use `fix_text_segment`.
-
-    _`bug 18183`: http://bugs.python.org/issue18183
     """
     if isinstance(text, bytes):
         raise UnicodeError(fixes.BYTES_ERROR_TEXT)
@@ -172,8 +170,8 @@ def fix_file(input_file,
 
     If the file is being read as Unicode text, use that. If it's being read as
     bytes, then unfortunately, we have to guess what encoding it is. We'll try
-    a few common encodings, but we make no promises. See `guess_bytes.py` for
-    how this is done.
+    a few common encodings, but we make no promises. See the `guess_bytes`
+    function for how this is done.
 
     The output is a stream of fixed lines of text.
     """
@@ -186,9 +184,9 @@ def fix_file(input_file,
         yield fix_text_segment(
             line,
             remove_unsafe_private_use=remove_unsafe_private_use,
-            fix_entities=fix_entities,
+            fix_entities=entities,
             remove_terminal_escapes=remove_terminal_escapes,
-            fix_encoding=entities,
+            fix_encoding=fix_encoding,
             normalization=normalization,
             uncurl_quotes=uncurl_quotes,
             fix_line_breaks=fix_line_breaks,
@@ -251,7 +249,8 @@ def guess_bytes(bstring):
 
     This is not a magic bullet. If the bytes are coming from some MySQL
     database with the "character set" set to ISO Elbonian, this won't figure
-    it out.
+    it out. Perhaps more relevantly, this currently doesn't try East Asian
+    encodings.
 
     The encodings we try are:
 
@@ -274,6 +273,26 @@ def guess_bytes(bstring):
 
     try:
         if byte_ed in byteset or byte_c0 in byteset:
+            # Byte 0xed can be used to encode a range of codepoints that
+            # are UTF-16 surrogates. UTF-8 does not use UTF-16 surrogates,
+            # so when we see 0xed, it's very likely we're being asked to
+            # decode CESU-8, the variant that encodes UTF-16 surrogates
+            # instead of the original characters themselves.
+            #
+            # This will occasionally trigger on standard UTF-8, as there
+            # are some Korean characters that also use byte 0xed, but that's
+            # not harmful.
+            #
+            # Byte 0xc0 is impossible because, numerically, it would only
+            # encode characters lower than U+0040. Those already have
+            # single-byte representations, and UTF-8 requires using the
+            # shortest possible representation. However, Java hides the null
+            # codepoint, U+0000, in a non-standard longer representation -- it
+            # encodes it as 0xc0 0x80 instead of 0x00, guaranteeing that 0x00
+            # will never appear in the encoded bytes.
+            #
+            # The 'utf-8-variants' decoder can handle both of these cases, as
+            # well as standard UTF-8, at the cost of a bit of speed.
             return bstring.decode('utf-8-variants'), 'utf-8-variants'
         else:
             return bstring.decode('utf-8'), 'utf-8'
@@ -289,6 +308,24 @@ def guess_bytes(bstring):
 def explain_unicode(text):
     """
     A utility method that's useful for debugging mysterious Unicode.
+    
+    It breaks down a string, showing you for each codepoint its number in
+    hexadecimal, its glyph, its category in the Unicode standard, and its name
+    in the Unicode standard.
+
+        >>> explain_unicode('(╯°□°)╯︵ ┻━┻')
+        U+0028  (       [Ps] LEFT PARENTHESIS
+        U+256F  ╯       [So] BOX DRAWINGS LIGHT ARC UP AND LEFT
+        U+00B0  °       [So] DEGREE SIGN
+        U+25A1  □       [So] WHITE SQUARE
+        U+00B0  °       [So] DEGREE SIGN
+        U+0029  )       [Pe] RIGHT PARENTHESIS
+        U+256F  ╯       [So] BOX DRAWINGS LIGHT ARC UP AND LEFT
+        U+FE35  ︵       [Ps] PRESENTATION FORM FOR VERTICAL LEFT PARENTHESIS
+        U+0020          [Zs] SPACE
+        U+253B  ┻       [So] BOX DRAWINGS HEAVY UP AND HORIZONTAL
+        U+2501  ━       [So] BOX DRAWINGS HEAVY HORIZONTAL
+        U+253B  ┻       [So] BOX DRAWINGS HEAVY UP AND HORIZONTAL
     """
     for char in text:
         if is_printable(char):
