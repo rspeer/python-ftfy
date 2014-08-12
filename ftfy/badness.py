@@ -84,6 +84,21 @@ def _make_weirdness_regex():
 
 WEIRDNESS_RE = _make_weirdness_regex()
 
+# A few characters are common ending punctuation that can show up at the end
+# of a mojibake sequence. It's plausible that such a character could appear
+# after an accented capital letter, for example, so we'll want to add a
+# slight preference to leave these characters alone.
+#
+# The match ends with a + so that we only give the bonus once for a
+# consecutive sequence of these characters.
+ENDING_PUNCT_RE = re.compile(
+    '['
+    '\N{HORIZONTAL ELLIPSIS}\N{EM DASH}\N{EN DASH}'
+    '\N{RIGHT SINGLE QUOTATION MARK}\N{RIGHT DOUBLE QUOTATION MARK}'
+    '\N{SINGLE RIGHT-POINTING ANGLE QUOTATION MARK}'
+    '\N{RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK}'
+    ']+'
+)
 
 def sequence_weirdness(text):
     """
@@ -113,7 +128,9 @@ def sequence_weirdness(text):
     The return value is the number of instances of weirdness.
     """
     text2 = unicodedata.normalize('NFC', text)
-    return len(WEIRDNESS_RE.findall(chars_to_classes(text2)))
+    weirdness = len(WEIRDNESS_RE.findall(chars_to_classes(text2)))
+    punct_discount = len(ENDING_PUNCT_RE.findall(text2))
+    return weirdness * 2 - punct_discount
 
 
 def text_cost(text):
@@ -121,7 +138,7 @@ def text_cost(text):
     An overall cost function for text. Weirder is worse, but all else being
     equal, shorter strings are better.
 
-    The overall cost is measured as twice the "weirdness"
-    (see :func:`sequence_weirdness`) plus the length.
+    The overall cost is measured as the "weirdness" (see
+    :func:`sequence_weirdness`) plus the length.
     """
-    return sequence_weirdness(text) * 2 + len(text)
+    return sequence_weirdness(text) + len(text)

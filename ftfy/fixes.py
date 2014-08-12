@@ -8,9 +8,10 @@ from __future__ import unicode_literals
 from ftfy.chardata import (possible_encoding,
                            CHARMAP_ENCODINGS, CONTROL_CHARS)
 from ftfy.badness import text_cost
-from ftfy.compatibility import (htmlentitydefs, unichr, UNSAFE_PRIVATE_USE_RE)
+from ftfy.compatibility import htmlentitydefs, unichr, UNSAFE_PRIVATE_USE_RE
 import re
 import sys
+import codecs
 
 
 BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
@@ -105,7 +106,7 @@ def fix_text_encoding(text):
     The best version of the text is found using
     :func:`ftfy.badness.text_cost`.
     """
-    text, plan = fix_encoding_and_explain(text)
+    text, _plan = fix_encoding_and_explain(text)
     return text
 
 
@@ -401,8 +402,6 @@ def remove_unsafe_private_use(text):
     string operations that will crash some versions of it with a SystemError:
     http://bugs.python.org/issue18183
 
-    You can trigger the bug by running `` '\U00010000\U00100000'.lower() ``.
-
     The best solution is to remove all characters from Supplementary Private
     Use Area B, using a regex that is known not to crash given those
     characters.
@@ -424,3 +423,51 @@ def remove_unsafe_private_use(text):
     based on a micro version upgrade of Python.)
     """
     return UNSAFE_PRIVATE_USE_RE.sub('', text)
+
+
+# Define a regex to match valid escape sequences in Python string literals.
+ESCAPE_SEQUENCE_RE = re.compile(r'''
+    ( \\U........      # 8-digit hex escapes
+    | \\u....          # 4-digit hex escapes
+    | \\x..            # 2-digit hex escapes
+    | \\[0-7]{1,3}     # Octal escapes
+    | \\N\{[^}]+\}     # Unicode characters by name
+    | \\[\\'"abfnrtv]  # Single-character escapes
+    )''', re.UNICODE | re.VERBOSE)
+
+
+def decode_escapes(text):
+    r"""
+    Decode backslashed escape sequences, including \\x, \\u, and \\U character
+    references, even in the presence of other Unicode.
+
+    This is what Python's "string-escape" and "unicode-escape" codecs were
+    meant to do, but in contrast, this actually works. It will decode the
+    string exactly the same way that the Python interpreter decodes its string
+    literals.
+
+        >>> factoid = '\\u20a1 is the currency symbol for the colón.'
+        >>> print(factoid)
+        \u20a1 is the currency symbol for the colón.
+        >>> print(decode_escapes(factoid))
+        ₡ is the currency symbol for the colón.
+
+    Even though Python itself can read string literals with a combination of
+    escapes and literal Unicode -- you're looking at one right now -- the
+    "unicode-escape" codec doesn't work on literal Unicode. (See
+    http://stackoverflow.com/a/24519338/773754 for more details.)
+    
+    Instead, this function searches for just the parts of a string that
+    represent escape sequences, and decodes them, leaving the rest alone. All
+    valid escape sequences are made of ASCII characters, and this allows
+    "unicode-escape" to work correctly.
+
+    This fix cannot be automatically applied by the `ftfy.fix_text` function,
+    because escaped text is not necessarily a mistake, and there is no way
+    to distinguish text that's supposed to be escaped from text that isn't.
+    """
+    def decode_match(match):
+        "Given a regex match, decode the escape sequence it contains."
+        return codecs.decode(match.group(0), 'unicode-escape')
+
+    return ESCAPE_SEQUENCE_RE.sub(decode_match, text)

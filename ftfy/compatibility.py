@@ -74,6 +74,6 @@ def is_printable(char):
     let's make a crude approximation in Python 2.
     """
     if PYTHON2:
-        return not unicodedata.category(char).startswith('C') 
+        return not unicodedata.category(char).startswith('C')
     else:
         return char.isprintable()
