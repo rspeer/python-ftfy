@@ -9,9 +9,10 @@ ftfy: fixes text for you
 This is a module for making text less broken and more consistent. It works in
 Python 2.6, Python 3.2, or later.
 
-The most interesting kind of brokenness that this resolves is when someone
-has encoded Unicode with one standard and decoded it with a different one.
-This often shows up as characters that turn into nonsense sequences:
+The most interesting kind of brokenness that this resolves is when someone has
+encoded Unicode with one standard and decoded it with a different one.  This
+often shows up as characters that turn into nonsense sequences (called
+"mojibake"):
 
 - The word ``schön`` might appear as ``schÃ¶n``.
 - An em dash (``—``) might appear as ``â€”``.
@@ -42,17 +43,6 @@ have no control over. Somebody else's minor mistake becomes your problem.
 
 ftfy will do everything it can to fix the problem.
 
-Using ftfy
-----------
-
-The main function, `fix_text`, will run text through a sequence of fixes. If
-the text changed, it will run them through again, so that you can be sure
-the output ends up in a standard form that will be unchanged by `fix_text`.
-
-All the fixes are on by default, but you can pass options to turn them off.
-
-.. autofunction:: ftfy.fix_text
-
 Encodings ftfy can handle
 -------------------------
 
@@ -79,6 +69,25 @@ However, ftfy cannot understand other mixups between single-byte encodings,
 because it is extremely difficult to detect which mixup in particular is the
 one that happened.
 
+Using ftfy
+----------
+
+The main function, `fix_text`, will run text through a sequence of fixes. If
+the text changed, it will run them through again, so that you can be sure
+the output ends up in a standard form that will be unchanged by `fix_text`.
+
+All the fixes are on by default, but you can pass options to turn them off.
+
+.. autofunction:: ftfy.fix_text
+
+.. autofunction:: ftfy.fix_text_segment
+
+.. autofunction:: ftfy.fix_file
+
+.. autofunction:: ftfy.guess_bytes
+
+.. autofunction:: ftfy.explain_unicode
+
 Non-Unicode strings
 -------------------
 
@@ -95,37 +104,30 @@ Reasonable ways that you might exchange data, such as JSON or XML, already have
 perfectly good ways of expressing Unicode strings. Given a Unicode string, ftfy
 can apply fixes that are very likely to work without false positives.
 
-But what if you all you actually have is a mess of bytes on a disk? Well,
-you've got a problem, and ftfy is not quite the right tool to solve it.
-
-As a sort of half-measure that covers a few common cases, you can decode the
-bytes as Latin-1 and let ftfy take it from there, which might include
-reinterpreting the Latin-1 text as Windows-1252 or UTF-8.
-
-    >>> print(fix_text(b'\x85test'))
-    UnicodeError: [informative error message]
-
-    >>> print(fix_text(b'\x85test'.decode('latin-1')))
-    —test
-
 A note on encoding detection
 ----------------------------
 
 If your input is a mess of unmarked bytes, you might want a tool that can just
 statistically analyze those bytes and predict what encoding they're in.
 
-ftfy is not that tool. I might want to write that tool someday.
+ftfy is not that tool. The `guess_bytes` function will do this in very limited
+cases, but to support more encodings from around the world, something more is
+needed.
 
-You may have heard of chardet. Chardet is admirable, but it is not that tool
-either. Its heuristics only work on multi-byte encodings, such as UTF-8 and the
-language-specific encodings used in East Asian languages. It works very badly
-on single-byte encodings, to the point where it will output wrong answers with
-high confidence.
+You may have heard of chardet. Chardet is admirable, but it doesn't completely
+do the job either. Its heuristics are designed for multi-byte encodings, such
+as UTF-8 and the language-specific encodings used in East Asian languages. It
+works badly on single-byte encodings, to the point where it will output wrong
+answers with high confidence.
 
-There is lots of real-world text that's in an unknown single-byte encoding.
-There might be enough information to statistically sort out which encoding is
-which. But nothing, so far, actually does that.
+ftfy's `guess_bytes` doesn't even try the East Asian encodings, so the ideal thing
+would combine the simple heuristic of `guess_bytes` with the multibyte character
+set detection of `chardet`. This ideal thing doesn't exist yet.
 
+
+Accuracy
+--------
+.. include:: accuracy.rst
 
 Module documentation
 ====================
@@ -134,6 +136,13 @@ Module documentation
 --------------------------------------------------
 
 .. automodule:: ftfy.fixes
+   :members:
+
+
+`ftfy.bad_codecs`: decode text from encodings Python doesn't like
+-----------------------------------------------------------------
+
+.. automodule:: ftfy.bad_codecs
    :members:
 
 
