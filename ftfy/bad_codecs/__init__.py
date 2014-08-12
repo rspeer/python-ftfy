@@ -33,7 +33,7 @@ from __future__ import unicode_literals
 from encodings import normalize_encoding
 import codecs
 
-_cache = {}
+_CACHE = {}
 
 # Define some aliases for 'utf-8-variants'. All hyphens get turned into
 # underscores, because of `normalize_encoding`.
@@ -60,8 +60,8 @@ def search_function(encoding):
     - The 'utf-8-variants' encoding, which has the several aliases seen
       above.
     """
-    if encoding in _cache:
-        return _cache[encoding]
+    if encoding in _CACHE:
+        return _CACHE[encoding]
 
     norm_encoding = normalize_encoding(encoding)
     codec = None
@@ -73,7 +73,7 @@ def search_function(encoding):
         codec = CODECS.get(norm_encoding)
 
     if codec is not None:
-        _cache[encoding] = codec
+        _CACHE[encoding] = codec
 
     return codec
 

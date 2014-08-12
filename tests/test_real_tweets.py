@@ -25,8 +25,6 @@ TEST_CASES = [
      "hihi RT username: ☺😘"),
     ("Beta Haber: HÄ±rsÄ±zÄ± BÃ¼yÃ¼ Korkuttu",
      "Beta Haber: Hırsızı Büyü Korkuttu"),
-    #("Blog Traffic Tip 2 вЂ“ Broadcast Email Your Blog",
-    # "Blog Traffic Tip 2 – Broadcast Email Your Blog"),
     ("Ôôô VIDA MINHA", "Ôôô VIDA MINHA"),
     ('[x]\xa0©', '[x] ©'),
     ('2012—∞', '2012—∞'),
@@ -36,16 +34,22 @@ TEST_CASES = [
     ('Kayanya laptopku error deh, soalnya tiap mau ngetik deket-deket kamu font yg keluar selalu Times New Ã¢â‚¬Å“ RomanceÃ¢â‚¬Â.',
      'Kayanya laptopku error deh, soalnya tiap mau ngetik deket-deket kamu font yg keluar selalu Times New " Romance".'),
     ("``toda produzida pronta pra assa aí´´", "``toda produzida pronta pra assa aí \u0301 \u0301"),
+    ('HUHLL Õ…', 'HUHLL Õ...'),
+    ('Iggy Pop (nÃƒÂ© Jim Osterberg)', 'Iggy Pop (né Jim Osterberg)'),
     
     ## Current false positives:
     #("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´",
     # "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´"),
-    #('HUHLL Õ…', 'HUHLL Õ...'),
     #("├┤a┼┐a┼┐a┼┐a┼┐a", "├┤a┼┐a┼┐a┼┐a┼┐a"),
+    #("ESSE CARA AI QUEM É¿", "ESSE CARA AI QUEM É¿")
     
     ## This kind of tweet can't be fixed without a full-blown encoding detector.
     #("Deja dos heridos hundimiento de barco tur\x92stico en Acapulco.",
     # "Deja dos heridos hundimiento de barco turístico en Acapulco."),
+    
+    ## The heuristics aren't confident enough to fix this text and its weird encoding.
+    #("Blog Traffic Tip 2 вЂ“ Broadcast Email Your Blog",
+    # "Blog Traffic Tip 2 – Broadcast Email Your Blog"),
 ]
 
 def test_real_tweets():
