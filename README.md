@@ -35,7 +35,7 @@ page](http://www.luminoso.com/careers.html).
 ## What it does
 
 ftfy makes Unicode text less broken and more consistent. It works in
-Python 2.6, Python 3.2, or later.
+Python 2.7, Python 3.2, or later.
 
 The most interesting kind of brokenness that this resolves is when someone
 has encoded Unicode with one standard and decoded it with a different one.
@@ -44,8 +44,8 @@ This often shows up as characters that turn into nonsense sequences:
 - The word `schön` might appear as `schÃ¶n`.
 - An em dash (`—`) might appear as `â€”`.
 - Text that was meant to be enclosed in quotation marks might end up
-  instead enclosed in `â€œ` and `â€` (and that last character
-  probably won't even display as anything meaningful).
+  instead enclosed in `â€œ` and `â€<9d>` (where <9d> is an unprintable
+  codepoint).
 
 This is called "mojibake", and it happens very often to real text. Fortunately,
 the nonsense sequences usually contain all the information you need to
@@ -110,10 +110,6 @@ the output ends up in a standard form that will be unchanged by `fix_text`.
 
 All the fixes are on by default, but you can pass options to turn them off.
 
-- If `remove_unsafe_private_use` is True, remove a range of unassigned
-  characters that can crash Python < 3.3.3 via
-  [bug 18183](http://bugs.python.org/issue18183). (This fix is off by
-  default on Python 3.4, because it's no longer necessary.)
 - If `fix_entities` is True, consider replacing HTML entities with their
   equivalent characters. However, this never applies to text with a pair
   of angle brackets in it already; you're probably not supposed to decode
