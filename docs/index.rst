@@ -7,7 +7,7 @@ ftfy: fixes text for you
 ========================
 
 This is a module for making text less broken and more consistent. It works in
-Python 2.6, Python 3.2, or later.
+Python 2.7, Python 3.2, or later.
 
 The most interesting kind of brokenness that this resolves is when someone has
 encoded Unicode with one standard and decoded it with a different one.  This
