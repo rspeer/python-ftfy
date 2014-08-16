@@ -2,6 +2,7 @@
 
 [![Downloads](https://pypip.in/d/ftfy/badge.png)](https://crate.io/packages/ftfy)
 [![Version](https://pypip.in/v/ftfy/badge.png)](https://crate.io/packages/ftfy)
+[![Docs](https://readthedocs.org/projects/ftfy/badge/?version=latest)](http://ftfy.readthedocs.org/en/latest/)
 
 Full documentation: **http://ftfy.readthedocs.org**
 
@@ -109,20 +110,22 @@ the text changed, it will run them through again, so that you can be sure
 the output ends up in a standard form that will be unchanged by `fix_text`.
 
 All the fixes are on by default, but you can pass options to turn them off.
-
-- If `fix_entities` is True, consider replacing HTML entities with their
-  equivalent characters. However, this never applies to text with a pair
-  of angle brackets in it already; you're probably not supposed to decode
-  entities there, and you'd make things ambiguous if you did.
+    
+- If `fix_entities` is True, replace HTML entities with their equivalent
+  characters. If it's "auto" (the default), then consider replacing HTML
+  entities, but don't do so in text where you have seen a pair of actual
+  angle brackets (that's probably actually HTML and you shouldn't mess
+  with the entities).
 - If `remove_terminal_escapes` is True, remove sequences of bytes that are
   instructions for Unix terminals, such as the codes that make text appear
   in different colors.
 - If `fix_encoding` is True, look for common mistakes that come from
   encoding or decoding Unicode text incorrectly, and fix them if they are
-  reasonably fixable.
+  reasonably fixable. See `fix_text_encoding` for details.
 - If `normalization` is not None, apply the specified form of Unicode
   normalization, which can be one of 'NFC', 'NFKC', 'NFD', and 'NFKD'.
   The default, 'NFKC', applies the following relevant transformations:
+
   - C: Combine characters and diacritics that are written using separate
     code points, such as converting "e" plus an acute accent modifier
     into "é", or converting "ka" (か) plus a dakuten into the
@@ -132,18 +135,18 @@ All the fixes are on by default, but you can pass options to turn them off.
     full-width versions, full-width Roman characters will be replaced with
     ASCII characters, ellipsis characters will be replaced with three
     periods, and the ligature 'ﬂ' will be replaced with 'fl'.
+
 - If `uncurl_quotes` is True, replace various curly quotation marks with
   plain-ASCII straight quotes.
 - If `fix_line_breaks` is true, convert all line breaks to Unix style
   (CRLF and CR line breaks become LF line breaks).
-- If `remove_control_chars` is true, remove all C0 control characters
+- If `fix_control_characters` is true, remove all C0 control characters
   except the common useful ones: TAB, CR, LF, and FF. (CR characters
   may have already been removed by the `fix_line_breaks` step.)
 - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
-  (It's a hint for a UTF-16 decoder. It's not meant to actually
-  end up in your string.)
 - If anything was changed, repeat all the steps, so that the function is
-  idempotent. `"&amp;amp;"` will become `"&"`, for example, not `"&amp;"`.
+  idempotent. "&amp;amp;" will become "&", for example, not "&amp;".
+
 
 ### Encodings ftfy can handle
 
@@ -184,35 +187,24 @@ Reasonable ways that you might exchange data, such as JSON or XML, already have
 perfectly good ways of expressing Unicode strings. Given a Unicode string, ftfy
 can apply fixes that are very likely to work without false positives.
 
-But what if you all you actually have is a mess of bytes on a disk? Well,
-you've got a problem, and ftfy is not quite the right tool to solve it.
-
-As a sort of half-measure that covers a few common cases, you can decode the
-bytes as Latin-1 and let ftfy take it from there, which might include
-reinterpreting the Latin-1 text as Windows-1252 or UTF-8.
-
-    >>> print(fix_text(b'\x85test'))
-    UnicodeError: [informative error message]
-
-    >>> print(fix_text(b'\x85test'.decode('latin-1')))
-    —test
-
 ### A note on encoding detection
 
 If your input is a mess of unmarked bytes, you might want a tool that can just
 statistically analyze those bytes and predict what encoding they're in.
 
-ftfy is not that tool. I might want to write that tool someday.
+ftfy is not that tool. The `guess_bytes` function will do this in very limited
+cases, but to support more encodings from around the world, something more is
+needed.
 
-You may have heard of chardet. Chardet is admirable, but it is not that tool
-either. Its heuristics only work on multi-byte encodings, such as UTF-8 and the
-language-specific encodings used in East Asian languages. It works very badly
-on single-byte encodings, to the point where it will output wrong answers with
-high confidence.
+You may have heard of chardet. Chardet is admirable, but it doesn't completely
+do the job either. Its heuristics are designed for multi-byte encodings, such
+as UTF-8 and the language-specific encodings used in East Asian languages. It
+works badly on single-byte encodings, to the point where it will output wrong
+answers with high confidence.
 
-There is lots of real-world text that's in an unknown single-byte encoding.
-There might be enough information to statistically sort out which encoding is
-which. But nothing, so far, actually does that.
+ftfy's `guess_bytes` doesn't even try the East Asian encodings, so the ideal thing
+would combine the simple heuristic of `guess_bytes` with the multibyte character
+set detection of `chardet`. This ideal thing doesn't exist yet.
 
 ## Command-line usage
 
@@ -220,19 +212,13 @@ ftfy installs itself as a command line tool that reads a file and applies
 `fix_text` to it.
 
 This has exactly the problem described above: a file on a disk is made of bytes
-in an unspecified encoding. It could assume the file is UTF-8, but if you had
-totally valid UTF-8 you probably wouldn't need this command line utility, and
-there's a slight chance that the file could contain Latin-1 that coincidentally
-looks like UTF-8.
+in an unspecified encoding. It has to guess the encoding of the bytes in the
+file. But if it guesses wrong, it might be able to fix it anyway, because
+that's what ftfy does.
 
-Instead, it will follow the "half-measure" above.
-
-You can type `ftfy FILENAME`, and it will read in FILENAME as Latin-1 text, fix
-everything that `fix_text` fixes (including re-interpreting it as UTF-8 if
-appropriate), and write the result to standard out as UTF-8.
-
-This is not necessarily a good idea, but it's convenient. Consider this a proof
-of concept until we get a real encoding detector.
+You can type `ftfy FILENAME`, and it will read in FILENAME, guess its encoding,
+fix everything that `fix_text` fixes, and write the result to standard out as
+UTF-8.
 
 ## Who maintains ftfy?
 
