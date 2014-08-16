@@ -35,9 +35,9 @@ Deprecations:
   breaks in some environments, such as Javascript, and Python's "codecs"
   library. These are all now replaced with \n:
   
-    U+0085   <control>, with alias "NEXT LINE"
-    U+2028   LINE SEPARATOR
-    U+2029   PARAGRAPH SEPARATOR
+      U+0085   <control>, with alias "NEXT LINE"
+      U+2028   LINE SEPARATOR
+      U+2029   PARAGRAPH SEPARATOR
 
 ## Version 3.1.3 (May 15, 2014)
 
