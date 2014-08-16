@@ -1,3 +1,34 @@
+## Version 3.3.0 (August 16, 2014)
+
+Heuristic changes:
+
+- Certain symbols are marked as "ending punctuation" that may naturally occur
+  after letters. When they follow an accented capital letter and look like
+  mojibake, they will not be "fixed" without further evidence.
+  An example is that "MARQUÉ…" will become "MARQUÉ...", and not "MARQUɅ".
+
+New features:
+
+- `ftfy.explain_unicode` is a diagnostic function that shows you what's going
+  on in a Unicode string. It shows you a table with each code point in
+  hexadecimal, its glyph, its name, and its Unicode category.
+
+- `ftfy.fixes.decode_escapes` adds a feature missing from the standard library:
+  it lets you decode a Unicode string with backslashed escape sequences in it
+  (such as "\u2014") the same way that Python itself would.
+
+- `ftfy.streamtester` is a release of the code that I use to test ftfy on
+  an endless stream of real-world data from Twitter. With the new heuristics,
+  the false positive rate of ftfy is about 1 per 6 million tweets. (See
+  the "Accuracy" section of the documentation.)
+
+Deprecations:
+
+- Python 2.6 is no longer supported.
+
+- `remove_unsafe_private_use` is no longer needed in any current version of
+  Python. This fixer will disappear in a later version of ftfy.
+
 ## Version 3.2.0 (June 27, 2014)
 
 - `fix_line_breaks` fixes three additional characters that are considered line
@@ -21,9 +52,12 @@
 
 - Add the `ftfy.bad_codecs` package, which registers new codecs that can
   decoding things that Python may otherwise refuse to decode:
+
   - `utf-8-variants`, which decodes CESU-8 and its Java lookalike
+
   - `sloppy-windows-*`, which decodes character-map encodings while treating
     unmapped characters as Latin-1
+
 - Simplify the code using `ftfy.bad_codecs`.
 
 ## Version 3.0.6 (November 5, 2013)

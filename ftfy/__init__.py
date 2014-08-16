@@ -308,7 +308,7 @@ def guess_bytes(bstring):
 def explain_unicode(text):
     """
     A utility method that's useful for debugging mysterious Unicode.
-    
+
     It breaks down a string, showing you for each codepoint its number in
     hexadecimal, its glyph, its category in the Unicode standard, and its name
     in the Unicode standard.
