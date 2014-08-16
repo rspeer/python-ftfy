@@ -447,8 +447,8 @@ def decode_escapes(text):
     literals.
 
         >>> factoid = '\\u20a1 is the currency symbol for the colón.'
-        >>> print(factoid)
-        \u20a1 is the currency symbol for the colón.
+        >>> print(factoid[1:])
+        u20a1 is the currency symbol for the colón.
         >>> print(decode_escapes(factoid))
         ₡ is the currency symbol for the colón.
 
