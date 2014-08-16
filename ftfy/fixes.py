@@ -337,8 +337,8 @@ def fix_line_breaks(text):
     \\x85 is very common mojibake for \\u2026, HORIZONTAL ELLIPSIS.
 
         >>> print(fix_line_breaks(
-        ...     "This string is made of two things:\N{PARAGRAPH SEPARATOR}"
-        ...     "1. Unicode\N{LINE SEPARATOR}"
+        ...     "This string is made of two things:\u2029"
+        ...     "1. Unicode\u2028"
         ...     "2. Spite"
         ... ))
         This string is made of two things:
@@ -390,7 +390,7 @@ def remove_bom(text):
     r"""
     Remove a left-over byte-order mark.
 
-    >>> print(remove_bom(unichr(0xfeff) + "Where do you want to go today?"))
+    >>> print(remove_bom("\ufeffWhere do you want to go today?"))
     Where do you want to go today?
     """
     return text.lstrip(unichr(0xfeff))
