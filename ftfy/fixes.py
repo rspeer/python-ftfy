@@ -332,9 +332,9 @@ def fix_line_breaks(text):
         - NEXT LINE (\\x85), a C1 control character that is certainly
           not what you meant
 
-        The NEXT LINE character is a bit of an odd case, because it
-        usually won't show up if `fix_encoding` is also being run.
-        \\x85 is very common mojibake for \\u2026, HORIZONTAL ELLIPSIS.
+    The NEXT LINE character is a bit of an odd case, because it
+    usually won't show up if `fix_encoding` is also being run.
+    \\x85 is very common mojibake for \\u2026, HORIZONTAL ELLIPSIS.
 
         >>> print(fix_line_breaks(
         ...     "This string is made of two things:\N{PARAGRAPH SEPARATOR}"
@@ -345,8 +345,8 @@ def fix_line_breaks(text):
         1. Unicode
         2. Spite
 
-        For further testing and examples, let's define a function to make sure
-        we can see the control characters in their escaped form:
+    For further testing and examples, let's define a function to make sure
+    we can see the control characters in their escaped form:
 
         >>> def eprint(text):
         ...     print(text.encode('unicode-escape').decode('ascii'))
