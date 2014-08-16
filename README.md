@@ -45,7 +45,7 @@ This often shows up as characters that turn into nonsense sequences:
 - The word `schön` might appear as `schÃ¶n`.
 - An em dash (`—`) might appear as `â€”`.
 - Text that was meant to be enclosed in quotation marks might end up
-  instead enclosed in `â€œ` and `â€<9d>` (where <9d> is an unprintable
+  instead enclosed in `â€œ` and `â€<9d>` (where `<9d>` is an unprintable
   codepoint).
 
 This is called "mojibake", and it happens very often to real text. Fortunately,
