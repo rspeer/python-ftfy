@@ -337,8 +337,8 @@ def fix_line_breaks(text):
         \\x85 is very common mojibake for \\u2026, HORIZONTAL ELLIPSIS.
 
         >>> print(fix_line_breaks(
-        ...     "This string is made of two things:\u2029"
-        ...     "1. Unicode\u2028"
+        ...     "This string is made of two things:\N{PARAGRAPH SEPARATOR}"
+        ...     "1. Unicode\N{LINE SEPARATOR}"
         ...     "2. Spite"
         ... ))
         This string is made of two things:
