@@ -36,7 +36,7 @@ TEST_CASES = [
     ("``toda produzida pronta pra assa aí´´", "``toda produzida pronta pra assa aí \u0301 \u0301"),
     ('HUHLL Õ…', 'HUHLL Õ...'),
     ('Iggy Pop (nÃƒÂ© Jim Osterberg)', 'Iggy Pop (né Jim Osterberg)'),
-    
+
     ## Current false positives:
     #("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´",
     # "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´"),
