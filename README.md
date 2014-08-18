@@ -145,7 +145,7 @@ All the fixes are on by default, but you can pass options to turn them off.
   may have already been removed by the `fix_line_breaks` step.)
 - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
 - If anything was changed, repeat all the steps, so that the function is
-  idempotent. "&amp;amp;" will become "&", for example, not "&amp;".
+  idempotent. "&amp;amp;amp;" will become "&", for example, not "&amp;amp;".
 
 
 ### Encodings ftfy can handle
