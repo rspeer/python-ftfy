@@ -1,9 +1,5 @@
 # ftfy: fixes text for you
 
-[![Downloads](https://pypip.in/d/ftfy/badge.png)](https://crate.io/packages/ftfy)
-[![Version](https://pypip.in/v/ftfy/badge.png)](https://crate.io/packages/ftfy)
-[![Docs](https://readthedocs.org/projects/ftfy/badge/?version=latest)](http://ftfy.readthedocs.org/en/latest/)
-
 Full documentation: **http://ftfy.readthedocs.org**
 
 ## Testimonials
