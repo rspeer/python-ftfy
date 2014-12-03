@@ -39,7 +39,7 @@ def _build_regexes():
         # bytes 0x80-0xff in this character set. (This uses the fact that all
         # regex special characters are ASCII, and therefore won't appear in the
         # string.)
-        regex = '^[\x00-\x7f{}]*$'.format(charlist)
+        regex = '^[\x00-\x7f{0}]*$'.format(charlist)
         encoding_regexes[encoding] = re.compile(regex)
     return encoding_regexes
 ENCODING_REGEXES = _build_regexes()
