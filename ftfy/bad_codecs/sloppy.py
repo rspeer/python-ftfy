@@ -72,9 +72,10 @@ sloppy-windows-1252 merges Windows-1252 with Latin-1:
 from __future__ import unicode_literals
 import codecs
 from encodings import normalize_encoding
+import sys
 
 REPLACEMENT_CHAR = '\ufffd'
-
+PY26 = sys.version_info[:2] == (2,6)
 
 def make_sloppy_codec(encoding):
     """
@@ -94,7 +95,10 @@ def make_sloppy_codec(encoding):
 
     # Get a list of what they decode to in the given encoding. Use the
     # replacement character for unassigned bytes.
-    decoded_chars = all_bytes.decode(encoding, errors='replace')
+    if PY26:
+        decoded_chars = all_bytes.decode(encoding, 'replace')
+    else:
+        decoded_chars = all_bytes.decode(encoding, errors='replace')
 
     # Update the sloppy_chars list. Each byte that was successfully decoded
     # gets its decoded value in the list. The unassigned bytes are left as
