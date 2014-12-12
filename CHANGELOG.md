@@ -1,3 +1,7 @@
+## Version 3.3.1 (December 12, 2014)
+
+This version restores compatibility with Python 2.6.
+
 ## Version 3.3.0 (August 16, 2014)
 
 Heuristic changes:
