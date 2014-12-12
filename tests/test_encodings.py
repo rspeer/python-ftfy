@@ -16,7 +16,7 @@ def test_cesu8():
 def test_russian_crash():
     thebytes = b'\xe8\xed\xe2\xe5\xed\xf2\xe0\xf0\xe8\xe7\xe0\xf6\xe8\xff '
     # We don't care what the result is, but this shouldn't crash
-    thebytes.decode('utf-8-variants', errors='replace') 
+    thebytes.decode('utf-8-variants', 'replace') 
     
     # This shouldn't crash either
     guess_bytes(thebytes)
