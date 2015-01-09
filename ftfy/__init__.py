@@ -14,13 +14,13 @@ ftfy.bad_codecs.ok()
 
 from ftfy import fixes
 from ftfy.fixes import fix_text_encoding
-from ftfy.compatibility import PYTHON34_OR_LATER, is_printable
+from ftfy.compatibility import is_printable
 import unicodedata
 import warnings
 
 
 def fix_text(text,
-             remove_unsafe_private_use=(not PYTHON34_OR_LATER),
+             remove_unsafe_private_use=False,
              fix_entities='auto',
              remove_terminal_escapes=True,
              fix_encoding=True,
@@ -67,10 +67,6 @@ def fix_text(text,
 
     Based on the options you provide, ftfy applies these steps in order:
 
-    - If `remove_unsafe_private_use` is True, it removes a range of private-use
-      characters that could trigger a Python bug. The bug is fixed in
-      the most recent versions of Python, so this will default to False
-      starting on Python 3.4.
     - If `fix_entities` is True, replace HTML entities with their equivalent
       characters. If it's "auto" (the default), then consider replacing HTML
       entities, but don't do so in text where you have seen a pair of actual
@@ -110,6 +106,12 @@ def fix_text(text,
     - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
     - If anything was changed, repeat all the steps, so that the function is
       idempotent. "&amp;amp;" will become "&", for example, not "&amp;".
+
+    There is one deprecated option:
+
+    - If `remove_unsafe_private_use` is True, it issues a DeprecationWarning
+      and applies a workaround for an old Python bug. This option will go away
+      in ftfy 3.5.
 
     `fix_text` will work one line at a time, with the possibility that some
     lines are in different encodings. When it encounters lines longer than
@@ -162,7 +164,7 @@ ftfy = fix_text
 
 
 def fix_file(input_file,
-             remove_unsafe_private_use=True,
+             remove_unsafe_private_use=False,
              fix_entities='auto',
              remove_terminal_escapes=True,
              fix_encoding=True,
@@ -204,7 +206,7 @@ def fix_file(input_file,
 
 
 def fix_text_segment(text,
-                     remove_unsafe_private_use=True,
+                     remove_unsafe_private_use=False,
                      fix_entities='auto',
                      remove_terminal_escapes=True,
                      fix_encoding=True,
