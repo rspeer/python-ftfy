@@ -27,6 +27,7 @@ def fix_text(text,
              normalization='NFKC',
              uncurl_quotes=True,
              fix_line_breaks=True,
+             fix_surrogates=True,
              remove_control_chars=True,
              remove_bom=True,
              max_decode_length=2**16):
@@ -99,6 +100,10 @@ def fix_text(text,
       plain-ASCII straight quotes.
     - If `fix_line_breaks` is true, convert all line breaks to Unix style
       (CRLF and CR line breaks become LF line breaks).
+    - If `fix_surrogates` is true, ensure that there are no UTF-16 surrogates
+      in the resulting string, by converting them to the correct characters
+      when they're appropriately paired, or replacing them with \ufffd
+      otherwise.
     - If `fix_control_characters` is true, remove all C0 control characters
       except the common useful ones: TAB, CR, LF, and FF. (CR characters
       may have already been removed by the `fix_line_breaks` step.)
@@ -144,6 +149,7 @@ def fix_text(text,
                 normalization=normalization,
                 uncurl_quotes=uncurl_quotes,
                 fix_line_breaks=fix_line_breaks,
+                fix_surrogates=fix_surrogates,
                 remove_control_chars=remove_control_chars,
                 remove_bom=remove_bom
             )
@@ -163,6 +169,7 @@ def fix_file(input_file,
              normalization='NFKC',
              uncurl_quotes=True,
              fix_line_breaks=True,
+             fix_surrogates=True,
              remove_control_chars=True,
              remove_bom=True):
     """
@@ -190,6 +197,7 @@ def fix_file(input_file,
             normalization=normalization,
             uncurl_quotes=uncurl_quotes,
             fix_line_breaks=fix_line_breaks,
+            fix_surrogates=fix_surrogates,
             remove_control_chars=remove_control_chars,
             remove_bom=remove_bom
         )
@@ -203,6 +211,7 @@ def fix_text_segment(text,
                      normalization='NFKC',
                      uncurl_quotes=True,
                      fix_line_breaks=True,
+                     fix_surrogates=True,
                      remove_control_chars=True,
                      remove_bom=True):
     """
@@ -233,6 +242,8 @@ def fix_text_segment(text,
             text = fixes.uncurl_quotes(text)
         if fix_line_breaks:
             text = fixes.fix_line_breaks(text)
+        if fix_surrogates:
+            text = fixes.fix_surrogates(text)
         if remove_control_chars:
             text = fixes.remove_control_chars(text)
         if remove_bom:

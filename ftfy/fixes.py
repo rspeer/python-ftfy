@@ -365,6 +365,27 @@ def fix_line_breaks(text):
                .replace('\u0085', '\n')
 
 
+SURROGATE_RE = re.compile('[\ud800-\udfff]')
+SURROGATE_PAIR_RE = re.compile('[\ud800-\udbff][\udc00-\udfff]')
+
+
+def convert_surrogate_pair(match):
+    pair = match.group(0)
+    codept = 0x10000 + (ord(pair[0]) - 0xd800) * 0x400 + (ord(pair[1]) - 0xdc00)
+    return chr(codept)
+
+
+def fix_surrogates(text):
+    """
+    Replace 16-bit surrogate codepoints with the characters they represent
+    (when properly paired), or with \ufffd otherwise.
+    """
+    if SURROGATE_RE.search(text):
+        text = SURROGATE_PAIR_RE.sub(convert_surrogate_pair, text)
+        text = SURROGATE_RE.sub('\ufffd', text)
+    return text
+
+
 def remove_control_chars(text):
     """
     Remove all control characters except for the important ones.
