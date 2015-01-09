@@ -12,6 +12,7 @@ from ftfy.compatibility import htmlentitydefs, unichr, UNSAFE_PRIVATE_USE_RE
 import re
 import sys
 import codecs
+import warnings
 
 
 BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
@@ -379,6 +380,18 @@ def fix_surrogates(text):
     """
     Replace 16-bit surrogate codepoints with the characters they represent
     (when properly paired), or with \ufffd otherwise.
+        
+        >>> high_surrogate = chr(0xd83d)
+        >>> low_surrogate = chr(0xdca9)
+        >>> print(fix_surrogates(high_surrogate + low_surrogate))
+        💩
+        >>> print(fix_surrogates(low_surrogate + high_surrogate))
+        ��
+
+    The above doctest had to be very carefully written, because even putting
+    the Unicode escapes of the surrogates in the docstring was causing
+    various tools to fail, which I think just goes to show why this fixer is
+    necessary.
     """
     if SURROGATE_RE.search(text):
         text = SURROGATE_PAIR_RE.sub(convert_surrogate_pair, text)
@@ -419,30 +432,28 @@ def remove_bom(text):
 
 def remove_unsafe_private_use(text):
     r"""
-    Python 3.3's Unicode support isn't perfect, and in fact there are certain
-    string operations that will crash some versions of it with a SystemError:
-    http://bugs.python.org/issue18183
+    This function is deprecated, because the Python bug it works around has
+    been fixed for a long time. It only affects old versions of Python that
+    are also insecure in more serious ways.
 
-    The best solution is to remove all characters from Supplementary Private
+    Certain string operations would crash Python < 3.3.3 and < 2.7.6 with a
+    SystemError: http://bugs.python.org/issue18183
+
+    ftfy's solution was to remove all characters from Supplementary Private
     Use Area B, using a regex that is known not to crash given those
-    characters.
-
-    These are the characters from U+100000 to U+10FFFF. It's sad to lose an
-    entire plane of Unicode, but on the other hand, these characters are not
-    assigned and never will be. If you get one of these characters and don't
-    know what its purpose is, its purpose is probably to crash your code.
-
-    If you were using these for actual private use, this might be inconvenient.
-    You can turn off this fixer, of course, but I kind of encourage using
-    Supplementary Private Use Area A instead.
+    characters. In retrospect, it would have been a better idea to indicate
+    that they were replaced, using the Unicode replacement character \ufffd.
 
         >>> print(remove_unsafe_private_use('\U0001F4A9\U00100000'))
         💩
-
-    This fixer is off by default in Python 3.4 or later. (The bug is actually
-    fixed in 3.3.3 and 2.7.6, but I don't want the default behavior to change
-    based on a micro version upgrade of Python.)
+    
+    ftfy no longer applies this fix, and it will be removed in ftfy 3.5.
     """
+    warnings.warn(
+        "remove_unsafe_private_use is deprecated and will be removed in "
+        "ftfy 3.5",
+        DeprecationWarning
+    )
     return UNSAFE_PRIVATE_USE_RE.sub('', text)
 
 

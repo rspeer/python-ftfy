@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from ftfy.fixes import fix_text_encoding, fix_encoding_and_explain, apply_plan, possible_encoding
+from ftfy.fixes import fix_text_encoding, fix_encoding_and_explain, apply_plan, possible_encoding, fix_surrogates
 from ftfy.badness import ENDING_PUNCT_RE
 import unicodedata
 import sys
@@ -45,13 +45,15 @@ phrases = [
 def test_valid_phrases():
     for phrase in phrases:
         yield check_phrase, phrase
-        # make it not just confirm based on the opening punctuation
-        yield check_phrase, phrase[1:]
 
 
 def check_phrase(text):
     eq_(fix_text_encoding(text), text)
     eq_(fix_text_encoding(text.encode('utf-8').decode('latin-1')), text)
+    # make sure that the opening punctuation is not the only thing that makes
+    # it work
+    eq_(fix_text_encoding(text[1:]), text[1:])
+    eq_(fix_text_encoding(text[1:].encode('utf-8').decode('latin-1')), text[1:])
 
 
 def test_possible_encoding():
