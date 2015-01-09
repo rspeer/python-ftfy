@@ -1,3 +1,15 @@
+## Version 3.4.0 (January 9, 2015)
+
+New features:
+
+- `ftfy.fixes.fix_surrogates` will fix all 16-bit surrogate codepoints,
+  which would otherwise break various encoding and output functions.
+
+Deprecations:
+
+- `remove_unsafe_private_use` emits a warning, and will disappear in the
+  next minor or major version.
+
 ## Version 3.3.1 (December 12, 2014)
 
 This version restores compatibility with Python 2.6.
