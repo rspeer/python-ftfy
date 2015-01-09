@@ -373,7 +373,7 @@ SURROGATE_PAIR_RE = re.compile('[\ud800-\udbff][\udc00-\udfff]')
 def convert_surrogate_pair(match):
     pair = match.group(0)
     codept = 0x10000 + (ord(pair[0]) - 0xd800) * 0x400 + (ord(pair[1]) - 0xdc00)
-    return chr(codept)
+    return unichr(codept)
 
 
 def fix_surrogates(text):
@@ -381,8 +381,8 @@ def fix_surrogates(text):
     Replace 16-bit surrogate codepoints with the characters they represent
     (when properly paired), or with \ufffd otherwise.
         
-        >>> high_surrogate = chr(0xd83d)
-        >>> low_surrogate = chr(0xdca9)
+        >>> high_surrogate = unichr(0xd83d)
+        >>> low_surrogate = unichr(0xdca9)
         >>> print(fix_surrogates(high_surrogate + low_surrogate))
         💩
         >>> print(fix_surrogates(low_surrogate + high_surrogate))
