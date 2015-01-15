@@ -1,4 +1,4 @@
-## Version 3.4.0 (January 9, 2015)
+## Version 3.4.0 (January 15, 2015)
 
 New features:
 
