@@ -371,6 +371,12 @@ SURROGATE_PAIR_RE = re.compile('[\ud800-\udbff][\udc00-\udfff]')
 
 
 def convert_surrogate_pair(match):
+    """
+    Convert a surrogate pair to the single codepoint it represents.
+
+    This implements the formula described at:
+    http://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
+    """
     pair = match.group(0)
     codept = 0x10000 + (ord(pair[0]) - 0xd800) * 0x400 + (ord(pair[1]) - 0xdc00)
     return unichr(codept)
@@ -447,7 +453,8 @@ def remove_unsafe_private_use(text):
         >>> print(remove_unsafe_private_use('\U0001F4A9\U00100000'))
         💩
     
-    ftfy no longer applies this fix, and it will be removed in ftfy 3.5.
+    ftfy no longer applies this fix by default, and it will be removed in
+    ftfy 3.5.
     """
     warnings.warn(
         "remove_unsafe_private_use is deprecated and will be removed in "
