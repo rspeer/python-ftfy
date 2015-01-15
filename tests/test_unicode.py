@@ -66,5 +66,11 @@ def test_fix_with_backslash():
     eq_(fix_text_encoding(u"<40\\% vs \xe2\x89\xa540\\%"), u"<40\\% vs ≥40\\%")
 
 
+def test_surrogates():
+    eq_(fix_surrogates(u'\udbff\udfff'), u'\U0010ffff')
+    eq_(fix_surrogates(u'\ud800\udc00'), u'\U00010000')
+
+
+
 if __name__ == '__main__':
     test_all_bmp_characters()
