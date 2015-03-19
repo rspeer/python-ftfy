@@ -43,15 +43,17 @@ def make_char_data_file(do_it_anyway=False):
     Build the compressed data file 'char_classes.dat' and write it to the
     current directory.
 
-    If you run this, run it in Python 3.3 or later. It will run in earlier
-    versions, but you won't get the current Unicode standard, leading to
-    inconsistent behavior. To protect against this, running this in the
-    wrong version of Python will raise an error unless you pass
-    `do_it_anyway=True`.
+    If you run this, run it in Python 3.5 or later, even though that requires
+    an alpha version at the time of writing this code. It will run in earlier
+    versions, but you won't get the Unicode 7 standard, leading to inconsistent
+    behavior.
+    
+    To protect against this, running this in the wrong version of Python will
+    raise an error unless you pass `do_it_anyway=True`.
     """
-    if sys.hexversion < 0x03030000 and not do_it_anyway:
+    if sys.hexversion < 0x03050000 and not do_it_anyway:
         raise RuntimeError(
-            "This function should be run in Python 3.3 or later."
+            "This function should be run in Python 3.5 or later."
         )
 
     cclasses = [None] * 0x110000
