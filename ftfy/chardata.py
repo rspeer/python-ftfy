@@ -79,3 +79,22 @@ for i in range(32):
 # Map whitespace control characters to themselves.
 for char in '\t\n\f\r':
     del CONTROL_CHARS[ord(char)]
+
+# A translate mapping that breaks ligatures made of Latin letters. While
+# ligatures may be important to the representation of other languages, in
+# Latin letters they tend to represent a copy/paste error.
+#
+# Ligatures may also be separated by NFKC normalization, but that is sometimes
+# more normalization than you want.
+LIGATURES = {
+    ord('Ĳ'): 'IJ',
+    ord('ĳ'): 'ij',
+    ord('ﬀ'): 'ff',
+    ord('ﬁ'): 'fi',
+    ord('ﬂ'): 'fl',
+    ord('ﬃ'): 'ffi',
+    ord('ﬄ'): 'ffl',
+    ord('ﬅ'): 'ſt',
+    ord('ﬆ'): 'st'
+}
+
