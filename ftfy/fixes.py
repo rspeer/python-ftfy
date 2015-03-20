@@ -6,7 +6,7 @@ can perform.
 
 from __future__ import unicode_literals
 from ftfy.chardata import (possible_encoding,
-                           CHARMAP_ENCODINGS, CONTROL_CHARS)
+                           CHARMAP_ENCODINGS, CONTROL_CHARS, LIGATURES)
 from ftfy.badness import text_cost
 from ftfy.compatibility import htmlentitydefs, unichr, UNSAFE_PRIVATE_USE_RE
 import re
@@ -36,7 +36,7 @@ If you're confused by this, please read the Python Unicode HOWTO:
 """ % sys.version_info[0]
 
 
-def fix_text_encoding(text):
+def fix_encoding(text):
     r"""
     Fix text with incorrectly-decoded garbage ("mojibake") whenever possible.
 
@@ -109,6 +109,12 @@ def fix_text_encoding(text):
     """
     text, _plan = fix_encoding_and_explain(text)
     return text
+
+
+def fix_text_encoding(text):
+    warnings.warn('fix_text_encoding is now known as fix_encoding',
+                  DeprecationWarning)
+    return fix_encoding(text)
 
 
 def fix_encoding_and_explain(text):
@@ -317,6 +323,10 @@ def uncurl_quotes(text):
     return SINGLE_QUOTE_RE.sub("'", DOUBLE_QUOTE_RE.sub('"', text))
 
 
+def fix_latin_ligatures(text):
+    return text.translate(LIGATURES)
+
+
 def fix_line_breaks(text):
     r"""
     Convert all line breaks to Unix style.
@@ -386,7 +396,7 @@ def fix_surrogates(text):
     """
     Replace 16-bit surrogate codepoints with the characters they represent
     (when properly paired), or with \ufffd otherwise.
-        
+
         >>> high_surrogate = unichr(0xd83d)
         >>> low_surrogate = unichr(0xdca9)
         >>> print(fix_surrogates(high_surrogate + low_surrogate))
@@ -407,7 +417,7 @@ def fix_surrogates(text):
 
 def remove_control_chars(text):
     """
-    Remove all control characters except for the important ones.
+    Remove all ASCII control characters except for the important ones.
 
     This removes characters in these ranges:
 
@@ -422,46 +432,22 @@ def remove_control_chars(text):
     - LF (U+000A)
     - FF (U+000C)
     - CR (U+000D)
+
+    Feel free to object that FF isn't "commonly" used for formatting. I've at
+    least seen it used.
     """
     return text.translate(CONTROL_CHARS)
 
 
 def remove_bom(text):
     r"""
-    Remove a left-over byte-order mark.
+    Remove a byte-order mark that was accidentally decoded as if it were part
+    of the text.
 
     >>> print(remove_bom("\ufeffWhere do you want to go today?"))
     Where do you want to go today?
     """
     return text.lstrip(unichr(0xfeff))
-
-
-def remove_unsafe_private_use(text):
-    r"""
-    This function is deprecated, because the Python bug it works around has
-    been fixed for a long time. It only affects old versions of Python that
-    are also insecure in more serious ways.
-
-    Certain string operations would crash Python < 3.3.3 and < 2.7.6 with a
-    SystemError: http://bugs.python.org/issue18183
-
-    ftfy's solution was to remove all characters from Supplementary Private
-    Use Area B, using a regex that is known not to crash given those
-    characters. In retrospect, it would have been a better idea to indicate
-    that they were replaced, using the Unicode replacement character \ufffd.
-
-        >>> print(remove_unsafe_private_use('\U0001F4A9\U00100000'))
-        💩
-    
-    ftfy no longer applies this fix by default, and it will be removed in
-    ftfy 3.5.
-    """
-    warnings.warn(
-        "remove_unsafe_private_use is deprecated and will be removed in "
-        "ftfy 3.5",
-        DeprecationWarning
-    )
-    return UNSAFE_PRIVATE_USE_RE.sub('', text)
 
 
 # Define a regex to match valid escape sequences in Python string literals.
@@ -495,7 +481,7 @@ def decode_escapes(text):
     escapes and literal Unicode -- you're looking at one right now -- the
     "unicode-escape" codec doesn't work on literal Unicode. (See
     http://stackoverflow.com/a/24519338/773754 for more details.)
-    
+
     Instead, this function searches for just the parts of a string that
     represent escape sequences, and decodes them, leaving the rest alone. All
     valid escape sequences are made of ASCII characters, and this allows
