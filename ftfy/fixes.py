@@ -64,17 +64,17 @@ def fix_encoding(text):
     ftfy decodes text that looks like it was decoded incorrectly. It leaves
     alone text that doesn't.
 
-        >>> print(fix_text_encoding('Ãºnico'))
+        >>> print(fix_encoding('Ãºnico'))
         único
 
-        >>> print(fix_text_encoding('This text is fine already :þ'))
+        >>> print(fix_encoding('This text is fine already :þ'))
         This text is fine already :þ
 
     Because these characters often come from Microsoft products, we allow
     for the possibility that we get not just Unicode characters 128-255, but
     also Windows's conflicting idea of what characters 128-160 are.
 
-        >>> print(fix_text_encoding('This â€” should be an em dash'))
+        >>> print(fix_encoding('This â€” should be an em dash'))
         This — should be an em dash
 
     We might have to deal with both Windows characters and raw control
@@ -82,26 +82,26 @@ def fix_encoding(text):
     0x81 that have no mapping in Windows. This is a string that Python's
     standard `.encode` and `.decode` methods cannot correct.
 
-        >>> print(fix_text_encoding('This text is sad .â\x81”.'))
+        >>> print(fix_encoding('This text is sad .â\x81”.'))
         This text is sad .⁔.
 
     However, it has safeguards against fixing sequences of letters and
     punctuation that can occur in valid text:
 
-        >>> print(fix_text_encoding('not such a fan of Charlotte Brontë…”'))
+        >>> print(fix_encoding('not such a fan of Charlotte Brontë…”'))
         not such a fan of Charlotte Brontë…”
 
     Cases of genuine ambiguity can sometimes be addressed by finding other
     characters that are not double-encoded, and expecting the encoding to
     be consistent:
 
-        >>> print(fix_text_encoding('AHÅ™, the new sofa from IKEA®'))
+        >>> print(fix_encoding('AHÅ™, the new sofa from IKEA®'))
         AHÅ™, the new sofa from IKEA®
 
     Finally, we handle the case where the text is in a single-byte encoding
     that was intended as Windows-1252 all along but read as Latin-1:
 
-        >>> print(fix_text_encoding('This text was never UTF-8 at all\x85'))
+        >>> print(fix_encoding('This text was never UTF-8 at all\x85'))
         This text was never UTF-8 at all…
 
     The best version of the text is found using
@@ -158,8 +158,7 @@ def fix_one_step_and_explain(text):
     """
     Performs a single step of re-decoding text that's been decoded incorrectly.
 
-    Returns the decoded text, plus a "plan" for how to reproduce what it
-    did.
+    Returns the decoded text, plus a "plan" for how to reproduce what it did.
     """
     if isinstance(text, bytes):
         raise UnicodeError(BYTES_ERROR_TEXT)
@@ -224,9 +223,9 @@ def fix_one_step_and_explain(text):
     # The cases that remain are mixups between two different single-byte
     # encodings, and not the common case of Latin-1 vs. Windows-1252.
     #
-    # Those cases are somewhat rare, and impossible to solve without false
-    # positives. If you're in one of these situations, you should try using
-    # the `ftfy.guess_bytes` function.
+    # Those cases are somewhat rare, and may be unsolvable without adding false
+    # positives. If you're in one of these situations, you should try using the
+    # `ftfy.guess_bytes` function.
 
     # Return the text unchanged; the plan is empty.
     return text, []
@@ -324,6 +323,19 @@ def uncurl_quotes(text):
 
 
 def fix_latin_ligatures(text):
+    """
+    Replace single-character ligatures of Latin letters, such as 'ﬁ', with the
+    characters that they contain, as in 'fi'. Latin ligatures are usually not
+    intended in text, and are a result of copy-and-paste glitches.
+
+    We leave ligatures in other scripts alone to be safe. They may be fully
+    intended for the text to render correctly, and removing them may lose
+    information. If you want to take apart nearly all ligatures, use NFKC
+    normalization.
+
+        >>> print(fix_latin_ligatures("ﬂuﬃeﬆ"))
+        fluffiest
+    """
     return text.translate(LIGATURES)
 
 
