@@ -25,6 +25,7 @@ def fix_text(text,
              fix_encoding=True,
              normalization='NFC',
              fix_latin_ligatures=True,
+             fix_character_width=False,
              uncurl_quotes=True,
              fix_line_breaks=True,
              fix_surrogates=True,
@@ -60,6 +61,9 @@ def fix_text(text,
         Party like
         it's 1999!
 
+        >>> print(fix_text('ＬＯＵＤ　ＮＯＩＳＥＳ', fix_character_width=True))
+        LOUD NOISES
+
         >>> len(fix_text('ﬁ' * 100000))
         200000
 
@@ -78,7 +82,7 @@ def fix_text(text,
       in different colors.
     - If `fix_encoding` is True, look for common mistakes that come from
       encoding or decoding Unicode text incorrectly, and fix them if they are
-      reasonably fixable. See `fix_text_encoding` for details.
+      reasonably fixable. See `fixes.fix_encoding` for details.
     - If `normalization` is not None, apply the specified form of Unicode
       normalization, which can be one of 'NFC', 'NFKC', 'NFD', and 'NFKD'.
 
@@ -101,6 +105,8 @@ def fix_text(text,
       such as `ﬁ`, will be separated into individual letters. These ligatures are
       usually not meaningful outside of font rendering, and often represent
       copy-and-paste errors.
+    - If `fix_character_width` is True, half-width and full-width characters
+      will be replaced by their standard-width form.
     - If `fix_line_breaks` is true, convert all line breaks to Unix style
       (CRLF and CR line breaks become LF line breaks).
     - If `fix_surrogates` is true, ensure that there are no UTF-16 surrogates
@@ -151,6 +157,7 @@ def fix_text(text,
                 normalization=normalization,
                 uncurl_quotes=uncurl_quotes,
                 fix_latin_ligatures=fix_latin_ligatures,
+                fix_character_width=fix_character_width,
                 fix_line_breaks=fix_line_breaks,
                 fix_surrogates=fix_surrogates,
                 remove_control_chars=remove_control_chars,
@@ -162,10 +169,7 @@ def fix_text(text,
     return ''.join(out)
 
 ftfy = fix_text
-
-
-def fix_encoding(text):
-    return fixes.fix_encoding(text)
+fix_encoding = fixes.fix_encoding
 
 
 def fix_file(input_file,
@@ -175,6 +179,7 @@ def fix_file(input_file,
              fix_encoding=True,
              normalization='NFC',
              fix_latin_ligatures=True,
+             fix_character_width=False,
              uncurl_quotes=True,
              fix_line_breaks=True,
              fix_surrogates=True,
@@ -206,6 +211,7 @@ def fix_file(input_file,
             fix_encoding=fix_encoding,
             normalization=normalization,
             fix_latin_ligatures=fix_latin_ligatures,
+            fix_character_width=fix_character_width,
             uncurl_quotes=uncurl_quotes,
             fix_line_breaks=fix_line_breaks,
             fix_surrogates=fix_surrogates,
@@ -220,6 +226,7 @@ def fix_text_segment(text,
                      fix_encoding=True,
                      normalization='NFC',
                      fix_latin_ligatures=True,
+                     fix_character_width=False,
                      uncurl_quotes=True,
                      fix_line_breaks=True,
                      fix_surrogates=True,
@@ -249,6 +256,8 @@ def fix_text_segment(text,
             text = unicodedata.normalize(normalization, text)
         if fix_latin_ligatures:
             text = fixes.fix_latin_ligatures(text)
+        if fix_character_width:
+            text = fixes.fix_character_width(text)
         if uncurl_quotes:
             text = fixes.uncurl_quotes(text)
         if fix_line_breaks:
