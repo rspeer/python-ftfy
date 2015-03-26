@@ -40,8 +40,8 @@ def fix_text(text,
         >>> print(fix_text('uÌˆnicode'))
         ünicode
 
-        >>> print(fix_text('Broken text&hellip; it&#x2019;s ﬂubberiﬁc!'),
-        ...       normalization='NFKC')
+        >>> print(fix_text('Broken text&hellip; it&#x2019;s ﬂubberiﬁc!',
+        ...                normalization='NFKC'))
         Broken text... it's flubberific!
 
         >>> print(fix_text('HTML entities &lt;3'))
