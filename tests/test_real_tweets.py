@@ -29,11 +29,11 @@ TEST_CASES = [
     ('[x]\xa0©', '[x]\xa0©'),
     ('2012—∞', '2012—∞'),
     ('Con il corpo e lo spirito ammaccato,\xa0è come se nel cuore avessi un vetro conficcato.',
-     'Con il corpo e lo spirito ammaccato, è come se nel cuore avessi un vetro conficcato.'),
+     'Con il corpo e lo spirito ammaccato,\xa0è come se nel cuore avessi un vetro conficcato.'),
     ('Р С—РЎР‚Р С‘РЎРЏРЎвЂљР Р…Р С•РЎРѓРЎвЂљР С‘. РІСњВ¤', 'приятности. ❤'),
     ('Kayanya laptopku error deh, soalnya tiap mau ngetik deket-deket kamu font yg keluar selalu Times New Ã¢â‚¬Å“ RomanceÃ¢â‚¬Â.',
      'Kayanya laptopku error deh, soalnya tiap mau ngetik deket-deket kamu font yg keluar selalu Times New " Romance".'),
-    ("``toda produzida pronta pra assa aí´´", "``toda produzida pronta pra assa aí \u0301 \u0301"),
+    ("``toda produzida pronta pra assa aí´´", "``toda produzida pronta pra assa aí´´"),
     ('HUHLL Õ…', 'HUHLL Õ…'),
     ('Iggy Pop (nÃƒÂ© Jim Osterberg)', 'Iggy Pop (né Jim Osterberg)'),
 
