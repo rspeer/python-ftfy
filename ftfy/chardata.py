@@ -7,6 +7,7 @@ encodings that use them.
 from __future__ import unicode_literals
 import re
 import zlib
+import unicodedata
 from pkg_resources import resource_string
 from ftfy.compatibility import unichr
 
@@ -72,13 +73,17 @@ def chars_to_classes(string):
 
 # A translate mapping that will strip all C0 control characters except
 # those that represent whitespace.
-CONTROL_CHARS = {}
-for i in range(32):
-    CONTROL_CHARS[i] = None
+def _build_control_char_mapping():
+    control_chars = {}
+    for i in range(32):
+        control_chars[i] = None
 
-# Map whitespace control characters to themselves.
-for char in '\t\n\f\r':
-    del CONTROL_CHARS[ord(char)]
+    # Map whitespace control characters to themselves.
+    for char in '\t\n\f\r':
+        del control_chars[ord(char)]
+    return control_chars
+CONTROL_CHARS = _build_control_char_mapping()
+
 
 # A translate mapping that breaks ligatures made of Latin letters. While
 # ligatures may be important to the representation of other languages, in
@@ -97,4 +102,17 @@ LIGATURES = {
     ord('ﬅ'): 'ſt',
     ord('ﬆ'): 'st'
 }
+
+
+# A translate mapping that replaces halfwidth and fullwidth forms with their
+# standard-width forms.
+def _build_width_map():
+    width_map = {0x3000: ' '}
+    for i in range(0xff01, 0xfff0):
+        char = unichr(i)
+        alternate = unicodedata.normalize('NFKC', char)
+        if alternate != char:
+            width_map[i] = alternate
+    return width_map
+WIDTH_MAP = _build_width_map()
 
