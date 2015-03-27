@@ -6,10 +6,39 @@
 ftfy: fixes text for you
 ========================
 
-This is a module for making text less broken and more consistent. It works in
-Python 2.7, Python 3.2, or later.
+`ftfy` fixes Unicode that's broken in various ways. It works in Python 2.7,
+Python 3.2, or later.
 
-The most interesting kind of brokenness that this resolves is when someone has
+The goal of ftfy is to **take in bad Unicode and output good Unicode**, for use
+in your Unicode-aware code. This is different from taking in non-Unicode and
+outputting Unicode, which is not a goal of ftfy. It also isn't designed to
+protect you from having to write Unicode-aware code. ftfy helps those who help
+themselves.
+
+Of course you're better off if your input is decoded properly and has no
+glitches. But you often don't have any control over your input; it's someone
+else's mistake, but it's your problem now.
+
+`ftfy` will do everything it can to fix the problem.
+
+.. note::
+
+    Time is marching on. ftfy 4.x has full support for Python 2.7, but given
+    the sweeping changes to Unicode in Python, it's getting inconvenient to add
+    new features to ftfy that work the same on both versions.
+    
+    ftfy 5.0, when it is released, will probably only support Python 3.3 and
+    later.
+
+    If you're running on Python 2, ftfy 4.x will keep working for you. It's
+    fine.  You can save yourself a headache by adding `ftfy < 5` to your
+    requirements, making sure you stay on version 4.
+
+
+Mojibake
+--------
+
+The most interesting kind of brokenness that ftfy will fix is when someone has
 encoded Unicode with one standard and decoded it with a different one.  This
 often shows up as characters that turn into nonsense sequences (called
 "mojibake"):
@@ -17,43 +46,86 @@ often shows up as characters that turn into nonsense sequences (called
 - The word ``schön`` might appear as ``schÃ¶n``.
 - An em dash (``—``) might appear as ``â€”``.
 - Text that was meant to be enclosed in quotation marks might end up
-  instead enclosed in ``â€œ`` and ``â€`` (and that last character
-  probably won't even display as anything meaningful).
+  instead enclosed in ``â€œ`` and ``â€<9d>``, where ``<9d>`` represents an
+  unprintable character.
 
-This happens very often to real text. Fortunately, the nonsense sequences
-usually contain all the information you need to reconstruct what character was
-supposed to be there.
+This causes your Unicode-aware code to end up with garbage text because someone
+else (or maybe "someone else") made a mistake.
+
+This happens very often to real text. It's often the fault of software that
+makes it difficult to use UTF-8 correctly, such as Microsoft Office and some
+programming languages. The :func:`ftfy.fix_encoding` function will look for
+evidence of mojibake and, when possible, it will undo the process that produced
+it to get back the text that was supposed to be there.
+
+Does this sound impossible? It's really not. UTF-8 is a well-designed encoding
+that makes it obvious when it's being misused, and a string of mojibake usually
+contains all the information we need to recover the original string.
+
+When ftfy is tested on multilingual data from Twitter, it has a false positive
+rate of less than 1 per million tweets.
+
+
+Other fixes
+-----------
 
 Any given text string might have other irritating properties, possibly even
-interacting with the erroneous decoding:
+interacting with the erroneous decoding. The main function of ftfy,
+:func:`ftfy.fix_text`, will fix other problems along the way, such as:
 
 - The text could contain HTML entities such as ``&amp;`` in place of certain
   characters, when you would rather see what the characters actually are.
+
 - For that matter, it could contain instructions for a text terminal to
   do something like change colors, but you are not sending the text to a
   terminal, so those instructions are just going to look like ``^[[30m;``
   or something in the middle of the text.
+
 - The text could write words in non-standard ways for display purposes,
   such as using the three characters ``ﬂ`` ``o`` ``p`` for the word "flop".
   This can happen when you copy text out of a PDF, for example.
 
-Of course you're better off if all the text you take as input is decoded
-properly and written in standard ways. But often, your input is something you
-have no control over. Somebody else's minor mistake becomes your problem.
+- It might not be in *NFC normalized* form. You generally want your text to be
+  NFC-normalized, to avoid situations where unequal sequences of codepoints
+  can represent exactly the same text. You can also opt for ftfy to use the
+  more aggressive *NFKC normalization*.
 
-ftfy will do everything it can to fix the problem.
+
+.. note::
+
+    Before version 4.0, ftfy used NFKC normalization by default. This covered a
+    lot of helpful fixes at once, such as expanding ligatures and replacing
+    "fullwidth" characters with their standard form. However, it also performed
+    transformations that lose information, such as converting `™` to `TM` and
+    `H₂O` to `H2O`.
+
+    The default, starting in ftfy 4.0, is to use NFC normalization unless told
+    to use NFKC normalization (or no normalization at all). The more helpful
+    parts of NFKC are implemented as separate, limited fixes.
+
+
+There are other interesting things that `ftfy` can do that aren't part of
+the :func:`ftfy.fix_text` pipeline, such as:
+
+* :func:`ftfy.explain_unicode`: show you what's going on in a string,
+  for debugging purposes
+* :func:`ftfy.fixes.decode_escapes`: do what everyone thinks the built-in
+  `unicode_escape` codec does, but this one doesn't *cause* mojibake
 
 Encodings ftfy can handle
 -------------------------
 
-ftfy can understand text that was decoded as any of these single-byte
+`ftfy` can't fix all possible mix-ups. Its goal is to cover the most common
+encoding mix-ups while keeping false positives to a very low rate.
+
+`ftfy` can understand text that was decoded as any of these single-byte
 encodings:
 
 - Latin-1 (ISO-8859-1)
 - Windows-1252 (cp1252 -- used in Microsoft products)
 - Windows-1251 (cp1251 -- the Russian version of cp1252)
 - MacRoman (used on Mac OS 9 and earlier)
-- cp437 (used in MS-DOS)
+- cp437 (used in MS-DOS and some versions of the Windows command prompt)
 
 when it was actually intended to be decoded as one of these variable-length
 encodings:
@@ -69,22 +141,36 @@ However, ftfy cannot understand other mixups between single-byte encodings,
 because it is extremely difficult to detect which mixup in particular is the
 one that happened.
 
+We also can't handle the non-UTF encodings used for Chinese, Japanese, and
+Korean, such as ``shift-jis`` and ``gb18030``.  See `issue #34
+<https://github.com/LuminosoInsight/python-ftfy/issues/34>`_ for why this is so
+hard.
+
+But remember that the input to `ftfy` is Unicode, so it handles actual
+CJK *text* just fine. It just can't discover that a CJK *encoding* introduced
+mojibake into the text.
+
 Using ftfy
 ----------
 
-The main function, `fix_text`, will run text through a sequence of fixes. If
+The main function, :func:`ftfy.fix_text`, will run text through a sequence of fixes. If
 the text changed, it will run them through again, so that you can be sure
-the output ends up in a standard form that will be unchanged by `fix_text`.
+the output ends up in a standard form that will be unchanged by :func:`ftfy.fix_text`.
 
 All the fixes are on by default, but you can pass options to turn them off.
+
+.. versionchanged:: 4.0
+   The default normalization was changed from `'NFKC'` to `'NFC'`. The new options
+   *fix_latin_ligatures* and *fix_character_width* were added to implement some
+   of the less lossy parts of NFKC normalization on top of NFC.
 
 .. autofunction:: ftfy.fix_text
 
 .. autofunction:: ftfy.fix_text_segment
 
-.. autofunction:: ftfy.fix_file
+.. autofunction:: ftfy.fix_encoding
 
-.. autofunction:: ftfy.guess_bytes
+.. autofunction:: ftfy.fix_file
 
 .. autofunction:: ftfy.explain_unicode
 
@@ -110,19 +196,20 @@ A note on encoding detection
 If your input is a mess of unmarked bytes, you might want a tool that can just
 statistically analyze those bytes and predict what encoding they're in.
 
-ftfy is not that tool. The `guess_bytes` function will do this in very limited
-cases, but to support more encodings from around the world, something more is
-needed.
+`ftfy` is not that tool. The :func:`ftfy.guess_bytes` function it contains will
+do this in very limited cases, but to support more encodings from around the
+world, something more is needed.
 
-You may have heard of chardet. Chardet is admirable, but it doesn't completely
-do the job either. Its heuristics are designed for multi-byte encodings, such
-as UTF-8 and the language-specific encodings used in East Asian languages. It
-works badly on single-byte encodings, to the point where it will output wrong
-answers with high confidence.
+You may have heard of `chardet`. Chardet is admirable, but it doesn't
+completely do the job either. Its heuristics are designed for multi-byte
+encodings, such as UTF-8 and the language-specific encodings used in East Asian
+languages. It works badly on single-byte encodings, to the point where it will
+output wrong answers with high confidence.
 
-ftfy's `guess_bytes` doesn't even try the East Asian encodings, so the ideal thing
-would combine the simple heuristic of `guess_bytes` with the multibyte character
-set detection of `chardet`. This ideal thing doesn't exist yet.
+:func:`ftfy.guess_bytes` doesn't even try the East Asian encodings, so the
+ideal thing would combine the simple heuristic of :func:`ftfy.guess_bytes` with
+the multibyte character set detection of `chardet`. This ideal thing doesn't
+exist yet.
 
 
 Accuracy
@@ -132,31 +219,41 @@ Accuracy
 Module documentation
 ====================
 
-`ftfy.fixes`: how individual fixes are implemented
+*ftfy.fixes*: how individual fixes are implemented
 --------------------------------------------------
 
 .. automodule:: ftfy.fixes
-   :members:
+   :members: unescape_html, remove_terminal_escapes, uncurl_quotes,
+    fix_latin_ligatures, fix_character_width, fix_line_breaks,
+    fix_surrogates, remove_control_chars, remove_bom, decode_escapes,
+    fix_one_step_and_explain, apply_plan
 
 
-`ftfy.bad_codecs`: decode text from encodings Python doesn't like
------------------------------------------------------------------
-
-.. automodule:: ftfy.bad_codecs
-   :members:
-
-
-`ftfy.badness`: measures the "badness" of text
+*ftfy.badness*: measures the "badness" of text
 ----------------------------------------------
 
 .. automodule:: ftfy.badness
    :members:
 
 
-`ftfy.chardata` and `ftfy.build_data`: trivia about characters
+*ftfy.bad_codecs*: support some encodings Python doesn't like
+-------------------------------------------------------------
+
+.. automodule:: ftfy.bad_codecs
+
+"Sloppy" encodings
+~~~~~~~~~~~~~~~~~~
+.. automodule:: ftfy.bad_codecs.sloppy
+
+Variants of UTF-8
+~~~~~~~~~~~~~~~~~
+.. automodule:: ftfy.bad_codecs.utf8_variants
+
+
+*ftfy.chardata* and *ftfy.build_data*: trivia about characters
 --------------------------------------------------------------
-These files load information about the character properties in Unicode 6.1.
-Yes, even if your version of Python doesn't support Unicode 6.1. This ensures
+These files load information about the character properties in Unicode 7.0.
+Yes, even if your version of Python doesn't support Unicode 7.0. This ensures
 that ftfy's behavior is consistent across versions.
 
 .. automodule:: ftfy.chardata

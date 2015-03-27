@@ -40,18 +40,11 @@ def fix_encoding(text):
     r"""
     Fix text with incorrectly-decoded garbage ("mojibake") whenever possible.
 
-    Something you will find all over the place, in real-world text, is text
-    that's mistakenly encoded as utf-8, decoded in some ugly format like
-    latin-1 or even Windows codepage 1252, and encoded as utf-8 again.
-
-    This causes your perfectly good Unicode-aware code to end up with garbage
-    text because someone else (or maybe "someone else") made a mistake.
-
-    This function looks for the evidence of that having happened and fixes it.
-    It determines whether it should replace nonsense sequences of single-byte
-    characters that were really meant to be UTF-8 characters, and if so, turns
-    them into the correctly-encoded Unicode character that they were meant to
-    represent.
+    This function looks for the evidence of mojibake, formulates a plan to fix
+    it, and applies the plan.  It determines whether it should replace nonsense
+    sequences of single-byte characters that were really meant to be UTF-8
+    characters, and if so, turns them into the correctly-encoded Unicode
+    character that they were meant to represent.
 
     The input to the function must be Unicode. If you don't have Unicode text,
     you're not using the right tool to solve your problem.
@@ -86,7 +79,9 @@ def fix_encoding(text):
         This text is sad .⁔.
 
     However, it has safeguards against fixing sequences of letters and
-    punctuation that can occur in valid text:
+    punctuation that can occur in valid text. In the following example,
+    the last three characters are not replaced with a Korean character,
+    even though they could be.
 
         >>> print(fix_encoding('not such a fan of Charlotte Brontë…”'))
         not such a fan of Charlotte Brontë…”
@@ -326,12 +321,13 @@ def fix_latin_ligatures(text):
     """
     Replace single-character ligatures of Latin letters, such as 'ﬁ', with the
     characters that they contain, as in 'fi'. Latin ligatures are usually not
-    intended in text, and are a result of copy-and-paste glitches.
+    intended in text strings (though they're lovely in *rendered* text).  If
+    you have such a ligature in your string, it is probably a result of a
+    copy-and-paste glitch.
 
-    We leave ligatures in other scripts alone to be safe. They may be fully
-    intended for the text to render correctly, and removing them may lose
-    information. If you want to take apart nearly all ligatures, use NFKC
-    normalization.
+    We leave ligatures in other scripts alone to be safe. They may be intended,
+    and removing them may lose information. If you want to take apart nearly
+    all ligatures, use NFKC normalization.
 
         >>> print(fix_latin_ligatures("ﬂuﬃeﬆ"))
         fluffiest
