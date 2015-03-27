@@ -25,7 +25,7 @@ def fix_text(text,
              fix_encoding=True,
              normalization='NFC',
              fix_latin_ligatures=True,
-             fix_character_width=False,
+             fix_character_width=True,
              uncurl_quotes=True,
              fix_line_breaks=True,
              fix_surrogates=True,
@@ -61,7 +61,7 @@ def fix_text(text,
         Party like
         it's 1999!
 
-        >>> print(fix_text('ＬＯＵＤ　ＮＯＩＳＥＳ', fix_character_width=True))
+        >>> print(fix_text('ＬＯＵＤ　ＮＯＩＳＥＳ'))
         LOUD NOISES
 
         >>> len(fix_text('ﬁ' * 100000))
@@ -179,7 +179,7 @@ def fix_file(input_file,
              fix_encoding=True,
              normalization='NFC',
              fix_latin_ligatures=True,
-             fix_character_width=False,
+             fix_character_width=True,
              uncurl_quotes=True,
              fix_line_breaks=True,
              fix_surrogates=True,
@@ -226,7 +226,7 @@ def fix_text_segment(text,
                      fix_encoding=True,
                      normalization='NFC',
                      fix_latin_ligatures=True,
-                     fix_character_width=False,
+                     fix_character_width=True,
                      uncurl_quotes=True,
                      fix_line_breaks=True,
                      fix_surrogates=True,
