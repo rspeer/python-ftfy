@@ -23,7 +23,6 @@ def fix_text(text,
              fix_entities='auto',
              remove_terminal_escapes=True,
              fix_encoding=True,
-             normalization='NFC',
              fix_latin_ligatures=True,
              fix_character_width=True,
              uncurl_quotes=True,
@@ -31,10 +30,11 @@ def fix_text(text,
              fix_surrogates=True,
              remove_control_chars=True,
              remove_bom=True,
-             max_decode_length=2**16):
+             normalization='NFC',
+             max_decode_length=10**6):
     r"""
-    Given Unicode text as input, make its representation consistent and
-    possibly less broken.
+    Given Unicode text as input, fix inconsistencies and glitches in it,
+    such as mojibake.
 
     Let's start with some examples:
 
@@ -77,12 +77,41 @@ def fix_text(text,
       entities, but don't do so in text where you have seen a pair of actual
       angle brackets (that's probably actually HTML and you shouldn't mess
       with the entities).
+
     - If `remove_terminal_escapes` is True, remove sequences of bytes that are
       instructions for Unix terminals, such as the codes that make text appear
       in different colors.
+
     - If `fix_encoding` is True, look for common mistakes that come from
       encoding or decoding Unicode text incorrectly, and fix them if they are
       reasonably fixable. See `fixes.fix_encoding` for details.
+
+    - If `uncurl_quotes` is True, replace various curly quotation marks with
+      plain-ASCII straight quotes.
+
+    - If `fix_latin_ligatures` is True, then ligatures made of Latin letters,
+      such as `ﬁ`, will be separated into individual letters. These ligatures are
+      usually not meaningful outside of font rendering, and often represent
+      copy-and-paste errors.
+
+    - If `fix_character_width` is True, half-width and full-width characters
+      will be replaced by their standard-width form.
+
+    - If `fix_line_breaks` is true, convert all line breaks to Unix style
+      (CRLF and CR line breaks become LF line breaks).
+
+    - If `fix_surrogates` is true, ensure that there are no UTF-16 surrogates
+      in the resulting string, by converting them to the correct characters
+      when they're appropriately paired, or replacing them with \ufffd
+      otherwise.
+
+    - If `fix_control_characters` is true, remove all C0 control characters
+      except the common useful ones: TAB, CR, LF, and FF. (CR characters
+      may have already been removed by the `fix_line_breaks` step.)
+
+    - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
+      (This is a decoded Unicode string. It doesn't have a "byte order".)
+
     - If `normalization` is not None, apply the specified form of Unicode
       normalization, which can be one of 'NFC', 'NFKC', 'NFD', and 'NFKD'.
 
@@ -91,7 +120,7 @@ def fix_text(text,
         acute accent modifier into "é", or converting "ka" (か) plus a dakuten
         into the single character "ga" (が). Unicode can be converted to NFC
         form without any change in its meaning.
-      
+
       - If you ask for NFKC normalization, it will apply additional
         normalizations that can change the meanings of characters. For example,
         ellipsis characters will be replaced with three periods, all ligatures
@@ -99,35 +128,21 @@ def fix_text(text,
         and characters that differ in font style will be converted to the same
         character.
 
-    - If `uncurl_quotes` is True, replace various curly quotation marks with
-      plain-ASCII straight quotes.
-    - If `fix_latin_ligatures` is True, then ligatures made of Latin letters,
-      such as `ﬁ`, will be separated into individual letters. These ligatures are
-      usually not meaningful outside of font rendering, and often represent
-      copy-and-paste errors.
-    - If `fix_character_width` is True, half-width and full-width characters
-      will be replaced by their standard-width form.
-    - If `fix_line_breaks` is true, convert all line breaks to Unix style
-      (CRLF and CR line breaks become LF line breaks).
-    - If `fix_surrogates` is true, ensure that there are no UTF-16 surrogates
-      in the resulting string, by converting them to the correct characters
-      when they're appropriately paired, or replacing them with \ufffd
-      otherwise.
-    - If `fix_control_characters` is true, remove all C0 control characters
-      except the common useful ones: TAB, CR, LF, and FF. (CR characters
-      may have already been removed by the `fix_line_breaks` step.)
-    - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
     - If anything was changed, repeat all the steps, so that the function is
       idempotent. "&amp;amp;" will become "&", for example, not "&amp;".
 
     `fix_text` will work one line at a time, with the possibility that some
-    lines are in different encodings. When it encounters lines longer than
-    `max_decode_length`, it will not run the `fix_encoding` step, to avoid
+    lines are in different encodings, allowing it to fix text that has been
+    concatenated together from different sources.
+    
+    When it encounters lines longer than `max_decode_length` (1 million
+    codepoints by default), it will not run the `fix_encoding` step, to avoid
     unbounded slowdowns.
 
-    If you are certain your entire text is in the same encoding (though that
-    encoding is possibly flawed), and do not mind performing operations on
-    the whole text at once, use `fix_text_segment`.
+    If you're certain that any decoding errors in the text would have affected
+    the entire text in the same way, and you don't mind operations that scale
+    with the length of the text, you can use `fix_text_segment` directly to
+    fix the whole string in one batch.
     """
     if isinstance(text, bytes):
         raise UnicodeError(fixes.BYTES_ERROR_TEXT)
@@ -154,14 +169,14 @@ def fix_text(text,
                 fix_entities=fix_entities,
                 remove_terminal_escapes=remove_terminal_escapes,
                 fix_encoding=fix_encoding_this_time,
-                normalization=normalization,
                 uncurl_quotes=uncurl_quotes,
                 fix_latin_ligatures=fix_latin_ligatures,
                 fix_character_width=fix_character_width,
                 fix_line_breaks=fix_line_breaks,
                 fix_surrogates=fix_surrogates,
                 remove_control_chars=remove_control_chars,
-                remove_bom=remove_bom
+                remove_bom=remove_bom,
+                normalization=normalization
             )
         )
         pos = textbreak
@@ -177,14 +192,15 @@ def fix_file(input_file,
              fix_entities='auto',
              remove_terminal_escapes=True,
              fix_encoding=True,
-             normalization='NFC',
              fix_latin_ligatures=True,
              fix_character_width=True,
              uncurl_quotes=True,
              fix_line_breaks=True,
              fix_surrogates=True,
              remove_control_chars=True,
-             remove_bom=True):
+             remove_bom=True,
+             normalization='NFC'
+             ):
     """
     Fix text that is found in a file.
 
@@ -209,14 +225,14 @@ def fix_file(input_file,
             fix_entities=entities,
             remove_terminal_escapes=remove_terminal_escapes,
             fix_encoding=fix_encoding,
-            normalization=normalization,
             fix_latin_ligatures=fix_latin_ligatures,
             fix_character_width=fix_character_width,
             uncurl_quotes=uncurl_quotes,
             fix_line_breaks=fix_line_breaks,
             fix_surrogates=fix_surrogates,
             remove_control_chars=remove_control_chars,
-            remove_bom=remove_bom
+            remove_bom=remove_bom,
+            normalization=normalization
         )
 
 
@@ -224,18 +240,18 @@ def fix_text_segment(text,
                      fix_entities='auto',
                      remove_terminal_escapes=True,
                      fix_encoding=True,
-                     normalization='NFC',
                      fix_latin_ligatures=True,
                      fix_character_width=True,
                      uncurl_quotes=True,
                      fix_line_breaks=True,
                      fix_surrogates=True,
                      remove_control_chars=True,
-                     remove_bom=True):
+                     remove_bom=True,
+                     normalization='NFC'):
     """
     Apply fixes to text in a single chunk. This could be a line of text
     within a larger run of `fix_text`, or it could be a larger amount
-    of text that you are certain is all in the same encoding.
+    of text that you are certain is in a consistent encoding.
 
     See `fix_text` for a description of the parameters.
     """
@@ -252,8 +268,6 @@ def fix_text_segment(text,
             text = fixes.remove_terminal_escapes(text)
         if fix_encoding:
             text = fixes.fix_text_encoding(text)
-        if normalization is not None:
-            text = unicodedata.normalize(normalization, text)
         if fix_latin_ligatures:
             text = fixes.fix_latin_ligatures(text)
         if fix_character_width:
@@ -268,6 +282,8 @@ def fix_text_segment(text,
             text = fixes.remove_control_chars(text)
         if remove_bom:
             text = fixes.remove_bom(text)
+        if normalization is not None:
+            text = unicodedata.normalize(normalization, text)
         if text == origtext:
             return text
 
@@ -283,12 +299,12 @@ def guess_bytes(bstring):
 
     Unlike the rest of ftfy, this may not be accurate, and it may *create*
     Unicode problems instead of solving them!
-    
+
     It doesn't try East Asian encodings at all, and if you have East Asian text
     that you don't know how to decode, you are somewhat out of luck.  East
     Asian encodings require some serious statistics to distinguish from each
     other, so we can't support them without decreasing the accuracy of ftfy.
-    
+
     If you don't know which encoding you have at all, I recommend
     trying the 'chardet' module, but being appropriately skeptical about its
     results.
