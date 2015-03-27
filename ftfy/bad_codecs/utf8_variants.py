@@ -6,7 +6,7 @@ UTF-16, as well as Java's twist on CESU-8 that contains a two-byte encoding for
 codepoint 0.
 
 This is particularly relevant in Python 3, which provides no other way of
-decoding CESU-8 or Java's encoding. [1]
+decoding CESU-8.
 
 The easiest way to use the codec is to simply import `ftfy.bad_codecs`:
 
