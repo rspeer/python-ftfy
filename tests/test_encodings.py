@@ -13,6 +13,15 @@ def test_cesu8():
     test_text = '\U00077777 is an unassigned character, and \x00 is null'
     eq_(test_bytes.decode('cesu8'), test_text)
 
+
+def test_sloppy_utf8():
+    eq_(bad_codecs.search_function('sloppy-utf8').__class__,
+        bad_codecs.search_function('sloppy-utf-8').__class__)
+    
+    eq_(b'\xe2\x80\x9cmismatched quotes\x85\x94'.decode('sloppy-utf-8'),
+        '“mismatched quotes…”')
+
+
 def test_russian_crash():
     thebytes = b'\xe8\xed\xe2\xe5\xed\xf2\xe0\xf0\xe8\xe7\xe0\xf6\xe8\xff '
     # We don't care what the result is, but this shouldn't crash
