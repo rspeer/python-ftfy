@@ -186,7 +186,13 @@ def fix_one_step_and_explain(text):
                 steps = [('encode', encoding), ('decode', decoding)]
                 return fixed, steps
             except UnicodeDecodeError:
-                possible_1byte_encodings.append(encoding)
+                try:
+                    decoding = 'sloppy-utf-8'
+                    fixed = encoded_bytes.decode(decoding)
+                    steps = [('encode', encoding), ('decode', decoding)]
+                    return fixed, steps
+                except UnicodeDecodeError:
+                    possible_1byte_encodings.append(encoding)
 
     # The next most likely case is that this is Latin-1 that was intended to
     # be read as Windows-1252, because those two encodings in particular are
