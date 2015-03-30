@@ -23,16 +23,14 @@ else's mistake, but it's your problem now.
 
 .. note::
 
-    Time is marching on. ftfy 4.x has full support for Python 2.7, but given
-    the sweeping changes to Unicode in Python, it's getting inconvenient to add
-    new features to ftfy that work the same on both versions.
-    
-    ftfy 5.0, when it is released, will probably only support Python 3.3 and
-    later.
+    Time is marching on. ftfy 4.x supports Python 2.7 and 3.x, but when
+    ftfy 5.0 is released, it will probably only support Python 3.
 
-    If you're running on Python 2, ftfy 4.x will keep working for you. It's
-    fine.  You can save yourself a headache by adding `ftfy < 5` to your
-    requirements, making sure you stay on version 4.
+    If you're running on Python 2, ftfy 4.x will keep working for you. You
+    don't have to upgrade to 5.0. You can save yourself a headache by adding
+    `ftfy < 5` to your requirements, making sure you stay on version 4.
+
+    See `Future versions of ftfy`_ for why this needs to happen.
 
 
 Mojibake
@@ -261,3 +259,28 @@ that ftfy's behavior is consistent across versions.
 
 .. autofunction:: ftfy.build_data.make_char_data_file
 
+
+Future versions of ftfy
+=======================
+    
+ftfy has full support for Python 2.7, even including a backport of Unicode 7
+character classes to Python 2. But given the sweeping changes to Unicode in
+Python, it's getting inconvenient to add new features to ftfy that work the
+same on both versions.
+
+ftfy 5.0, when it is released, will probably only support Python 3.
+
+If you want to see examples of why ftfy is particularly difficult to maintain
+on two versions of Python (which is more like three versions because of Python
+2's "wide" and "narrow" builds), take a look at functions such as
+:func:`ftfy.bad_codecs.utf8_variants.mangle_surrogates` and
+:func:`ftfy.compatibility._narrow_unichr_workaround`.
+
+We're following the lead of venerable projects such as jQuery. jQuery dropped
+support for IE 6-8 in version 2.0, and in doing so, it became much simpler and
+faster for people who didn't need to support old versions of IE in their web
+applications. Meanwhile, jQuery 1.9 remained there for those who needed it.
+
+Similarly, ftfy 5.0 will reduce the size and complexity of the code greatly,
+but ftfy 4.x will remain there. If you're running on Python 2, please make sure
+that `ftfy < 5` is in your requirements list, not just `ftfy`.
