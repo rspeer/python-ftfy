@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from ftfy.fixes import fix_text_encoding, fix_encoding_and_explain, apply_plan, possible_encoding, fix_surrogates
+from __future__ import unicode_literals
+from ftfy.fixes import fix_encoding, fix_encoding_and_explain, apply_plan, possible_encoding, fix_surrogates
 from ftfy.badness import ENDING_PUNCT_RE
 import unicodedata
 import sys
@@ -33,13 +34,13 @@ def test_all_bmp_characters():
 
 
 phrases = [
-    u"\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
-    u"\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
-    u"\u2039ALLÍ ESTÁ\u203A",
-    u"\u2014ALLÍ ESTÁ\u2014",
-    u"AHÅ™, the new sofa from IKEA®",
-    u"ВІКІ is Ukrainian for WIKI",
-    #u"\u2014a radius of 10 Å\u2014",
+    "\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
+    "\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
+    "\u2039ALLÍ ESTÁ\u203A",
+    "\u2014ALLÍ ESTÁ\u2014",
+    "AHÅ™, the new sofa from IKEA®",
+    "ВІКІ is Ukrainian for WIKI",
+    #"\u2014a radius of 10 Å\u2014",
 ]
 # These phrases should not be erroneously "fixed"
 def test_valid_phrases():
@@ -48,12 +49,12 @@ def test_valid_phrases():
 
 
 def check_phrase(text):
-    eq_(fix_text_encoding(text), text)
-    eq_(fix_text_encoding(text.encode('utf-8').decode('latin-1')), text)
+    eq_(fix_encoding(text), text)
+    eq_(fix_encoding(text.encode('utf-8').decode('latin-1')), text)
     # make sure that the opening punctuation is not the only thing that makes
     # it work
-    eq_(fix_text_encoding(text[1:]), text[1:])
-    eq_(fix_text_encoding(text[1:].encode('utf-8').decode('latin-1')), text[1:])
+    eq_(fix_encoding(text[1:]), text[1:])
+    eq_(fix_encoding(text[1:].encode('utf-8').decode('latin-1')), text[1:])
 
 
 def test_possible_encoding():
@@ -63,13 +64,17 @@ def test_possible_encoding():
 
 
 def test_fix_with_backslash():
-    eq_(fix_text_encoding(u"<40\\% vs \xe2\x89\xa540\\%"), u"<40\\% vs ≥40\\%")
+    eq_(fix_encoding("<40\\% vs \xe2\x89\xa540\\%"), "<40\\% vs ≥40\\%")
+
+
+def test_sloppy_utf8():
+    eq_(fix_encoding('\xe2\x80\x9cmismatched quotes\x85\x94'), '“mismatched quotes…”')
+    eq_(fix_encoding('â€œmismatched quotes…”'), '“mismatched quotes…”')
 
 
 def test_surrogates():
-    eq_(fix_surrogates(u'\udbff\udfff'), u'\U0010ffff')
-    eq_(fix_surrogates(u'\ud800\udc00'), u'\U00010000')
-
+    eq_(fix_surrogates('\udbff\udfff'), '\U0010ffff')
+    eq_(fix_surrogates('\ud800\udc00'), '\U00010000')
 
 
 if __name__ == '__main__':

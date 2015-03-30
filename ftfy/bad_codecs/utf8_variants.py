@@ -6,7 +6,7 @@ UTF-16, as well as Java's twist on CESU-8 that contains a two-byte encoding for
 codepoint 0.
 
 This is particularly relevant in Python 3, which provides no other way of
-decoding CESU-8.
+decoding CESU-8 [1]_.
 
 The easiest way to use the codec is to simply import `ftfy.bad_codecs`:
 
@@ -132,8 +132,8 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
         elif cutoff2 != -1:
             cutoff = cutoff2
         else:
-            # The entire input can be decoded as UTF-8, so just do so.
-            return sup(input, errors, final)
+            # Decode the entire input at once.
+            return sup(input, errors, True)
 
         if cutoff1 == 0:
             # Decode a possible six-byte sequence starting with 0xed.
@@ -146,6 +146,13 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
             # Set final=True because 0xc0 and 0xed don't make sense in the
             # middle of a sequence, in any variant.
             return sup(input[:cutoff], errors, True)
+    
+    def _handle_errors(self, input, errors, final, err):
+        """
+        A subclass can override this to run special code upon encountering
+        a UTF-8 decoding error.
+        """
+        return UTF8IncrementalDecoder._buffer_decode(input, errors, final)
 
     @staticmethod
     def _buffer_decode_null(sup, input, errors, final):
