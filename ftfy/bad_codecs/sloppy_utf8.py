@@ -90,9 +90,13 @@ class SloppyIncrementalDecoder(IncrementalDecoder):
                     return byte.decode('windows-1252'), 1
             
             elif err.reason == 'invalid continuation byte':
-                cause = input[err.end]
-                if cause == ' ':
-                    input = input[:err.end] + b'\xa0' + input[err.end + 1:]
+                cause = input[err.end:err.end + 1]
+                if cause == b' ':
+                    fixed = input[:err.end] + b'\xa0' + input[err.end + 1:]
+                    return self._buffer_decode_step(fixed, errors, final)
+                elif cause == b'.' and input[err.end:err.end + 3] == b'...':
+                    fixed = input[:err.end] + b'\x85' + input[err.end + 3:]
+                    return self._buffer_decode_step(fixed, errors, final)
 
             return sup(input, errors, final)
 
