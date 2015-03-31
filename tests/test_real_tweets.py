@@ -38,6 +38,8 @@ TEST_CASES = [
     ('Iggy Pop (nÃƒÂ© Jim Osterberg)', 'Iggy Pop (né Jim Osterberg)'),
     ('eres mía, mía, mía, no te hagas la loca eso muy bien ya lo sabías',
      'eres mía, mía, mía, no te hagas la loca eso muy bien ya lo sabías'),
+    ("Direzione Pd, ok âsenza modifiche all'Italicum.",
+     "Direzione Pd, ok \"senza modifiche\" all'Italicum."),
 
     ## Current false positives:
     #("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´",
