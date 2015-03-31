@@ -36,6 +36,8 @@ TEST_CASES = [
     ("``toda produzida pronta pra assa aí´´", "``toda produzida pronta pra assa aí´´"),
     ('HUHLL Õ…', 'HUHLL Õ…'),
     ('Iggy Pop (nÃƒÂ© Jim Osterberg)', 'Iggy Pop (né Jim Osterberg)'),
+    ('eres mía, mía, mía, no te hagas la loca eso muy bien ya lo sabías',
+     'eres mía, mía, mía, no te hagas la loca eso muy bien ya lo sabías'),
 
     ## Current false positives:
     #("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´",
