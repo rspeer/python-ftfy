@@ -69,7 +69,7 @@ def test_fix_with_backslash():
 
 def test_sloppy_utf8():
     eq_(fix_encoding('\xe2\x80\x9cmismatched quotes\x85\x94'), '“mismatched quotes…”')
-    eq_(fix_encoding('â€œmismatched quotes…”'), '“mismatched quotes…”')
+    eq_(fix_encoding('â€œmismatched quotesâ€¦”'), '“mismatched quotes…”')
 
 
 def test_surrogates():
