@@ -134,12 +134,10 @@ def fix_encoding_and_explain(text):
         # is that we won't use these encodings unless they can successfully
         # replace multiple characters.
         if ('encode', 'macroman') in plan_so_far or\
-           ('encode', 'cp437') in plan_so_far or\
-           ('decode', 'sloppy-utf-8') in plan_so_far:
+           ('encode', 'cp437') in plan_so_far:
             cost += 2
 
-        # We need pretty solid evidence to decode from Windows-1251 (Cyrillic)
-        # or from sloppy-utf-8.
+        # We need pretty solid evidence to decode from Windows-1251 (Cyrillic).
         if ('encode', 'sloppy-windows-1251') in plan_so_far:
             cost += 5
 
@@ -188,15 +186,6 @@ def fix_one_step_and_explain(text):
                 steps = [('encode', encoding), ('decode', decoding)]
                 return fixed, steps
             except UnicodeDecodeError:
-                if len(encoded_bytes.decode('utf-8-variants', 'replace')) < len(text):
-                    try:
-                        decoding = 'sloppy-utf-8'
-                        fixed = encoded_bytes.decode(decoding)
-                        steps = [('encode', encoding), ('decode', decoding)]
-                        return fixed, steps
-                    except UnicodeDecodeError:
-                        pass
-
                 possible_1byte_encodings.append(encoding)
 
     # The next most likely case is that this is Latin-1 that was intended to

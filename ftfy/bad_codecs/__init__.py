@@ -45,10 +45,6 @@ UTF8_VAR_NAMES = (
     'java_utf_8', 'java_utf8'
 )
 
-SLOPPY_UTF8_NAMES = (
-    'sloppy_utf_8', 'sloppy_utf8'
-)
-
 
 def search_function(encoding):
     """
@@ -71,9 +67,6 @@ def search_function(encoding):
     codec = None
     if norm_encoding in UTF8_VAR_NAMES:
         from ftfy.bad_codecs.utf8_variants import CODEC_INFO
-        codec = CODEC_INFO
-    elif norm_encoding in SLOPPY_UTF8_NAMES:
-        from ftfy.bad_codecs.sloppy_utf8 import CODEC_INFO
         codec = CODEC_INFO
     elif norm_encoding.startswith('sloppy_'):
         from ftfy.bad_codecs.sloppy import CODECS
