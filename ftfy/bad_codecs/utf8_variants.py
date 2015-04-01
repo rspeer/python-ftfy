@@ -119,8 +119,7 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
 
         # Find the next byte position that indicates a variant of UTF-8.
         # CESU-8 sequences always start with 0xed, and Java nulls always
-        # start with 0xc0, both of which are conveniently impossible in
-        # real UTF-8.
+        # start with 0xc0.
         cutoff1 = input.find(b'\xed')
         cutoff2 = input.find(b'\xc0')
 
