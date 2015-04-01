@@ -339,7 +339,7 @@ def fix_character_width(text):
     """
     The ASCII characters, katakana, and Hangul characters have alternate
     "halfwidth" or "fullwidth" forms that help text line up in a grid.
-    
+
     If you don't need these width properties, you probably want to replace
     these characters with their standard form, which is what this function
     does.
