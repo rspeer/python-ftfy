@@ -19,21 +19,10 @@ import unicodedata
 import warnings
 
 
-# These are flags used by the fix_encoding option. BASIC is equivalent to True,
-# and it fixes UTF-8 when it can be applied consistently throughout the string.
-#
-# THOROUGH, on the other hand, will find stubborn UTF-8 sequences that didn't
-# decode consistently with the rest of the string, and decode them anyway if
-# they're a sufficiently common character. This covers the case where -- for
-# whatever reason -- something out there is encoding left curly quotes in UTF-8
-# and right curly quotes in Latin-1.
-BASIC, THOROUGH = 1, 2
-
-
 def fix_text(text,
              fix_entities='auto',
              remove_terminal_escapes=True,
-             fix_encoding=THOROUGH,
+             fix_encoding=True,
              fix_latin_ligatures=True,
              fix_character_width=True,
              uncurl_quotes=True,
@@ -93,11 +82,9 @@ def fix_text(text,
       instructions for Unix terminals, such as the codes that make text appear
       in different colors.
 
-    - If `fix_encoding` is True (or BASIC), look for common mistakes that come from
+    - If `fix_encoding` is True, look for common mistakes that come from
       encoding or decoding Unicode text incorrectly, and fix them if they are
-      reasonably fixable. If it's set to THOROUGH (the default), it will make
-      an extra pass to fix even more problems. See `fixes.fix_encoding` for
-      details.
+      reasonably fixable. See `fixes.fix_encoding` for details.
 
     - If `uncurl_quotes` is True, replace various curly quotation marks with
       plain-ASCII straight quotes.
@@ -204,7 +191,7 @@ def fix_file(input_file,
              encoding=None,
              fix_entities='auto',
              remove_terminal_escapes=True,
-             fix_encoding=THOROUGH,
+             fix_encoding=True,
              fix_latin_ligatures=True,
              fix_character_width=True,
              uncurl_quotes=True,
@@ -252,7 +239,7 @@ def fix_file(input_file,
 def fix_text_segment(text,
                      fix_entities='auto',
                      remove_terminal_escapes=True,
-                     fix_encoding=THOROUGH,
+                     fix_encoding=True,
                      fix_latin_ligatures=True,
                      fix_character_width=True,
                      uncurl_quotes=True,
