@@ -112,6 +112,56 @@ def fix_text_encoding(text):
     return fix_encoding(text)
 
 
+# When we support discovering mojibake in more encodings, we run the risk
+# of more false positives. We can mitigate false positives by assigning an
+# additional cost to using encodings that are rarer than Windows-1252, so
+# that these encodings will only be used if they fix multiple problems.
+ENCODING_COSTS = {
+    'macroman': 2,
+    'cp437': 3,
+    'sloppy-windows-1251': 5
+}
+
+
+# Recognize UTF-8 mojibake that's so blatant that we can fix it even when the
+# rest of the string doesn't decode as UTF-8 -- namely, UTF-8 re-encodings of
+# the 'General Punctuation' characters U+2000 to U+2040.
+#
+# These are recognizable by the distinctive 'â€' ('\xe2\x80') sequence they all
+# begin with when decoded as Windows-1252.
+
+OBVIOUS_UTF8_RE = re.compile(b'\xe2\x80[\x80-\xbf]')
+
+
+# Recognize UTF-8 sequences that would be valid if it weren't for a b'\xa0'
+# that some Windows-1252 program converted to a plain space.
+#
+# The smaller values are included on a case-by-case basis, because we don't want
+# to decode likely input sequences to unlikely characters. These are the ones
+# that *do* form likely characters before 0xa0:
+#
+#   0xc2 -> U+A0 NO-BREAK SPACE
+#   0xc3 -> U+E0 LATIN SMALL LETTER A WITH GRAVE
+#   0xc5 -> U+160 LATIN CAPITAL LETTER S WITH CARON
+#   0xce -> U+3A0 GREEK CAPITAL LETTER PI
+#   0xd0 -> U+420 CYRILLIC CAPITAL LETTER ER
+#
+# These still need to come with a cost, so that they only get converted when
+# there's evidence that it fixes other things. Any of these could represent
+# characters that legitimately appear surrounded by spaces, particularly U+C5
+# (Å), which is a word in multiple languages!
+#
+# We should consider checking for b'\x85' being converted to ... in the future.
+# I've seen it once, but the text still wasn't recoverable.
+
+ALTERED_UTF8_RE = re.compile(b'[\xc2\xc3\xc5\xce\xd0][ ]'
+                             b'|[\xe0-\xef][ ][\x80-\xbf]'
+                             b'|[\xe0-\xef][\x80-\xbf][ ]'
+                             b'|[\xf0-\xf4][ ][\x80-\xbf][\x80-\xbf]'
+                             b'|[\xf0-\xf4][\x80-\xbf][ ][\x80-\xbf]'
+                             b'|[\xf0-\xf4][\x80-\xbf][\x80-\xbf][ ]')
+
+
 def fix_encoding_and_explain(text):
     """
     Re-decodes text that has been decoded incorrectly, and also return a
@@ -129,17 +179,9 @@ def fix_encoding_and_explain(text):
         text, plan = fix_one_step_and_explain(text)
         plan_so_far.extend(plan)
         cost = text_cost(text)
-
-        # Add a penalty if we used a particularly obsolete encoding. The result
-        # is that we won't use these encodings unless they can successfully
-        # replace multiple characters.
-        if ('encode', 'macroman') in plan_so_far or\
-           ('encode', 'cp437') in plan_so_far:
-            cost += 2
-
-        # We need pretty solid evidence to decode from Windows-1251 (Cyrillic).
-        if ('encode', 'sloppy-windows-1251') in plan_so_far:
-            cost += 5
+        orig_cost = cost
+        for _op, _encoding, step_cost in plan_so_far:
+            cost += step_cost
 
         if cost < best_cost:
             best_cost = cost
@@ -180,11 +222,25 @@ def fix_one_step_and_explain(text):
             # remember the encoding for later.
             try:
                 decoding = 'utf-8'
+                # Check encoded_bytes for sequences that would be UTF-8,
+                # except they have b' ' where b'\xa0' would belong.
+                if ALTERED_UTF8_RE.search(encoded_bytes):
+                    fixed_bytes, cost = restore_byte_a0(encoded_bytes)
+                    try:
+                        fixed = fixed_bytes.decode('utf-8-variants')
+                        steps = [('transcode', 'restore_byte_a0', cost),
+                                 ('decode', 'utf-8-variants', 0)]
+                        return fixed, steps
+                    except UnicodeDecodeError:
+                        pass
+
                 if b'\xed' in encoded_bytes or b'\xc0' in encoded_bytes:
                     decoding = 'utf-8-variants'
                 fixed = encoded_bytes.decode(decoding)
-                steps = [('encode', encoding), ('decode', decoding)]
+                steps = [('encode', encoding, ENCODING_COSTS.get(encoding, 0)),
+                         ('decode', decoding, 0)]
                 return fixed, steps
+
             except UnicodeDecodeError:
                 possible_1byte_encodings.append(encoding)
 
@@ -207,13 +263,15 @@ def fix_one_step_and_explain(text):
                 fixed = encoded.decode('windows-1252')
                 steps = []
                 if fixed != text:
-                    steps = [('encode', 'latin-1'), ('decode', 'windows-1252')]
+                    steps = [('encode', 'latin-1', 0), ('decode', 'windows-1252', 1)]
                 return fixed, steps
             except UnicodeDecodeError:
                 # This text contained characters that don't even make sense
                 # if you assume they were supposed to be Windows-1252. In
                 # that case, let's not assume anything.
                 pass
+
+    # TODO: look for a-hat-euro sequences that remain, and fix them in isolation.
 
     # The cases that remain are mixups between two different single-byte
     # encodings, and not the common case of Latin-1 vs. Windows-1252.
@@ -230,20 +288,26 @@ def apply_plan(text, plan):
     """
     Apply a plan for fixing the encoding of text.
 
-    The plan is a list of tuples of the form (operation, encoding), where
-    `operation` is either 'encode' or 'decode', and `encoding` is an encoding
-    name such as 'utf-8' or 'latin-1'.
+    The plan is a list of tuples of the form (operation, encoding, cost):
 
-    Because only text can be encoded, and only bytes can be decoded, the plan
-    should alternate 'encode' and 'decode' steps, or else this function will
-    encounter an error.
+    - `operation` is 'encode' if it turns a string into bytes, 'decode' if it
+      turns bytes into a string, and 'transcode' if it turns bytes into bytes.
+    - `encoding` is the name of the encoding to use, such as 'utf-8' or
+      'latin-1', or the function name in the case of 'transcode'.
+    - `cost` is a penalty to apply to the score of the resulting text, when
+      performing a dubious operation that requires a lot of evidence.
     """
     obj = text
-    for operation, encoding in plan:
+    for operation, encoding, cost in plan:
         if operation == 'encode':
             obj = obj.encode(encoding)
         elif operation == 'decode':
             obj = obj.decode(encoding)
+        elif operation == 'transcode':
+            if encoding == 'restore_byte_a0':
+                obj = restore_byte_a0(obj)
+            else:
+                raise ValueError("Unknown transcode operation: %s" % encoding)
         else:
             raise ValueError("Unknown plan step: %s" % operation)
 
@@ -524,3 +588,12 @@ def decode_escapes(text):
         return codecs.decode(match.group(0), 'unicode-escape')
 
     return ESCAPE_SEQUENCE_RE.sub(decode_match, text)
+
+
+def restore_byte_a0(byts):
+    def replacement(match):
+        return match.group(0).replace(b'\x20', b'\xa0')
+
+    fixed = ALTERED_UTF8_RE.sub(replacement, byts)
+    return fixed, fixed.count(b'\xa0') * 2
+
