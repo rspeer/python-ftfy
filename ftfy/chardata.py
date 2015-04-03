@@ -46,6 +46,60 @@ def _build_regexes():
 ENCODING_REGEXES = _build_regexes()
 
 
+def _build_utf8_punct_regex():
+    """
+    Recognize UTF-8 mojibake that's so blatant that we can fix it even when the
+    rest of the string doesn't decode as UTF-8 -- namely, UTF-8 sequences for
+    the 'General Punctuation' characters U+2000 to U+2040, re-encoded in
+    Windows-1252.
+
+    These are recognizable by the distinctive 'â€' ('\xe2\x80') sequence they all
+    begin with when decoded as Windows-1252.
+    """
+    obvious_utf8_regexes = {}
+
+    # We're making a regex that has all the literal bytes from 0x80 to 0xbf in
+    # a range. "Couldn't this have just said [\x80-\xbf]?", you might ask.
+    # However, when we decode the regex as Windows-1252, the resulting characters
+    # won't even be remotely contiguous.
+    #
+    # Unrelatedly, the expression that generates these bytes will be so much
+    # prettier when we deprecate Python 2.
+    continuation_char_list = ''.join(unichr(i) for i in range(0x80, 0xc0)).encode('latin-1')
+    obvious_utf8 = 'â€[' + continuation_char_list.decode('sloppy-windows-1252') + ']'
+    return re.compile(obvious_utf8)
+PARTIAL_UTF8_PUNCT_RE = _build_utf8_punct_regex()
+
+
+# Recognize UTF-8 sequences that would be valid if it weren't for a b'\xa0'
+# that some Windows-1252 program converted to a plain space.
+#
+# The smaller values are included on a case-by-case basis, because we don't want
+# to decode likely input sequences to unlikely characters. These are the ones
+# that *do* form likely characters before 0xa0:
+#
+#   0xc2 -> U+A0 NO-BREAK SPACE
+#   0xc3 -> U+E0 LATIN SMALL LETTER A WITH GRAVE
+#   0xc5 -> U+160 LATIN CAPITAL LETTER S WITH CARON
+#   0xce -> U+3A0 GREEK CAPITAL LETTER PI
+#   0xd0 -> U+420 CYRILLIC CAPITAL LETTER ER
+#
+# These still need to come with a cost, so that they only get converted when
+# there's evidence that it fixes other things. Any of these could represent
+# characters that legitimately appear surrounded by spaces, particularly U+C5
+# (Å), which is a word in multiple languages!
+#
+# We should consider checking for b'\x85' being converted to ... in the future.
+# I've seen it once, but the text still wasn't recoverable.
+
+ALTERED_UTF8_RE = re.compile(b'[\xc2\xc3\xc5\xce\xd0][ ]'
+                             b'|[\xe0-\xef][ ][\x80-\xbf]'
+                             b'|[\xe0-\xef][\x80-\xbf][ ]'
+                             b'|[\xf0-\xf4][ ][\x80-\xbf][\x80-\xbf]'
+                             b'|[\xf0-\xf4][\x80-\xbf][ ][\x80-\xbf]'
+                             b'|[\xf0-\xf4][\x80-\xbf][\x80-\xbf][ ]')
+
+
 def possible_encoding(text, encoding):
     """
     Given text and a single-byte encoding, check whether that text could have

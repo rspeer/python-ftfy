@@ -6,7 +6,8 @@ can perform.
 
 from __future__ import unicode_literals
 from ftfy.chardata import (possible_encoding, CHARMAP_ENCODINGS,
-                           CONTROL_CHARS, LIGATURES, WIDTH_MAP)
+                           CONTROL_CHARS, LIGATURES, WIDTH_MAP,
+                           PARTIAL_UTF8_PUNCT_RE, ALTERED_UTF8_RE)
 from ftfy.badness import text_cost
 from ftfy.compatibility import htmlentitydefs, unichr, UNSAFE_PRIVATE_USE_RE
 import re
@@ -123,45 +124,6 @@ ENCODING_COSTS = {
 }
 
 
-# Recognize UTF-8 mojibake that's so blatant that we can fix it even when the
-# rest of the string doesn't decode as UTF-8 -- namely, UTF-8 re-encodings of
-# the 'General Punctuation' characters U+2000 to U+2040.
-#
-# These are recognizable by the distinctive 'â€' ('\xe2\x80') sequence they all
-# begin with when decoded as Windows-1252.
-
-OBVIOUS_UTF8_RE = re.compile(b'\xe2\x80[\x80-\xbf]')
-
-
-# Recognize UTF-8 sequences that would be valid if it weren't for a b'\xa0'
-# that some Windows-1252 program converted to a plain space.
-#
-# The smaller values are included on a case-by-case basis, because we don't want
-# to decode likely input sequences to unlikely characters. These are the ones
-# that *do* form likely characters before 0xa0:
-#
-#   0xc2 -> U+A0 NO-BREAK SPACE
-#   0xc3 -> U+E0 LATIN SMALL LETTER A WITH GRAVE
-#   0xc5 -> U+160 LATIN CAPITAL LETTER S WITH CARON
-#   0xce -> U+3A0 GREEK CAPITAL LETTER PI
-#   0xd0 -> U+420 CYRILLIC CAPITAL LETTER ER
-#
-# These still need to come with a cost, so that they only get converted when
-# there's evidence that it fixes other things. Any of these could represent
-# characters that legitimately appear surrounded by spaces, particularly U+C5
-# (Å), which is a word in multiple languages!
-#
-# We should consider checking for b'\x85' being converted to ... in the future.
-# I've seen it once, but the text still wasn't recoverable.
-
-ALTERED_UTF8_RE = re.compile(b'[\xc2\xc3\xc5\xce\xd0][ ]'
-                             b'|[\xe0-\xef][ ][\x80-\xbf]'
-                             b'|[\xe0-\xef][\x80-\xbf][ ]'
-                             b'|[\xf0-\xf4][ ][\x80-\xbf][\x80-\xbf]'
-                             b'|[\xf0-\xf4][\x80-\xbf][ ][\x80-\xbf]'
-                             b'|[\xf0-\xf4][\x80-\xbf][\x80-\xbf][ ]')
-
-
 def fix_encoding_and_explain(text):
     """
     Re-decodes text that has been decoded incorrectly, and also return a
@@ -244,6 +206,12 @@ def fix_one_step_and_explain(text):
             except UnicodeDecodeError:
                 possible_1byte_encodings.append(encoding)
 
+    # Look for a-hat-euro sequences that remain, and fix them in isolation.
+    if PARTIAL_UTF8_PUNCT_RE.search(text):
+        steps = [('transcode', 'fix_partial_utf8_punct_in_1252', 1)]
+        fixed = fix_partial_utf8_punct_in_1252(text)
+        return fixed, steps
+
     # The next most likely case is that this is Latin-1 that was intended to
     # be read as Windows-1252, because those two encodings in particular are
     # easily confused.
@@ -271,8 +239,6 @@ def fix_one_step_and_explain(text):
                 # that case, let's not assume anything.
                 pass
 
-    # TODO: look for a-hat-euro sequences that remain, and fix them in isolation.
-
     # The cases that remain are mixups between two different single-byte
     # encodings, and not the common case of Latin-1 vs. Windows-1252.
     #
@@ -291,7 +257,7 @@ def apply_plan(text, plan):
     The plan is a list of tuples of the form (operation, encoding, cost):
 
     - `operation` is 'encode' if it turns a string into bytes, 'decode' if it
-      turns bytes into a string, and 'transcode' if it turns bytes into bytes.
+      turns bytes into a string, and 'transcode' if it keeps the type the same.
     - `encoding` is the name of the encoding to use, such as 'utf-8' or
       'latin-1', or the function name in the case of 'transcode'.
     - `cost` is a penalty to apply to the score of the resulting text, when
@@ -306,6 +272,8 @@ def apply_plan(text, plan):
         elif operation == 'transcode':
             if encoding == 'restore_byte_a0':
                 obj = restore_byte_a0(obj)
+            elif encoding == 'fix_partial_utf8_punct_in_1252':
+                obj = fix_partial_utf8_punct_in_1252(obj)
             else:
                 raise ValueError("Unknown transcode operation: %s" % encoding)
         else:
@@ -596,4 +564,19 @@ def restore_byte_a0(byts):
 
     fixed = ALTERED_UTF8_RE.sub(replacement, byts)
     return fixed, fixed.count(b'\xa0') * 2
+
+
+def fix_partial_utf8_punct_in_1252(text):
+    """
+    Fix particular characters that seem to be found in the wild encoded in
+    UTF-8 and decoded in Latin-1 or Windows-1252, even when this fix can't be
+    consistently applied.
+
+    For this function, we assume the text has been decoded in Windows-1252.
+    If it was decoded in Latin-1, we'll call this right after it goes through
+    the Latin-1-to-Windows-1252 fixer.
+    """
+    def replacement(match):
+        return match.group(0).encode('sloppy-windows-1252').decode('utf-8')
+    return PARTIAL_UTF8_PUNCT_RE.sub(replacement, text)
 
