@@ -67,7 +67,7 @@ def test_fix_with_backslash():
     eq_(fix_encoding("<40\\% vs \xe2\x89\xa540\\%"), "<40\\% vs ≥40\\%")
 
 
-def test_sloppy_utf8():
+def test_mixed_utf8():
     eq_(fix_encoding('\xe2\x80\x9cmismatched quotes\x85\x94'), '“mismatched quotes…”')
     eq_(fix_encoding('â€œmismatched quotesâ€¦”'), '“mismatched quotes…”')
 
