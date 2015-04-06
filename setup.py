@@ -48,5 +48,5 @@ if sys.version_info[0] < 3:
     Instead of just asking for 'ftfy', you should ask for:
 
         'ftfy >= 4, < 5'
-    """)
+    """.strip(' '))
 
