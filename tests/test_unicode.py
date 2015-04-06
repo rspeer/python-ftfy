@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from ftfy.fixes import fix_encoding, fix_encoding_and_explain, apply_plan, possible_encoding, fix_surrogates
-from ftfy.badness import ENDING_PUNCT_RE
+from ftfy.badness import sequence_weirdness
 import unicodedata
 import sys
 from nose.tools import eq_
@@ -19,13 +19,15 @@ def char_names(text):
 
 
 # Most single-character strings which have been misencoded should be restored.
-def test_all_bmp_characters():
+def test_bmp_characters():
     for index in range(0xa0, 0xfffd):
         char = unichr(index)
         # Exclude code points that are not assigned
         if unicodedata.category(char) not in ('Co', 'Cn', 'Cs', 'Mc', 'Mn'):
             garble = char.encode('utf-8').decode('latin-1')
-            if not (index < 0x800 and ENDING_PUNCT_RE.search(garble)):
+            # Exclude characters whose re-encoding is protected by the
+            # 'sequence_weirdness' metric
+            if sequence_weirdness(garble) >= 0:
                 garble2 = char.encode('utf-8').decode('latin-1').encode('utf-8').decode('latin-1')
                 for garb in (garble, garble2):
                     fixed, plan = fix_encoding_and_explain(garb)
