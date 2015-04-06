@@ -51,13 +51,8 @@ def fix_encoding(text):
     The input to the function must be Unicode. If you don't have Unicode text,
     you're not using the right tool to solve your problem.
 
-    .. note::
-        The following examples are written using unmarked literal strings,
-        but they are Unicode text. In Python 2 we have "unicode_literals"
-        turned on, and in Python 3 this is always the case.
-
-    ftfy decodes text that looks like it was decoded incorrectly. It leaves
-    alone text that doesn't.
+    `fix_encoding` decodes text that looks like it was decoded incorrectly. It
+    leaves alone text that doesn't.
 
         >>> print(fix_encoding('Ãºnico'))
         único
@@ -88,8 +83,9 @@ def fix_encoding(text):
         >>> print(fix_encoding('not such a fan of Charlotte Brontë…”'))
         not such a fan of Charlotte Brontë…”
 
-    ftfy can now recover some complex manglings of text, such as when UTF-8
-    mojibake has been normalized in a way that replaces U+A0 with a space:
+    This function can now recover some complex manglings of text, such as when
+    UTF-8 mojibake has been normalized in a way that replaces U+A0 with a
+    space:
 
         >>> print(fix_encoding('The more you know ðŸŒ '))
         The more you know 🌠
