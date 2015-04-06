@@ -97,6 +97,7 @@ ENDING_PUNCT_RE = re.compile(
     '\N{RIGHT SINGLE QUOTATION MARK}\N{RIGHT DOUBLE QUOTATION MARK}'
     '\N{SINGLE RIGHT-POINTING ANGLE QUOTATION MARK}'
     '\N{RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK}'
+    '\N{ACUTE ACCENT}'
     ']+'
 )
 
@@ -129,7 +130,7 @@ def sequence_weirdness(text):
     """
     text2 = unicodedata.normalize('NFC', text)
     weirdness = len(WEIRDNESS_RE.findall(chars_to_classes(text2)))
-    punct_discount = len(ENDING_PUNCT_RE.findall(text2))
+    punct_discount = sum(len(x) for x in ENDING_PUNCT_RE.findall(text2))
     return weirdness * 2 - punct_discount
 
 
