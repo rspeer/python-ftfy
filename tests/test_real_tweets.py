@@ -40,10 +40,12 @@ TEST_CASES = [
      'eres mía, mía, mía, no te hagas la loca eso muy bien ya lo sabías'),
     ("Direzione Pd, ok âsenza modifiche all'Italicum.",
      "Direzione Pd, ok \"senza modifiche\" all'Italicum."),
+    ("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´",
+     "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´"),
+    ('Engkau masih yg terindah, indah di dalam hatikuâ™«~',
+     'Engkau masih yg terindah, indah di dalam hatiku♫~'),
 
     ## Current false positives:
-    #("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´",
-    # "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´"),
     #("├┤a┼┐a┼┐a┼┐a┼┐a", "├┤a┼┐a┼┐a┼┐a┼┐a"),
     #("ESSE CARA AI QUEM É¿", "ESSE CARA AI QUEM É¿")
     

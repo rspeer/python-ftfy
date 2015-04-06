@@ -5,7 +5,7 @@ This never needs to run in normal usage. It needs to be run if the character
 classes we care about change, or if a new version of Python supports a new
 Unicode standard and we want it to affect our string decoding.
 
-The file that we generate is based on Unicode 6.1, as supported by Python 3.3.
+The file that we generate is based on Unicode 7.0, as supported by Python 3.5.
 You can certainly use it in earlier versions. This simply makes sure that we
 get consistent results from running ftfy on different versions of Python.
 
@@ -104,7 +104,12 @@ def make_char_data_file(do_it_anyway=False):
         else:
             cclasses[codepoint] = 'o'
 
+    # Mark whitespace control characters as whitespace
     cclasses[9] = cclasses[10] = cclasses[12] = cclasses[13] = ' '
+
+    # Tilde is not a "math symbol" the way it's used
+    cclasses[ord('~')] = 'o'
+
     out = open('char_classes.dat', 'wb')
     out.write(zlib.compress(''.join(cclasses).encode('ascii')))
     out.close()
