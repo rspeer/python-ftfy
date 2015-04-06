@@ -18,6 +18,8 @@ from ftfy.compatibility import is_printable
 import unicodedata
 import warnings
 
+__version__ = '4.0.0'
+
 
 def fix_text(text,
              fix_entities='auto',
@@ -199,15 +201,14 @@ def fix_file(input_file,
              fix_surrogates=True,
              remove_control_chars=True,
              remove_bom=True,
-             normalization='NFC'
-             ):
+             normalization='NFC'):
     """
     Fix text that is found in a file.
 
     If the file is being read as Unicode text, use that. If it's being read as
-    bytes, then unfortunately, we have to guess what encoding it is. We'll try
-    a few common encodings, but we make no promises. See the `guess_bytes`
-    function for how this is done.
+    bytes, then we hope an encoding was supplied. If not, unfortunately, we
+    have to guess what encoding it is. We'll try a few common encodings, but we
+    make no promises. See the `guess_bytes` function for how this is done.
 
     The output is a stream of fixed lines of text.
     """
@@ -290,8 +291,8 @@ def fix_text_segment(text,
 
 def guess_bytes(bstring):
     """
-    NOTE: Using `guess_bytes` is not the recommended way of using ftfy. It's
-    not the primary purpose of ftfy.
+    NOTE: Using `guess_bytes` is not the recommended way of using ftfy. ftfy
+    is not designed to be an encoding detector.
 
     In the unfortunate situation that you have some bytes in an unknown
     encoding, ftfy can guess a reasonable strategy for decoding them, by trying
@@ -306,7 +307,7 @@ def guess_bytes(bstring):
     other, so we can't support them without decreasing the accuracy of ftfy.
 
     If you don't know which encoding you have at all, I recommend
-    trying the 'chardet' module, but being appropriately skeptical about its
+    trying the 'chardet' module, and being appropriately skeptical about its
     results.
 
     The encodings we try here are:
