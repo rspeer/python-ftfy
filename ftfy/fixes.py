@@ -10,7 +10,7 @@ from ftfy.chardata import (possible_encoding, CHARMAP_ENCODINGS,
                            PARTIAL_UTF8_PUNCT_RE, ALTERED_UTF8_RE,
                            SINGLE_QUOTE_RE, DOUBLE_QUOTE_RE)
 from ftfy.badness import text_cost
-from ftfy.compatibility import htmlentitydefs, unichr, UNSAFE_PRIVATE_USE_RE
+from ftfy.compatibility import htmlentitydefs, unichr
 import re
 import sys
 import codecs
@@ -106,11 +106,14 @@ def fix_encoding(text):
     The best version of the text is found using
     :func:`ftfy.badness.text_cost`.
     """
-    text, _plan = fix_encoding_and_explain(text)
+    text, _ = fix_encoding_and_explain(text)
     return text
 
 
 def fix_text_encoding(text):
+    """
+    A deprecated name for :func:`ftfy.fixes.fix_encoding`.
+    """
     warnings.warn('fix_text_encoding is now known as fix_encoding',
                   DeprecationWarning)
     return fix_encoding(text)
@@ -144,8 +147,7 @@ def fix_encoding_and_explain(text):
         text, plan = fix_one_step_and_explain(text)
         plan_so_far.extend(plan)
         cost = text_cost(text)
-        orig_cost = cost
-        for _op, _encoding, step_cost in plan_so_far:
+        for _, _, step_cost in plan_so_far:
             cost += step_cost
 
         if cost < best_cost:
@@ -234,7 +236,8 @@ def fix_one_step_and_explain(text):
                 fixed = encoded.decode('windows-1252')
                 steps = []
                 if fixed != text:
-                    steps = [('encode', 'latin-1', 0), ('decode', 'windows-1252', 1)]
+                    steps = [('encode', 'latin-1', 0),
+                             ('decode', 'windows-1252', 1)]
                 return fixed, steps
             except UnicodeDecodeError:
                 # This text contained characters that don't even make sense
@@ -266,7 +269,7 @@ def apply_plan(text, plan):
       performing a dubious operation that requires a lot of evidence.
     """
     obj = text
-    for operation, encoding, cost in plan:
+    for operation, encoding, _ in plan:
         if operation == 'encode':
             obj = obj.encode(encoding)
         elif operation == 'decode':
@@ -564,6 +567,7 @@ def restore_byte_a0(byts):
     `fix_encoding`.
     """
     def replacement(match):
+        "The function to apply when this regex matches."
         return match.group(0).replace(b'\x20', b'\xa0')
 
     fixed = ALTERED_UTF8_RE.sub(replacement, byts)
@@ -581,6 +585,7 @@ def fix_partial_utf8_punct_in_1252(text):
     the Latin-1-to-Windows-1252 fixer.
     """
     def replacement(match):
+        "The function to apply when this regex matches."
         return match.group(0).encode('sloppy-windows-1252').decode('utf-8')
     return PARTIAL_UTF8_PUNCT_RE.sub(replacement, text)
 
