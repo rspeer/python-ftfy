@@ -53,20 +53,22 @@ def _build_utf8_punct_regex():
     the 'General Punctuation' characters U+2000 to U+2040, re-encoded in
     Windows-1252.
 
-    These are recognizable by the distinctive 'â€' ('\xe2\x80') sequence they all
-    begin with when decoded as Windows-1252.
+    These are recognizable by the distinctive 'â€' ('\xe2\x80') sequence they
+    all begin with when decoded as Windows-1252.
     """
-    obvious_utf8_regexes = {}
-
     # We're making a regex that has all the literal bytes from 0x80 to 0xbf in
     # a range. "Couldn't this have just said [\x80-\xbf]?", you might ask.
-    # However, when we decode the regex as Windows-1252, the resulting characters
-    # won't even be remotely contiguous.
+    # However, when we decode the regex as Windows-1252, the resulting
+    # characters won't even be remotely contiguous.
     #
     # Unrelatedly, the expression that generates these bytes will be so much
     # prettier when we deprecate Python 2.
-    continuation_char_list = ''.join(unichr(i) for i in range(0x80, 0xc0)).encode('latin-1')
-    obvious_utf8 = 'â€[' + continuation_char_list.decode('sloppy-windows-1252') + ']'
+    continuation_char_list = ''.join(
+        unichr(i) for i in range(0x80, 0xc0)
+    ).encode('latin-1')
+    obvious_utf8 = ('â€['
+                    + continuation_char_list.decode('sloppy-windows-1252')
+                    + ']')
     return re.compile(obvious_utf8)
 PARTIAL_UTF8_PUNCT_RE = _build_utf8_punct_regex()
 
@@ -130,9 +132,11 @@ def chars_to_classes(string):
     return string.translate(CHAR_CLASS_STRING)
 
 
-# A translate mapping that will strip all C0 control characters except
-# those that represent whitespace.
 def _build_control_char_mapping():
+    """
+    Build a translate mapping that strips all C0 control characters,
+    except those that represent whitespace.
+    """
     control_chars = {}
     for i in range(32):
         control_chars[i] = None
@@ -163,9 +167,11 @@ LIGATURES = {
 }
 
 
-# A translate mapping that replaces halfwidth and fullwidth forms with their
-# standard-width forms.
 def _build_width_map():
+    """
+    Build a translate mapping that replaces halfwidth and fullwidth forms
+    with their standard-width forms.
+    """
     # Though it's not listed as a fullwidth character, we'll want to convert
     # U+3000 IDEOGRAPHIC SPACE to U+20 SPACE on the same principle, so start
     # with that in the dictionary.

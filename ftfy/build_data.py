@@ -47,7 +47,7 @@ def make_char_data_file(do_it_anyway=False):
     an alpha version at the time of writing this code. It will run in earlier
     versions, but you won't get the Unicode 7 standard, leading to inconsistent
     behavior.
-    
+
     To protect against this, running this in the wrong version of Python will
     raise an error unless you pass `do_it_anyway=True`.
     """
