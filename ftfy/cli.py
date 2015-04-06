@@ -4,10 +4,20 @@ A simple command-line utility for fixing text found in a file.
 Because files do not come with their encoding marked, it first runs the file
 through `ftfy.guess_bytes`, then runs it through `ftfy.fix_text`.
 """
-from ftfy import fix_file
+from ftfy import fix_file, __version__
 
 import sys
 ENCODE_STDOUT = (sys.hexversion < 0x03000000)
+
+
+ENCODE_ERROR_TEXT = """
+Unfortunately, this output stream does not support Unicode.
+
+- If this is a Linux system, your locale may be very old or misconfigured.
+  You should `export LANG=C.UTF-8`.
+- If this is a Windows system, please do not use the Command Prompt (cmd.exe)
+  to run Python. It does not and cannot support real Unicode.
+"""
 
 
 def main():
@@ -17,17 +27,51 @@ def main():
     """
     import argparse
 
-    parser = argparse.ArgumentParser()
-    parser.add_argument('filename', help='file to transcode')
+    parser = argparse.ArgumentParser(
+        description="ftfy (fixes text for you), version %s" % __version__
+    )
+    parser.add_argument('filename',
+                        help='The file whose Unicode is to be fixed')
+    parser.add_argument('-g', '--guess', action='store_true',
+                        help="Ask ftfy to guess the encoding of your input. "
+                             "This is risky. Overrides -e.")
+    parser.add_argument('-e', '--encoding', type=str, default='utf-8',
+                        help='The encoding of the input. Defaults to UTF-8.')
+    parser.add_argument('-n', '--normalization', type=str, default='NFC',
+                        help='The normalization of Unicode to apply. '
+                             'Defaults to NFC. Can be "none".')
+    parser.add_argument('--preserve-entities', action='store_true',
+                        help="Leave HTML entities as they are. The default "
+                             "is to decode them in non-HTML files.")
 
     args = parser.parse_args()
 
     file = open(args.filename)
-    for line in fix_file(file):
+    encoding = args.encoding
+    if args.guess:
+        encoding = None
+
+    normalization = args.normalization
+    if normalization.lower() == 'none':
+        normalization = None
+
+    if args.preserve_entities:
+        fix_entities = False
+    else:
+        fix_entities = 'auto'
+
+    for line in fix_file(
+        file, encoding=encoding, fix_entities=fix_entities,
+        normalization=normalization
+    ):
         if ENCODE_STDOUT:
             sys.stdout.write(line.encode('utf-8'))
         else:
-            sys.stdout.write(line)
+            try:
+                sys.stdout.write(line)
+            except UnicodeEncodeError:
+                sys.stderr.write(ENCODE_ERROR_TEXT)
+                sys.exit(1)
 
 
 if __name__ == '__main__':
