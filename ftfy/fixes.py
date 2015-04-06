@@ -7,7 +7,8 @@ can perform.
 from __future__ import unicode_literals
 from ftfy.chardata import (possible_encoding, CHARMAP_ENCODINGS,
                            CONTROL_CHARS, LIGATURES, WIDTH_MAP,
-                           PARTIAL_UTF8_PUNCT_RE, ALTERED_UTF8_RE)
+                           PARTIAL_UTF8_PUNCT_RE, ALTERED_UTF8_RE,
+                           SINGLE_QUOTE_RE, DOUBLE_QUOTE_RE)
 from ftfy.badness import text_cost
 from ftfy.compatibility import htmlentitydefs, unichr, UNSAFE_PRIVATE_USE_RE
 import re
@@ -87,6 +88,12 @@ def fix_encoding(text):
         >>> print(fix_encoding('not such a fan of Charlotte Brontë…”'))
         not such a fan of Charlotte Brontë…”
 
+    ftfy can now recover some complex manglings of text, such as when UTF-8
+    mojibake has been normalized in a way that replaces U+A0 with a space:
+
+        >>> print(fix_encoding('The more you know ðŸŒ '))
+        The more you know 🌠
+
     Cases of genuine ambiguity can sometimes be addressed by finding other
     characters that are not double-encoded, and expecting the encoding to
     be consistent:
@@ -130,7 +137,7 @@ def fix_encoding_and_explain(text):
     "plan" indicating all the steps required to fix it.
 
     To fix similar text in the same way, without having to detect anything,
-    you can use the ``apply_plan`` function.
+    you can use the :func:`ftfy.fixes.apply_plan` function.
     """
     best_version = text
     best_cost = text_cost(text)
@@ -242,9 +249,8 @@ def fix_one_step_and_explain(text):
     # The cases that remain are mixups between two different single-byte
     # encodings, and not the common case of Latin-1 vs. Windows-1252.
     #
-    # Those cases are somewhat rare, and may be unsolvable without adding false
-    # positives. If you're in one of these situations, you should try using the
-    # `ftfy.guess_bytes` function.
+    # These cases may be unsolvable without adding false positives, though
+    # I have vague ideas about how to optionally address them in the future.
 
     # Return the text unchanged; the plan is empty.
     return text, []
@@ -335,9 +341,6 @@ def remove_terminal_escapes(text):
     """
     return ANSI_RE.sub('', text)
 
-
-SINGLE_QUOTE_RE = re.compile('[\u2018-\u201b]')
-DOUBLE_QUOTE_RE = re.compile('[\u201c-\u201f]')
 
 def uncurl_quotes(text):
     r"""
@@ -559,6 +562,11 @@ def decode_escapes(text):
 
 
 def restore_byte_a0(byts):
+    """
+    Find sequences that would convincingly decode as UTF-8 if the byte 0x20
+    were changed to 0xa0, and fix them. This is used as a step within
+    `fix_encoding`.
+    """
     def replacement(match):
         return match.group(0).replace(b'\x20', b'\xa0')
 
@@ -570,7 +578,7 @@ def fix_partial_utf8_punct_in_1252(text):
     """
     Fix particular characters that seem to be found in the wild encoded in
     UTF-8 and decoded in Latin-1 or Windows-1252, even when this fix can't be
-    consistently applied.
+    consistently applied. This is used as a step within `fix_encoding`.
 
     For this function, we assume the text has been decoded in Windows-1252.
     If it was decoded in Latin-1, we'll call this right after it goes through
