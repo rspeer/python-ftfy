@@ -41,7 +41,7 @@ def main():
         description="ftfy (fixes text for you), version %s" % __version__
     )
     parser.add_argument('filename', default='-', nargs='?',
-                        help='The file whose Unicode is to be fixed. Defaults'
+                        help='The file whose Unicode is to be fixed. Defaults '
                              'to -, meaning standard input.')
     parser.add_argument('-g', '--guess', action='store_true',
                         help="Ask ftfy to guess the encoding of your input. "
@@ -63,7 +63,7 @@ def main():
         file_flags = 'rb'
     else:
         file_flags = 'r'
-    
+
     if args.filename == '-':
         file = sys.stdin
     else:
@@ -79,10 +79,9 @@ def main():
         fix_entities = 'auto'
 
     try:
-        for line in fix_file(
-            file, encoding=encoding, fix_entities=fix_entities,
-            normalization=normalization
-        ):
+        for line in fix_file(file, encoding=encoding,
+                             fix_entities=fix_entities,
+                             normalization=normalization):
             if ENCODE_STDIO:
                 sys.stdout.write(line.encode('utf-8'))
             else:
@@ -91,8 +90,8 @@ def main():
                 except UnicodeEncodeError:
                     sys.stderr.write(ENCODE_ERROR_TEXT)
                     sys.exit(1)
-    except UnicodeDecodeError as e:
-        sys.stderr.write(DECODE_ERROR_TEXT % (encoding, e))
+    except UnicodeDecodeError as err:
+        sys.stderr.write(DECODE_ERROR_TEXT % (encoding, err))
         sys.exit(1)
 
 

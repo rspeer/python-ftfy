@@ -92,8 +92,8 @@ def fix_text(text,
       plain-ASCII straight quotes.
 
     - If `fix_latin_ligatures` is True, then ligatures made of Latin letters,
-      such as `ﬁ`, will be separated into individual letters. These ligatures are
-      usually not meaningful outside of font rendering, and often represent
+      such as `ﬁ`, will be separated into individual letters. These ligatures
+      are usually not meaningful outside of font rendering, and often represent
       copy-and-paste errors.
 
     - If `fix_character_width` is True, half-width and full-width characters
@@ -136,7 +136,7 @@ def fix_text(text,
     `fix_text` will work one line at a time, with the possibility that some
     lines are in different encodings, allowing it to fix text that has been
     concatenated together from different sources.
-    
+
     When it encounters lines longer than `max_decode_length` (1 million
     codepoints by default), it will not run the `fix_encoding` step, to avoid
     unbounded slowdowns.
