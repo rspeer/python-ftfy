@@ -146,13 +146,6 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
             # middle of a sequence, in any variant.
             return sup(input[:cutoff], errors, True)
     
-    def _handle_errors(self, input, errors, final, err):
-        """
-        A subclass can override this to run special code upon encountering
-        a UTF-8 decoding error.
-        """
-        return UTF8IncrementalDecoder._buffer_decode(input, errors, final)
-
     @staticmethod
     def _buffer_decode_null(sup, input, errors, final):
         """
