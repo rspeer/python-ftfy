@@ -100,6 +100,11 @@ ALTERED_UTF8_RE = re.compile(b'[\xc2\xc3\xc5\xce\xd0][ ]'
                              b'|[\xf0-\xf4][\x80-\xbf][\x80-\xbf][ ]')
 
 
+# These regexes match various Unicode variations on single and double quotes.
+SINGLE_QUOTE_RE = re.compile('[\u2018-\u201b]')
+DOUBLE_QUOTE_RE = re.compile('[\u201c-\u201f]')
+
+
 def possible_encoding(text, encoding):
     """
     Given text and a single-byte encoding, check whether that text could have
@@ -161,6 +166,9 @@ LIGATURES = {
 # A translate mapping that replaces halfwidth and fullwidth forms with their
 # standard-width forms.
 def _build_width_map():
+    # Though it's not listed as a fullwidth character, we'll want to convert
+    # U+3000 IDEOGRAPHIC SPACE to U+20 SPACE on the same principle, so start
+    # with that in the dictionary.
     width_map = {0x3000: ' '}
     for i in range(0xff01, 0xfff0):
         char = unichr(i)
@@ -169,5 +177,4 @@ def _build_width_map():
             width_map[i] = alternate
     return width_map
 WIDTH_MAP = _build_width_map()
-
 
