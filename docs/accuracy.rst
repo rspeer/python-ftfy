@@ -3,7 +3,7 @@ data. Twitter is massively multilingual, and despite that it's supposed to be
 uniformly UTF-8, in practice, any encoding mistake that someone can make will
 be made by someone's Twitter client.
 
-This version of ftfy was evaluated on 13,000,000 tweets received from Twitter's
+This version of ftfy was evaluated on 17,000,000 tweets received from Twitter's
 streaming API in April 2015. None of them were false positives.
 
 ftfy changes about 1 in every 8500 tweets. We sampled 1000 of these changes for

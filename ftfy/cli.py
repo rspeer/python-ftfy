@@ -60,14 +60,11 @@ def main():
     encoding = args.encoding
     if args.guess:
         encoding = None
-        file_flags = 'rb'
-    else:
-        file_flags = 'r'
 
     if args.filename == '-':
         file = sys.stdin
     else:
-        file = open(args.filename, file_flags)
+        file = open(args.filename, 'rb')
 
     normalization = args.normalization
     if normalization.lower() == 'none':
