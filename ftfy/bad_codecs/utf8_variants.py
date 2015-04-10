@@ -145,7 +145,7 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
             # Set final=True because 0xc0 and 0xed don't make sense in the
             # middle of a sequence, in any variant.
             return sup(input[:cutoff], errors, True)
-    
+
     @staticmethod
     def _buffer_decode_null(sup, input, errors, final):
         """
