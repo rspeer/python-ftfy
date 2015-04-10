@@ -19,13 +19,13 @@ New features:
 - The command-line tool can be configured with options, and can be used as a
   pipe.
 - Recognizes characters that are new in Unicode 7.0.
+- `remove_unsafe_private_use` has been removed entirely, after two versions
+  of deprecation.
 
 Deprecations:
 
 - `fix_text_encoding` has been renamed to simply `fix_encoding`, and the old
   name emits a warning. It will disappear in ftfy 4.2 or 5.0.
-- `remove_unsafe_private_use` has been removed entirely, after two versions
-  of deprecation.
 
 Pending deprecations:
 

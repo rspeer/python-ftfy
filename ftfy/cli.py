@@ -53,7 +53,8 @@ def main():
                              'Defaults to NFC. Can be "none".')
     parser.add_argument('--preserve-entities', action='store_true',
                         help="Leave HTML entities as they are. The default "
-                             "is to decode them in non-HTML files.")
+                             "is to decode them, as long as no HTML tags "
+                             "have appeared in the file.")
 
     args = parser.parse_args()
 
