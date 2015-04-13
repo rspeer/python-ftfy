@@ -44,6 +44,7 @@ TEST_CASES = [
      "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´"),
     ('Engkau masih yg terindah, indah di dalam hatikuâ™«~',
      'Engkau masih yg terindah, indah di dalam hatiku♫~'),
+    ('SENSЕ - Oleg Tsedryk', 'SENSЕ - Oleg Tsedryk'),   # this Е is a Ukrainian letter
 
     ## Current false positives:
     #("├┤a┼┐a┼┐a┼┐a┼┐a", "├┤a┼┐a┼┐a┼┐a┼┐a"),
