@@ -195,7 +195,9 @@ def fix_one_step_and_explain(text):
                     fixed_bytes, cost = restore_byte_a0(encoded_bytes)
                     try:
                         fixed = fixed_bytes.decode('utf-8-variants')
-                        steps = [('transcode', 'restore_byte_a0', cost),
+                        steps = [('encode', encoding,
+                                  ENCODING_COSTS.get(encoding, 0)),
+                                 ('transcode', 'restore_byte_a0', cost),
                                  ('decode', 'utf-8-variants', 0)]
                         return fixed, steps
                     except UnicodeDecodeError:
