@@ -3,7 +3,7 @@ This file defines a general method for evaluating ftfy using data that arrives
 in a stream. A concrete implementation of it is found in `twitter_tester.py`.
 """
 from __future__ import print_function, unicode_literals
-from ftfy.fixes import fix_text_encoding
+from ftfy.fixes import fix_encoding
 from ftfy.chardata import possible_encoding
 
 
@@ -24,7 +24,7 @@ class StreamTester:
         """
         self.count += 1
         if not possible_encoding(text, 'ascii'):
-            fixed = fix_text_encoding(text)
+            fixed = fix_encoding(text)
             if text != fixed:
                 # possibly filter common bots before printing
                 print(u'\nText:\t{text}\nFixed:\t{fixed}\n'.format(
