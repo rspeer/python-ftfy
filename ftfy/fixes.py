@@ -135,8 +135,8 @@ def fix_encoding_and_explain(text):
     Re-decodes text that has been decoded incorrectly, and also return a
     "plan" indicating all the steps required to fix it.
 
-    To fix similar text in the same way, without having to detect anything,
-    you can use the :func:`ftfy.fixes.apply_plan` function.
+    The resulting plan could be used with :func:`ftfy.fixes.apply_plan`
+    to fix additional strings that are broken in the same way.
     """
     best_version = text
     best_cost = text_cost(text)
@@ -267,8 +267,9 @@ def apply_plan(text, plan):
       turns bytes into a string, and 'transcode' if it keeps the type the same.
     - `encoding` is the name of the encoding to use, such as 'utf-8' or
       'latin-1', or the function name in the case of 'transcode'.
-    - `cost` is a penalty to apply to the score of the resulting text, when
-      performing a dubious operation that requires a lot of evidence.
+    - The `cost` does not affect how the plan itself works. It's used by other
+      users of plans, namely `fix_encoding_and_explain`, which has to decide
+      *which* plan to use.
     """
     obj = text
     for operation, encoding, _ in plan:
