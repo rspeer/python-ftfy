@@ -1,26 +1,33 @@
 """
-A simple command-line utility for fixing text found in a file.
-
-Because files do not come with their encoding marked, it first runs the file
-through `ftfy.guess_bytes`, then runs it through `ftfy.fix_text`.
+A command-line utility for fixing text found in a file.
 """
 from ftfy import fix_file, __version__
 
 import sys
+import io
 ENCODE_STDIO = (sys.hexversion < 0x03000000)
 
 
-ENCODE_ERROR_TEXT = """
+ENCODE_ERROR_TEXT_UNIX = """ftfy error:
 Unfortunately, this output stream does not support Unicode.
 
-- If this is a Linux system, your locale may be very old or misconfigured.
-  You should `export LANG=C.UTF-8`.
-- If this is a Windows system, please do not use the Command Prompt (cmd.exe)
-  to run Python. It does not and cannot support real Unicode.
+Your system locale may be very old or misconfigured. You should use a locale
+that supports UTF-8. One way to do this is to `export LANG=C.UTF-8`.
 """
 
-DECODE_ERROR_TEXT = """
-Error: this input couldn't be decoded as %r. We got the following error:
+ENCODE_ERROR_TEXT_WINDOWS = """ftfy error:
+Unfortunately, this output stream does not support Unicode.
+
+You might be trying to output to the Windows Command Prompt (cmd.exe), which
+does not fully support Unicode for historical reasons. In general, we recommend
+finding a way to run Python without using cmd.exe.
+
+You can work around this problem by using the '-o filename' option in ftfy to
+output to a file instead.
+"""
+
+DECODE_ERROR_TEXT = """ftfy error:
+This input couldn't be decoded as %r. We got the following error:
 
     %s
 
@@ -32,8 +39,7 @@ to guess, if you're desperate. Otherwise, give the encoding name with the
 
 def main():
     """
-    Run ftfy as a command-line utility. (Requires Python 2.7 or later, or
-    the 'argparse' module.)
+    Run ftfy as a command-line utility.
     """
     import argparse
 
@@ -43,6 +49,9 @@ def main():
     parser.add_argument('filename', default='-', nargs='?',
                         help='The file whose Unicode is to be fixed. Defaults '
                              'to -, meaning standard input.')
+    parser.add_argument('-o', '--output', type=str, default='-',
+                        help='The file to output to. Defaults to -, meaning '
+                             'standard output.')
     parser.add_argument('-g', '--guess', action='store_true',
                         help="Ask ftfy to guess the encoding of your input. "
                              "This is risky. Overrides -e.")
@@ -67,6 +76,14 @@ def main():
     else:
         file = open(args.filename, 'rb')
 
+    encode_output = ENCODE_STDIO or (args.output != '-')
+    if args.output == '-':
+        encode_output = ENCODE_STDIO
+        outfile = sys.stdout
+    else:
+        encode_output = False
+        outfile = io.open(args.output, 'w', encoding='utf-8')
+
     normalization = args.normalization
     if normalization.lower() == 'none':
         normalization = None
@@ -80,13 +97,16 @@ def main():
         for line in fix_file(file, encoding=encoding,
                              fix_entities=fix_entities,
                              normalization=normalization):
-            if ENCODE_STDIO:
-                sys.stdout.write(line.encode('utf-8'))
+            if encode_output:
+                outfile.write(line.encode('utf-8'))
             else:
                 try:
-                    sys.stdout.write(line)
+                    outfile.write(line)
                 except UnicodeEncodeError:
-                    sys.stderr.write(ENCODE_ERROR_TEXT)
+                    if sys.platform == 'win32':
+                        sys.stderr.write(ENCODE_ERROR_TEXT_WINDOWS)
+                    else:
+                        sys.stderr.write(ENCODE_ERROR_TEXT_UNIX)
                     sys.exit(1)
     except UnicodeDecodeError as err:
         sys.stderr.write(DECODE_ERROR_TEXT % (encoding, err))
