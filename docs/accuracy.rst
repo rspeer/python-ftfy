@@ -3,8 +3,12 @@ data. Twitter is massively multilingual, and despite that it's supposed to be
 uniformly UTF-8, in practice, any encoding mistake that someone can make will
 be made by someone's Twitter client.
 
-This version of ftfy was evaluated on 17,000,000 tweets received from Twitter's
-streaming API in April 2015. None of them were false positives.
+We check what ftfy's :func:`fix_encoding` heuristic does to this data, and we
+aim to have the rate of false positives be indistinguishable from zero.
+
+A pre-release version of ftfy was evaluated on 30,880,000 tweets received from
+Twitter's streaming API in April 2015. There was 1 false positive, and it was
+due to a bug that has now been fixed.
 
 ftfy changes about 1 in every 8500 tweets. We sampled 1000 of these changes for
 further evaluation, and found:
@@ -13,8 +17,8 @@ further evaluation, and found:
 - 12 of them incompletely or incorrectly restored the text, when a sufficiently
   advanced heuristic might have been able to fully recover the text.
 - 8 of them represented text that had lost too much information to be fixed.
-- None of them changed correct text to incorrect text (these would be false
-  positives).
+- None of those 1000 changed correct text to incorrect text (these would be
+  false positives).
 
 In all the data we've sampled, including from previous versions of ftfy, there
 are only two false positives that remain that we know of::
