@@ -151,11 +151,29 @@ mojibake into the text.
 Using ftfy
 ----------
 
-The main function, :func:`ftfy.fix_text`, will run text through a sequence of fixes. If
-the text changed, it will run them through again, so that you can be sure
-the output ends up in a standard form that will be unchanged by :func:`ftfy.fix_text`.
+The main function, :func:`ftfy.fix_text`, will run text through a sequence of
+fixes. If the text changed, it will run them through again, so that you can be
+sure the output ends up in a standard form that will be unchanged by
+:func:`ftfy.fix_text`.
 
 All the fixes are on by default, but you can pass options to turn them off.
+Check that the default fixes are appropriate for your use case. For example:
+
+- You should set `fix_entities` to False if the output is meant to be
+  interpreted as HTML.
+
+- You should set `fix_character_width` to False if you want to preserve the
+  spacing of CJK text.
+
+- You should set `uncurl_quotes` to False if you want to preserve quotation
+  marks with nice typography. You could even consider doing quite the opposite
+  of `uncurl_quotes`, running `smartypants`_ on the result to make all the
+  punctuation nice.
+  
+.. _smartypants: http://pythonhosted.org/smartypants/
+
+If the only fix you need is to detect and repair decoding errors (mojibake), then
+you should use :func:`ftfy.fix_encoding` directly.
 
 .. versionchanged:: 4.0
    The default normalization was changed from `'NFKC'` to `'NFC'`. The new options
@@ -222,7 +240,8 @@ writes it to UTF-8 output, fixing problems in its Unicode as it goes.
 
 Here's the usage documentation for the `ftfy` command::
 
-    usage: ftfy [-h] [-g] [-e ENCODING] [-n NORMALIZATION] [--preserve-entities]
+    usage: ftfy [-h] [-o OUTPUT] [-g] [-e ENCODING] [-n NORMALIZATION]
+                [--preserve-entities]
                 [filename]
 
     ftfy (fixes text for you), version 4.0.0
@@ -233,6 +252,9 @@ Here's the usage documentation for the `ftfy` command::
 
     optional arguments:
       -h, --help            show this help message and exit
+      -o OUTPUT, --output OUTPUT
+                            The file to output to. Defaults to -, meaning standard
+                            output.
       -g, --guess           Ask ftfy to guess the encoding of your input. This is
                             risky. Overrides -e.
       -e ENCODING, --encoding ENCODING
@@ -241,7 +263,8 @@ Here's the usage documentation for the `ftfy` command::
                             The normalization of Unicode to apply. Defaults to
                             NFC. Can be "none".
       --preserve-entities   Leave HTML entities as they are. The default is to
-                            decode them in non-HTML files.
+                            decode them, as long as no HTML tags have appeared in
+                            the file.
 
 
 Module documentation
