@@ -91,6 +91,11 @@ def make_char_data_file(do_it_anyway=False):
             cclasses[codepoint] = '2'
         elif category == 'So':
             cclasses[codepoint] = '3'
+        elif 0x1f000 <= codepoint < 0x1f900:
+            # This range is rapidly having emoji added to it. Assume that
+            # an unassigned codepoint in this range is just a symbol we
+            # don't know yet.
+            cclasses[codepoint] = '3'
         elif category == 'Cn':
             cclasses[codepoint] = '_'
         elif category == 'Cc':
