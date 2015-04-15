@@ -33,9 +33,9 @@ decoding is. So this module won't produce CESU-8 for you. Look for that
 functionality in the sister module, "Breaks Text For You", coming approximately
 never.
 
-[1] In a pinch, you can decode CESU-8 in Python 2 using the UTF-8 codec: first
-decode the bytes (incorrectly), then encode them, then decode them again, using
-UTF-8 as the codec every time.
+.. [1] In a pinch, you can decode CESU-8 in Python 2 using the UTF-8 codec:
+   first decode the bytes (incorrectly), then encode them, then decode them
+   again, using UTF-8 as the codec every time.
 """
 
 from __future__ import unicode_literals
