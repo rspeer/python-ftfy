@@ -2,34 +2,50 @@
 
 Breaking changes:
 
-- The default normalization is now NFC, not NFKC.
+- The default normalization form is now NFC, not NFKC. NFKC replaces a large
+  number of characters with 'equivalent' characters, and some of these
+  replacements are useful, but some are not desirable to do by default.
+
 - The `fix_text` function has some new options that perform more targeted
-  operations that are part of NFKC normalization, without requiring hitting all
-  your text with the huge mallet that is NFKC.
+  operations that are part of NFKC normalization, such as
+  `fix_character_width`, without requiring hitting all your text with the huge
+  mallet that is NFKC.
+
+  - If you were already using NFC normalization, or in general if you want to
+    preserve the *spacing* of CJK text, you should be sure to set
+    `fix_character_width=False`.
+
+- The `remove_unsafe_private_use` parameter has been removed entirely, after
+  two versions of deprecation. The function name `fix_bad_encoding` is also
+  gone.
 
 New features:
 
 - Fixers for strange new forms of mojibake, including particularly clear cases
   of mixed UTF-8 and Windows-1252.
+
 - New heuristics, so that ftfy can fix more stuff, while maintaining
   approximately zero false positives.
+
 - The command-line tool trusts you to know what encoding your *input* is in,
   and assumes UTF-8 by default. You can still tell it to guess with the `-g`
   option.
+
 - The command-line tool can be configured with options, and can be used as a
   pipe.
+
 - Recognizes characters that are new in Unicode 7.0.
-- `remove_unsafe_private_use` has been removed entirely, after two versions
-  of deprecation.
 
 Deprecations:
 
-- `fix_text_encoding` has been renamed to simply `fix_encoding`, and the old
-  name emits a warning. It will disappear in ftfy 4.2 or 5.0.
+- `fix_text_encoding` is being renamed again, for conciseness and consistency.
+  It's now simply called `fix_encoding`. The name `fix_text_encoding` is
+  available but emits a warning.
 
 Pending deprecations:
 
 - Python 2.6 support is largely coincidental.
+
 - Python 2.7 support is on notice. If you use Python 2, be sure to pin a
   version of ftfy less than 5.0 in your requirements.
 
@@ -89,7 +105,7 @@ Deprecations:
 - `fix_line_breaks` fixes three additional characters that are considered line
   breaks in some environments, such as Javascript, and Python's "codecs"
   library. These are all now replaced with \n:
-  
+
       U+0085   <control>, with alias "NEXT LINE"
       U+2028   LINE SEPARATOR
       U+2029   PARAGRAPH SEPARATOR
