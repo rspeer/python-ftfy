@@ -4,7 +4,6 @@ Python 3, and also between narrow and wide builds.
 """
 from __future__ import unicode_literals
 import sys
-import re
 import unicodedata
 
 if sys.hexversion >= 0x03000000:

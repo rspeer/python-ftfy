@@ -76,7 +76,6 @@ def main():
     else:
         file = open(args.filename, 'rb')
 
-    encode_output = ENCODE_STDIO or (args.output != '-')
     if args.output == '-':
         encode_output = ENCODE_STDIO
         outfile = sys.stdout

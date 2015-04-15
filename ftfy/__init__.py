@@ -13,10 +13,8 @@ import ftfy.bad_codecs
 ftfy.bad_codecs.ok()
 
 from ftfy import fixes
-from ftfy.fixes import fix_text_encoding
 from ftfy.compatibility import is_printable
 import unicodedata
-import warnings
 
 __version__ = '4.0.0'
 
@@ -185,8 +183,10 @@ def fix_text(text,
 
     return ''.join(out)
 
+# Some alternate names for the main functions
 ftfy = fix_text
 fix_encoding = fixes.fix_encoding
+fix_text_encoding = fixes.fix_text_encoding  # deprecated
 
 
 def fix_file(input_file,
