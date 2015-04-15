@@ -34,7 +34,8 @@ New features:
 - The command-line tool can be configured with options, and can be used as a
   pipe.
 
-- Recognizes characters that are new in Unicode 7.0.
+- Recognizes characters that are new in Unicode 7.0, as well as emoji from
+  Unicode 8.0+ that may already be in use on iOS.
 
 Deprecations:
 
