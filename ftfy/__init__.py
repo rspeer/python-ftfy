@@ -324,6 +324,12 @@ def guess_bytes(bstring):
     - "sloppy-windows-1252", the Latin-1-like encoding that is the most common
       single-byte encoding
     """
+    if type(bstring) == type(''):
+        raise UnicodeError(
+            "This string was already decoded as Unicode. You should pass "
+            "bytes to guess_bytes, not Unicode."
+        )
+
     if bstring.startswith(b'\xfe\xff') or bstring.startswith(b'\xff\xfe'):
         return bstring.decode('utf-16'), 'utf-16'
 
