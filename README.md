@@ -4,6 +4,11 @@
 [![Version](https://pypip.in/v/ftfy/badge.png)](https://crate.io/packages/ftfy)
 [![Docs](https://readthedocs.org/projects/ftfy/badge/?version=latest)](http://ftfy.readthedocs.org/en/latest/)
 
+```python
+>>> print(fix_encoding("(à¸‡'Ì€âŒ£'Ì\x81)à¸‡"))
+(ง'̀⌣'́)ง
+```
+
 Full documentation: **http://ftfy.readthedocs.org**
 
 ## Testimonials
@@ -69,9 +74,11 @@ low rate of false positives.
 ## Examples
 
 `fix_text` is the main function of ftfy. This section is meant to give you a
-taste of the things it can do. Please read [the
-documentation](http://ftfy.readthedocs.org) for more information on what ftfy
-does, and how to configure it for your needs.
+taste of the things it can do. `fix_encoding` is the more specific function
+that only fixes mojibake.
+
+Please read [the documentation](http://ftfy.readthedocs.org) for more
+information on what ftfy does, and how to configure it for your needs.
 
 
 ```python
