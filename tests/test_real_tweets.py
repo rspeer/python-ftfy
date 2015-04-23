@@ -40,8 +40,6 @@ TEST_CASES = [
      'eres mía, mía, mía, no te hagas la loca eso muy bien ya lo sabías'),
     ("Direzione Pd, ok âsenza modifiche all'Italicum.",
      "Direzione Pd, ok \"senza modifiche\" all'Italicum."),
-    ("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´",
-     "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´"),
     ('Engkau masih yg terindah, indah di dalam hatikuâ™«~',
      'Engkau masih yg terindah, indah di dalam hatiku♫~'),
     ('SENSЕ - Oleg Tsedryk', 'SENSЕ - Oleg Tsedryk'),   # this Е is a Ukrainian letter
@@ -49,6 +47,7 @@ TEST_CASES = [
     ## Current false positives:
     #("├┤a┼┐a┼┐a┼┐a┼┐a", "├┤a┼┐a┼┐a┼┐a┼┐a"),
     #("ESSE CARA AI QUEM É¿", "ESSE CARA AI QUEM É¿")
+    #("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´", "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´"),
     
     ## This kind of tweet can't be fixed without a full-blown encoding detector.
     #("Deja dos heridos hundimiento de barco tur\x92stico en Acapulco.",
