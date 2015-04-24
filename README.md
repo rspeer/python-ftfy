@@ -31,7 +31,7 @@ is making sure it has the correct characters in it!
 
 Luminoso is growing fast and hiring in all areas. If you're interested in
 joining us, take a look at [our careers
-page](http://www.luminoso.com/careers.html).
+page](http://www.luminoso.com/career.html).
 
 ## What it does
 
