@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from ftfy.fixes import fix_text_encoding, fix_encoding_and_explain, apply_plan, possible_encoding, fix_surrogates
-from ftfy.badness import ENDING_PUNCT_RE
+from __future__ import unicode_literals
+from ftfy.fixes import fix_encoding, fix_encoding_and_explain, apply_plan, possible_encoding, fix_surrogates
+from ftfy.badness import sequence_weirdness
 import unicodedata
 import sys
 from nose.tools import eq_
@@ -18,13 +19,15 @@ def char_names(text):
 
 
 # Most single-character strings which have been misencoded should be restored.
-def test_all_bmp_characters():
+def test_bmp_characters():
     for index in range(0xa0, 0xfffd):
         char = unichr(index)
         # Exclude code points that are not assigned
         if unicodedata.category(char) not in ('Co', 'Cn', 'Cs', 'Mc', 'Mn'):
             garble = char.encode('utf-8').decode('latin-1')
-            if not (index < 0x800 and ENDING_PUNCT_RE.search(garble)):
+            # Exclude characters whose re-encoding is protected by the
+            # 'sequence_weirdness' metric
+            if sequence_weirdness(garble) >= 0:
                 garble2 = char.encode('utf-8').decode('latin-1').encode('utf-8').decode('latin-1')
                 for garb in (garble, garble2):
                     fixed, plan = fix_encoding_and_explain(garb)
@@ -33,13 +36,13 @@ def test_all_bmp_characters():
 
 
 phrases = [
-    u"\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
-    u"\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
-    u"\u2039ALLÍ ESTÁ\u203A",
-    u"\u2014ALLÍ ESTÁ\u2014",
-    u"AHÅ™, the new sofa from IKEA®",
-    u"ВІКІ is Ukrainian for WIKI",
-    #u"\u2014a radius of 10 Å\u2014",
+    "\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
+    "\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
+    "\u2039ALLÍ ESTÁ\u203A",
+    "\u2014ALLÍ ESTÁ\u2014",
+    "AHÅ™, the new sofa from IKEA®",
+    "ВІКІ is Ukrainian for WIKI",
+    #"\u2014a radius of 10 Å\u2014",
 ]
 # These phrases should not be erroneously "fixed"
 def test_valid_phrases():
@@ -48,12 +51,12 @@ def test_valid_phrases():
 
 
 def check_phrase(text):
-    eq_(fix_text_encoding(text), text)
-    eq_(fix_text_encoding(text.encode('utf-8').decode('latin-1')), text)
+    eq_(fix_encoding(text), text)
+    eq_(fix_encoding(text.encode('utf-8').decode('latin-1')), text)
     # make sure that the opening punctuation is not the only thing that makes
     # it work
-    eq_(fix_text_encoding(text[1:]), text[1:])
-    eq_(fix_text_encoding(text[1:].encode('utf-8').decode('latin-1')), text[1:])
+    eq_(fix_encoding(text[1:]), text[1:])
+    eq_(fix_encoding(text[1:].encode('utf-8').decode('latin-1')), text[1:])
 
 
 def test_possible_encoding():
@@ -63,13 +66,37 @@ def test_possible_encoding():
 
 
 def test_fix_with_backslash():
-    eq_(fix_text_encoding(u"<40\\% vs \xe2\x89\xa540\\%"), u"<40\\% vs ≥40\\%")
+    eq_(fix_encoding("<40\\% vs \xe2\x89\xa540\\%"), "<40\\% vs ≥40\\%")
+
+
+def test_mixed_utf8():
+    eq_(fix_encoding('\xe2\x80\x9cmismatched quotes\x85\x94'), '“mismatched quotes…”')
+    eq_(fix_encoding('â€œmismatched quotesâ€¦”'), '“mismatched quotes…”')
+
+
+def test_unknown_emoji():
+    # Make a string with two burritos in it. Python doesn't know about Unicode
+    # burritos, but ftfy can guess they're probably emoji anyway.
+    emoji_text = 'dos burritos: \U0001f32f\U0001f32f'
+
+    # Mangle the burritos into a mess of Russian characters. (It would have
+    # been great if we could have decoded them in cp437 instead, to turn them
+    # into "DOS burritos", but the resulting string is one ftfy could already
+    # fix.)
+    emojibake = emoji_text.encode('utf-8').decode('windows-1251')
+
+    # Restore the original text.
+    eq_(fix_encoding(emojibake), emoji_text)
+
+    # This doesn't happen if we replace the burritos with arbitrary unassigned
+    # characters. The mangled text passes through as is.
+    not_emoji = 'dos burritos: \U0003f32f\U0003f32f'.encode('utf-8').decode('windows-1251')
+    eq_(fix_encoding(not_emoji), not_emoji)
 
 
 def test_surrogates():
-    eq_(fix_surrogates(u'\udbff\udfff'), u'\U0010ffff')
-    eq_(fix_surrogates(u'\ud800\udc00'), u'\U00010000')
-
+    eq_(fix_surrogates('\udbff\udfff'), '\U0010ffff')
+    eq_(fix_surrogates('\ud800\udc00'), '\U00010000')
 
 
 if __name__ == '__main__':

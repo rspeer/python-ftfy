@@ -5,7 +5,7 @@ This never needs to run in normal usage. It needs to be run if the character
 classes we care about change, or if a new version of Python supports a new
 Unicode standard and we want it to affect our string decoding.
 
-The file that we generate is based on Unicode 6.1, as supported by Python 3.3.
+The file that we generate is based on Unicode 7.0, as supported by Python 3.5.
 You can certainly use it in earlier versions. This simply makes sure that we
 get consistent results from running ftfy on different versions of Python.
 
@@ -43,15 +43,17 @@ def make_char_data_file(do_it_anyway=False):
     Build the compressed data file 'char_classes.dat' and write it to the
     current directory.
 
-    If you run this, run it in Python 3.3 or later. It will run in earlier
-    versions, but you won't get the current Unicode standard, leading to
-    inconsistent behavior. To protect against this, running this in the
-    wrong version of Python will raise an error unless you pass
-    `do_it_anyway=True`.
+    If you run this, run it in Python 3.5 or later, even though that requires
+    an alpha version at the time of writing this code. It will run in earlier
+    versions, but you won't get the Unicode 7 standard, leading to inconsistent
+    behavior.
+
+    To protect against this, running this in the wrong version of Python will
+    raise an error unless you pass `do_it_anyway=True`.
     """
-    if sys.hexversion < 0x03030000 and not do_it_anyway:
+    if sys.hexversion < 0x03050000 and not do_it_anyway:
         raise RuntimeError(
-            "This function should be run in Python 3.3 or later."
+            "This function should be run in Python 3.5 or later."
         )
 
     cclasses = [None] * 0x110000
@@ -89,6 +91,11 @@ def make_char_data_file(do_it_anyway=False):
             cclasses[codepoint] = '2'
         elif category == 'So':
             cclasses[codepoint] = '3'
+        elif 0x1f000 <= codepoint < 0x1f900:
+            # This range is rapidly having emoji added to it. Assume that
+            # an unassigned codepoint in this range is just a symbol we
+            # don't know yet.
+            cclasses[codepoint] = '3'
         elif category == 'Cn':
             cclasses[codepoint] = '_'
         elif category == 'Cc':
@@ -102,7 +109,12 @@ def make_char_data_file(do_it_anyway=False):
         else:
             cclasses[codepoint] = 'o'
 
+    # Mark whitespace control characters as whitespace
     cclasses[9] = cclasses[10] = cclasses[12] = cclasses[13] = ' '
+
+    # Tilde is not a "math symbol" the way it's used
+    cclasses[ord('~')] = 'o'
+
     out = open('char_classes.dat', 'wb')
     out.write(zlib.compress(''.join(cclasses).encode('ascii')))
     out.close()
