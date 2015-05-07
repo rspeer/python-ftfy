@@ -6,7 +6,7 @@ UTF-16, as well as Java's twist on CESU-8 that contains a two-byte encoding for
 codepoint 0.
 
 This is particularly relevant in Python 3, which provides no other way of
-decoding CESU-8 or Java's encoding. [1]
+decoding CESU-8 [1]_.
 
 The easiest way to use the codec is to simply import `ftfy.bad_codecs`:
 
@@ -33,9 +33,9 @@ decoding is. So this module won't produce CESU-8 for you. Look for that
 functionality in the sister module, "Breaks Text For You", coming approximately
 never.
 
-[1] In a pinch, you can decode CESU-8 in Python 2 using the UTF-8 codec: first
-decode the bytes (incorrectly), then encode them, then decode them again, using
-UTF-8 as the codec every time.
+.. [1] In a pinch, you can decode CESU-8 in Python 2 using the UTF-8 codec:
+   first decode the bytes (incorrectly), then encode them, then decode them
+   again, using UTF-8 as the codec every time.
 """
 
 from __future__ import unicode_literals
@@ -119,8 +119,7 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
 
         # Find the next byte position that indicates a variant of UTF-8.
         # CESU-8 sequences always start with 0xed, and Java nulls always
-        # start with 0xc0, both of which are conveniently impossible in
-        # real UTF-8.
+        # start with 0xc0.
         cutoff1 = input.find(b'\xed')
         cutoff2 = input.find(b'\xc0')
 
@@ -132,8 +131,8 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
         elif cutoff2 != -1:
             cutoff = cutoff2
         else:
-            # The entire input can be decoded as UTF-8, so just do so.
-            return sup(input, errors, final)
+            # Decode the entire input at once.
+            return sup(input, errors, True)
 
         if cutoff1 == 0:
             # Decode a possible six-byte sequence starting with 0xed.

@@ -88,16 +88,13 @@ WEIRDNESS_RE = _make_weirdness_regex()
 # of a mojibake sequence. It's plausible that such a character could appear
 # after an accented capital letter, for example, so we'll want to add a
 # slight preference to leave these characters alone.
-#
-# The match ends with a + so that we only give the bonus once for a
-# consecutive sequence of these characters.
 ENDING_PUNCT_RE = re.compile(
     '['
     '\N{HORIZONTAL ELLIPSIS}\N{EM DASH}\N{EN DASH}'
     '\N{RIGHT SINGLE QUOTATION MARK}\N{RIGHT DOUBLE QUOTATION MARK}'
     '\N{SINGLE RIGHT-POINTING ANGLE QUOTATION MARK}'
     '\N{RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK}'
-    ']+'
+    ']'
 )
 
 def sequence_weirdness(text):
