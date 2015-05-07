@@ -13,34 +13,36 @@ import ftfy.bad_codecs
 ftfy.bad_codecs.ok()
 
 from ftfy import fixes
-from ftfy.fixes import fix_text_encoding
 from ftfy.compatibility import is_printable
 import unicodedata
-import warnings
+
+__version__ = '4.0.0'
 
 
 def fix_text(text,
-             remove_unsafe_private_use=False,
              fix_entities='auto',
              remove_terminal_escapes=True,
              fix_encoding=True,
-             normalization='NFKC',
+             fix_latin_ligatures=True,
+             fix_character_width=True,
              uncurl_quotes=True,
              fix_line_breaks=True,
              fix_surrogates=True,
              remove_control_chars=True,
              remove_bom=True,
-             max_decode_length=2**16):
+             normalization='NFC',
+             max_decode_length=10**6):
     r"""
-    Given Unicode text as input, make its representation consistent and
-    possibly less broken.
+    Given Unicode text as input, fix inconsistencies and glitches in it,
+    such as mojibake.
 
     Let's start with some examples:
 
         >>> print(fix_text('uÌˆnicode'))
         ünicode
 
-        >>> print(fix_text('Broken text&hellip; it&#x2019;s ﬂubberiﬁc!'))
+        >>> print(fix_text('Broken text&hellip; it&#x2019;s ﬂubberiﬁc!',
+        ...                normalization='NFKC'))
         Broken text... it's flubberific!
 
         >>> print(fix_text('HTML entities &lt;3'))
@@ -50,7 +52,7 @@ def fix_text(text,
         <em>HTML entities &lt;3</em>
 
         >>> print(fix_text('\001\033[36;44mI&#x92;m blue, da ba dee da ba '
-        ...               'doo&#133;\033[0m'))
+        ...               'doo&#133;\033[0m', normalization='NFKC'))
         I'm blue, da ba dee da ba doo...
 
         >>> # This example string starts with a byte-order mark, even if
@@ -58,6 +60,9 @@ def fix_text(text,
         >>> print(fix_text('\ufeffParty like\nit&rsquo;s 1999!'))
         Party like
         it's 1999!
+
+        >>> print(fix_text('ＬＯＵＤ　ＮＯＩＳＥＳ'))
+        LOUD NOISES
 
         >>> len(fix_text('ﬁ' * 100000))
         200000
@@ -72,55 +77,72 @@ def fix_text(text,
       entities, but don't do so in text where you have seen a pair of actual
       angle brackets (that's probably actually HTML and you shouldn't mess
       with the entities).
+
     - If `remove_terminal_escapes` is True, remove sequences of bytes that are
       instructions for Unix terminals, such as the codes that make text appear
       in different colors.
+
     - If `fix_encoding` is True, look for common mistakes that come from
       encoding or decoding Unicode text incorrectly, and fix them if they are
-      reasonably fixable. See `fix_text_encoding` for details.
-    - If `normalization` is not None, apply the specified form of Unicode
-      normalization, which can be one of 'NFC', 'NFKC', 'NFD', and 'NFKD'.
-      The default, 'NFKC', applies the following relevant transformations:
-
-      - C: Combine characters and diacritics that are written using separate
-        code points, such as converting "e" plus an acute accent modifier
-        into "é", or converting "ka" (か) plus a dakuten into the
-        single character "ga" (が).
-      - K: Replace characters that are functionally equivalent with the most
-        common form. For example, half-width katakana will be replaced with
-        full-width versions, full-width Roman characters will be replaced with
-        ASCII characters, ellipsis characters will be replaced with three
-        periods, and the ligature 'ﬂ' will be replaced with 'fl'.
+      reasonably fixable. See `fixes.fix_encoding` for details.
 
     - If `uncurl_quotes` is True, replace various curly quotation marks with
       plain-ASCII straight quotes.
+
+    - If `fix_latin_ligatures` is True, then ligatures made of Latin letters,
+      such as `ﬁ`, will be separated into individual letters. These ligatures
+      are usually not meaningful outside of font rendering, and often represent
+      copy-and-paste errors.
+
+    - If `fix_character_width` is True, half-width and full-width characters
+      will be replaced by their standard-width form.
+
     - If `fix_line_breaks` is true, convert all line breaks to Unix style
       (CRLF and CR line breaks become LF line breaks).
+
     - If `fix_surrogates` is true, ensure that there are no UTF-16 surrogates
       in the resulting string, by converting them to the correct characters
       when they're appropriately paired, or replacing them with \ufffd
       otherwise.
+
     - If `fix_control_characters` is true, remove all C0 control characters
       except the common useful ones: TAB, CR, LF, and FF. (CR characters
       may have already been removed by the `fix_line_breaks` step.)
+
     - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
+      (This is a decoded Unicode string. It doesn't have a "byte order".)
+
+    - If `normalization` is not None, apply the specified form of Unicode
+      normalization, which can be one of 'NFC', 'NFKC', 'NFD', and 'NFKD'.
+
+      - The default normalization, NFC, combines characters and diacritics that
+        are written using separate code points, such as converting "e" plus an
+        acute accent modifier into "é", or converting "ka" (か) plus a dakuten
+        into the single character "ga" (が). Unicode can be converted to NFC
+        form without any change in its meaning.
+
+      - If you ask for NFKC normalization, it will apply additional
+        normalizations that can change the meanings of characters. For example,
+        ellipsis characters will be replaced with three periods, all ligatures
+        will be replaced with the individual characters that make them up,
+        and characters that differ in font style will be converted to the same
+        character.
+
     - If anything was changed, repeat all the steps, so that the function is
       idempotent. "&amp;amp;" will become "&", for example, not "&amp;".
 
-    There is one deprecated option:
-
-    - If `remove_unsafe_private_use` is True, it issues a DeprecationWarning
-      and applies a workaround for an old Python bug. This option will go away
-      in ftfy 3.5.
-
     `fix_text` will work one line at a time, with the possibility that some
-    lines are in different encodings. When it encounters lines longer than
-    `max_decode_length`, it will not run the `fix_encoding` step, to avoid
+    lines are in different encodings, allowing it to fix text that has been
+    concatenated together from different sources.
+
+    When it encounters lines longer than `max_decode_length` (1 million
+    codepoints by default), it will not run the `fix_encoding` step, to avoid
     unbounded slowdowns.
 
-    If you are certain your entire text is in the same encoding (though that
-    encoding is possibly flawed), and do not mind performing operations on
-    the whole text at once, use `fix_text_segment`.
+    If you're certain that any decoding errors in the text would have affected
+    the entire text in the same way, and you don't mind operations that scale
+    with the length of the text, you can use `fix_text_segment` directly to
+    fix the whole string in one batch.
     """
     if isinstance(text, bytes):
         raise UnicodeError(fixes.BYTES_ERROR_TEXT)
@@ -144,82 +166,93 @@ def fix_text(text,
         out.append(
             fix_text_segment(
                 substring,
-                remove_unsafe_private_use=remove_unsafe_private_use,
                 fix_entities=fix_entities,
                 remove_terminal_escapes=remove_terminal_escapes,
                 fix_encoding=fix_encoding_this_time,
-                normalization=normalization,
                 uncurl_quotes=uncurl_quotes,
+                fix_latin_ligatures=fix_latin_ligatures,
+                fix_character_width=fix_character_width,
                 fix_line_breaks=fix_line_breaks,
                 fix_surrogates=fix_surrogates,
                 remove_control_chars=remove_control_chars,
-                remove_bom=remove_bom
+                remove_bom=remove_bom,
+                normalization=normalization
             )
         )
         pos = textbreak
 
     return ''.join(out)
 
+# Some alternate names for the main functions
 ftfy = fix_text
+fix_encoding = fixes.fix_encoding
+fix_text_encoding = fixes.fix_text_encoding  # deprecated
 
 
 def fix_file(input_file,
-             remove_unsafe_private_use=False,
+             encoding=None,
              fix_entities='auto',
              remove_terminal_escapes=True,
              fix_encoding=True,
-             normalization='NFKC',
+             fix_latin_ligatures=True,
+             fix_character_width=True,
              uncurl_quotes=True,
              fix_line_breaks=True,
              fix_surrogates=True,
              remove_control_chars=True,
-             remove_bom=True):
+             remove_bom=True,
+             normalization='NFC'):
     """
     Fix text that is found in a file.
 
     If the file is being read as Unicode text, use that. If it's being read as
-    bytes, then unfortunately, we have to guess what encoding it is. We'll try
-    a few common encodings, but we make no promises. See the `guess_bytes`
-    function for how this is done.
+    bytes, then we hope an encoding was supplied. If not, unfortunately, we
+    have to guess what encoding it is. We'll try a few common encodings, but we
+    make no promises. See the `guess_bytes` function for how this is done.
 
     The output is a stream of fixed lines of text.
     """
     entities = fix_entities
     for line in input_file:
         if isinstance(line, bytes):
-            line, encoding = guess_bytes(line)
+            if encoding is None:
+                line, encoding = guess_bytes(line)
+            else:
+                line = line.decode(encoding)
         if fix_entities == 'auto' and '<' in line and '>' in line:
             entities = False
         yield fix_text_segment(
             line,
-            remove_unsafe_private_use=remove_unsafe_private_use,
             fix_entities=entities,
             remove_terminal_escapes=remove_terminal_escapes,
             fix_encoding=fix_encoding,
-            normalization=normalization,
+            fix_latin_ligatures=fix_latin_ligatures,
+            fix_character_width=fix_character_width,
             uncurl_quotes=uncurl_quotes,
             fix_line_breaks=fix_line_breaks,
             fix_surrogates=fix_surrogates,
             remove_control_chars=remove_control_chars,
-            remove_bom=remove_bom
+            remove_bom=remove_bom,
+            normalization=normalization
         )
 
 
 def fix_text_segment(text,
-                     remove_unsafe_private_use=False,
                      fix_entities='auto',
                      remove_terminal_escapes=True,
                      fix_encoding=True,
-                     normalization='NFKC',
+                     fix_latin_ligatures=True,
+                     fix_character_width=True,
                      uncurl_quotes=True,
                      fix_line_breaks=True,
                      fix_surrogates=True,
                      remove_control_chars=True,
-                     remove_bom=True):
+                     remove_bom=True,
+                     normalization='NFC'):
     """
     Apply fixes to text in a single chunk. This could be a line of text
     within a larger run of `fix_text`, or it could be a larger amount
-    of text that you are certain is all in the same encoding.
+    of text that you are certain is in a consistent encoding.
 
     See `fix_text` for a description of the parameters.
     """
@@ -230,16 +263,16 @@ def fix_text_segment(text,
         fix_entities = False
     while True:
         origtext = text
-        if remove_unsafe_private_use:
-            text = fixes.remove_unsafe_private_use(text)
         if fix_entities:
             text = fixes.unescape_html(text)
         if remove_terminal_escapes:
             text = fixes.remove_terminal_escapes(text)
         if fix_encoding:
             text = fixes.fix_text_encoding(text)
-        if normalization is not None:
-            text = unicodedata.normalize(normalization, text)
+        if fix_latin_ligatures:
+            text = fixes.fix_latin_ligatures(text)
+        if fix_character_width:
+            text = fixes.fix_character_width(text)
         if uncurl_quotes:
             text = fixes.uncurl_quotes(text)
         if fix_line_breaks:
@@ -250,26 +283,39 @@ def fix_text_segment(text,
             text = fixes.remove_control_chars(text)
         if remove_bom:
             text = fixes.remove_bom(text)
+        if normalization is not None:
+            text = unicodedata.normalize(normalization, text)
         if text == origtext:
             return text
 
 
 def guess_bytes(bstring):
     """
-    If you have some bytes in an unknown encoding, here's a reasonable
-    strategy for decoding them, by trying a few common encodings that
-    can be distinguished from each other.
+    NOTE: Using `guess_bytes` is not the recommended way of using ftfy. ftfy
+    is not designed to be an encoding detector.
 
-    This is not a magic bullet. If the bytes are coming from some MySQL
-    database with the "character set" set to ISO Elbonian, this won't figure
-    it out. Perhaps more relevantly, this currently doesn't try East Asian
-    encodings.
+    In the unfortunate situation that you have some bytes in an unknown
+    encoding, ftfy can guess a reasonable strategy for decoding them, by trying
+    a few common encodings that can be distinguished from each other.
 
-    The encodings we try are:
+    Unlike the rest of ftfy, this may not be accurate, and it may *create*
+    Unicode problems instead of solving them!
+
+    It doesn't try East Asian encodings at all, and if you have East Asian text
+    that you don't know how to decode, you are somewhat out of luck.  East
+    Asian encodings require some serious statistics to distinguish from each
+    other, so we can't support them without decreasing the accuracy of ftfy.
+
+    If you don't know which encoding you have at all, I recommend
+    trying the 'chardet' module, and being appropriately skeptical about its
+    results.
+
+    The encodings we try here are:
 
     - UTF-16 with a byte order mark, because a UTF-16 byte order mark looks
       like nothing else
-    - UTF-8, because it's the global de facto standard
+    - UTF-8, because it's the global standard, which has been used by a
+      majority of the Web since 2008
     - "utf-8-variants", because it's what people actually implement when they
       think they're doing UTF-8
     - MacRoman, because Microsoft Office thinks it's still a thing, and it
@@ -278,6 +324,12 @@ def guess_bytes(bstring):
     - "sloppy-windows-1252", the Latin-1-like encoding that is the most common
       single-byte encoding
     """
+    if type(bstring) == type(''):
+        raise UnicodeError(
+            "This string was already decoded as Unicode. You should pass "
+            "bytes to guess_bytes, not Unicode."
+        )
+
     if bstring.startswith(b'\xfe\xff') or bstring.startswith(b'\xff\xfe'):
         return bstring.decode('utf-16'), 'utf-16'
 
@@ -351,14 +403,3 @@ def explain_unicode(text):
             category=unicodedata.category(char),
             name=unicodedata.name(char, '<unknown>')
         ))
-
-
-def fix_bad_encoding(text):
-    """
-    Kept for compatibility with previous versions of ftfy.
-    """
-    warnings.warn(
-        'fix_bad_encoding is now known as fix_text_encoding',
-        DeprecationWarning
-    )
-    return fix_text_encoding(text)
