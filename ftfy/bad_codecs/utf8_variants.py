@@ -131,8 +131,8 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
         elif cutoff2 != -1:
             cutoff = cutoff2
         else:
-            # Decode the entire input at once.
-            return sup(input, errors, True)
+            # Decode the input as standard UTF-8.
+            return sup(input, errors, final)
 
         if cutoff1 == 0:
             # Decode a possible six-byte sequence starting with 0xed.
