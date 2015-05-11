@@ -28,8 +28,11 @@ evaluation, and found:
   false positives).
 
 In all the data we've sampled, including from previous versions of ftfy, there
-are only two false positives that remain that we know of::
+are only three false positives that remain that we know of::
 
     fix_encoding('├┤a┼┐a┼┐a┼┐a┼┐a') == 'ôaſaſaſaſa'
     fix_encoding('ESSE CARA AI QUEM É¿') == 'ESSE CARA AI QUEM ɿ'
+    fix_encoding('``hogwarts nao existe, voce nao vai pegar o trem pra lá´´')
+      == '``hogwarts nao existe, voce nao vai pegar o trem pra lᴴ'
+
 
