@@ -1,12 +1,11 @@
 # ftfy: fixes text for you
 
-[![Downloads](https://pypip.in/d/ftfy/badge.png)](https://crate.io/packages/ftfy)
-[![Version](https://pypip.in/v/ftfy/badge.png)](https://crate.io/packages/ftfy)
+[![PyPI package](https://badge.fury.io/py/ftfy.svg)](http://badge.fury.io/py/ftfy)
 [![Docs](https://readthedocs.org/projects/ftfy/badge/?version=latest)](http://ftfy.readthedocs.org/en/latest/)
 
 ```python
->>> print(fix_encoding("(à¸‡'Ì€âŒ£'Ì\x81)à¸‡"))
-(ง'̀⌣'́)ง
+>>> print(fix_encoding("(à¸‡'âŒ£')à¸‡"))
+(ง'⌣')ง
 ```
 
 Full documentation: **http://ftfy.readthedocs.org**
