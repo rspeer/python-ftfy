@@ -13,10 +13,11 @@ import ftfy.bad_codecs
 ftfy.bad_codecs.ok()
 
 from ftfy import fixes
+from ftfy.formatting import display_ljust
 from ftfy.compatibility import is_printable
 import unicodedata
 
-__version__ = '4.0.0'
+__version__ = '4.1.0'
 
 
 def fix_text(text,
@@ -386,7 +387,7 @@ def explain_unicode(text):
         U+00B0  °       [So] DEGREE SIGN
         U+0029  )       [Pe] RIGHT PARENTHESIS
         U+256F  ╯       [So] BOX DRAWINGS LIGHT ARC UP AND LEFT
-        U+FE35  ︵       [Ps] PRESENTATION FORM FOR VERTICAL LEFT PARENTHESIS
+        U+FE35  ︵      [Ps] PRESENTATION FORM FOR VERTICAL LEFT PARENTHESIS
         U+0020          [Zs] SPACE
         U+253B  ┻       [So] BOX DRAWINGS HEAVY UP AND HORIZONTAL
         U+2501  ━       [So] BOX DRAWINGS HEAVY HORIZONTAL
@@ -397,8 +398,8 @@ def explain_unicode(text):
             display = char
         else:
             display = char.encode('unicode-escape').decode('ascii')
-        print('U+{code:04X}  {display:<7} [{category}] {name}'.format(
-            display=display,
+        print('U+{code:04X}  {display} [{category}] {name}'.format(
+            display=display_ljust(display, 7),
             code=ord(char),
             category=unicodedata.category(char),
             name=unicodedata.name(char, '<unknown>')
