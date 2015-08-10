@@ -29,10 +29,10 @@ class StreamTester:
             if encoding_only:
                 fixed = fix_encoding(text)
             else:
-                fixed = fix_text(text, fix_character_width=False, uncurl_quotes=False)
+                fixed = fix_text(text, uncurl_quotes=False, fix_character_width=False)
             if text != fixed:
                 # possibly filter common bots before printing
-                print(u'\nText:\t{text}\nFixed:\t{fixed}\n'.format(
+                print(u'\nText:\t{text!r}\nFixed:\t{fixed!r}\n'.format(
                     text=text, fixed=fixed
                 ))
                 self.num_fixed += 1
