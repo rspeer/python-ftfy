@@ -8,7 +8,7 @@ from __future__ import unicode_literals
 from ftfy.chardata import (possible_encoding, CHARMAP_ENCODINGS,
                            CONTROL_CHARS, LIGATURES, WIDTH_MAP,
                            PARTIAL_UTF8_PUNCT_RE, ALTERED_UTF8_RE,
-                           SINGLE_QUOTE_RE, DOUBLE_QUOTE_RE)
+                           LOSSY_UTF8_RE, SINGLE_QUOTE_RE, DOUBLE_QUOTE_RE)
 from ftfy.badness import text_cost
 from ftfy.compatibility import htmlentitydefs, unichr
 import re
@@ -184,6 +184,8 @@ def fix_one_step_and_explain(text):
     for encoding in CHARMAP_ENCODINGS:
         if possible_encoding(text, encoding):
             encoded_bytes = text.encode(encoding)
+            encode_step = ('encode', encoding, ENCODING_COSTS.get(encoding, 0))
+            transcode_steps = []
 
             # Now, find out if it's UTF-8 (or close enough). Otherwise,
             # remember the encoding for later.
@@ -192,22 +194,21 @@ def fix_one_step_and_explain(text):
                 # Check encoded_bytes for sequences that would be UTF-8,
                 # except they have b' ' where b'\xa0' would belong.
                 if ALTERED_UTF8_RE.search(encoded_bytes):
-                    fixed_bytes, cost = restore_byte_a0(encoded_bytes)
-                    try:
-                        fixed = fixed_bytes.decode('utf-8-variants')
-                        steps = [('encode', encoding,
-                                  ENCODING_COSTS.get(encoding, 0)),
-                                 ('transcode', 'restore_byte_a0', cost),
-                                 ('decode', 'utf-8-variants', 0)]
-                        return fixed, steps
-                    except UnicodeDecodeError:
-                        pass
+                    encoded_bytes, cost = _restore_byte_a0_with_cost(encoded_bytes)
+                    transcode_steps.append(('transcode', 'restore_byte_a0', cost))
+
+                # Check for the byte 0x1a, which indicates where one of our
+                # 'sloppy' codecs found a replacement character.
+                if b'\x1a' in encoded_bytes:
+                    encoded_bytes = replace_lossy_sequences(encoded_bytes)
+                    transcode_steps.append(('transcode', 'replace_lossy_sequences', 0))
 
                 if b'\xed' in encoded_bytes or b'\xc0' in encoded_bytes:
                     decoding = 'utf-8-variants'
+
+                decode_step = ('decode', decoding, 0)
+                steps = [encode_step] + transcode_steps + [decode_step]
                 fixed = encoded_bytes.decode(decoding)
-                steps = [('encode', encoding, ENCODING_COSTS.get(encoding, 0)),
-                         ('decode', decoding, 0)]
                 return fixed, steps
 
             except UnicodeDecodeError:
@@ -278,10 +279,8 @@ def apply_plan(text, plan):
         elif operation == 'decode':
             obj = obj.decode(encoding)
         elif operation == 'transcode':
-            if encoding == 'restore_byte_a0':
-                obj = restore_byte_a0(obj)
-            elif encoding == 'fix_partial_utf8_punct_in_1252':
-                obj = fix_partial_utf8_punct_in_1252(obj)
+            if encoding in TRANSCODERS:
+                obj = TRANSCODERS[encoding](obj)
             else:
                 raise ValueError("Unknown transcode operation: %s" % encoding)
         else:
@@ -563,19 +562,10 @@ def decode_escapes(text):
     return ESCAPE_SEQUENCE_RE.sub(decode_match, text)
 
 
-def restore_byte_a0(byts):
+def _restore_byte_a0_with_cost(byts):
     """
-    Some mojibake has been additionally altered by a process that said "hmm,
-    \\xa0, that's basically a space!" and replaced it with an ASCII space.
-    When the \\xa0 is part of a sequence that we intend to decode as UTF-8,
-    changing byte A0 to 20 would make it fail to decode.
-    
-    This process finds sequences that would convincingly decode as UTF-8 if
-    byte 20 were changed to A0, and puts back the A0. For the purpose of
-    deciding whether this is a good idea, this step gets a cost of twice
-    the number of bytes that are changed.
-    
-    This is used as a step within `fix_encoding`.
+    See `restore_byte_a0`. This version of the function additionally
+    returns a cost, which is twice the number of bytes being replaced.
     """
     def replacement(match):
         "The function to apply when this regex matches."
@@ -583,6 +573,32 @@ def restore_byte_a0(byts):
 
     fixed = ALTERED_UTF8_RE.sub(replacement, byts)
     return fixed, fixed.count(b'\xa0') * 2
+
+
+def restore_byte_a0(byts):
+    """
+    Some mojibake has been additionally altered by a process that said "hmm,
+    \\xa0, that's basically a space!" and replaced it with an ASCII space.
+    When the \\xa0 is part of a sequence that we intend to decode as UTF-8,
+    changing byte A0 to 20 would make it fail to decode.
+
+    This process finds sequences that would convincingly decode as UTF-8 if
+    byte 20 were changed to A0, and puts back the A0. For the purpose of
+    deciding whether this is a good idea, this step gets a cost of twice
+    the number of bytes that are changed.
+
+    This is used as a step within `fix_encoding`.
+    """
+    return _restore_byte_a0_with_cost(byts)[0]
+
+
+def replace_lossy_sequences(byts):
+    def replacement(match):
+        "The function to apply when this regex matches."
+        return '\ufffd'.encode('utf-8')
+
+    fixed = LOSSY_UTF8_RE.sub(replacement, byts)
+    return fixed
 
 
 def fix_partial_utf8_punct_in_1252(text):
@@ -599,4 +615,11 @@ def fix_partial_utf8_punct_in_1252(text):
         "The function to apply when this regex matches."
         return match.group(0).encode('sloppy-windows-1252').decode('utf-8')
     return PARTIAL_UTF8_PUNCT_RE.sub(replacement, text)
+
+
+TRANSCODERS = {
+    'restore_byte_a0': restore_byte_a0,
+    'replace_lossy_sequences': replace_lossy_sequences,
+    'fix_partial_utf8_punct_in_1252': fix_partial_utf8_punct_in_1252
+}
 
