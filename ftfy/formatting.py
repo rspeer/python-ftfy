@@ -1,3 +1,5 @@
+# coding: utf-8
+from __future__ import unicode_literals, division
 from unicodedata import east_asian_width, combining, category, normalize
 
 
