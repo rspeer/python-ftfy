@@ -17,11 +17,15 @@ def character_width(char):
     exception. This assumption will go wrong, for example, if your display is
     actually on a Japanese flip-phone... but let's assume it isn't.
 
-    If this character is a control code, the idea of it having a "width"
-    probably doesn't even apply, because it will probably have some other
-    effect on your terminal. For example, there's no sensible width for a
-    line break. We return the default of 1 in the absence of anything sensible
-    to do there.
+    Combining marks and formatting codepoints do not advance the cursor,
+    so their width is 0.
+
+    If the character is a particular kind of control code -- the kind
+    represented by the lowest bytes of ASCII, with Unicode category Cc -- the
+    idea of it having a "width" probably doesn't even apply, because it will
+    probably have some other effect on your terminal. For example, there's no
+    sensible width for a line break. We return the default of 1 in the absence
+    of anything sensible to do there.
 
     >>> character_width('車')
     2
