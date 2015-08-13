@@ -59,6 +59,10 @@ TEST_CASES = [
     ('Ã¢â€\x9dâ€™(Ã¢Å’Â£Ã‹â€ºÃ¢Å’Â£)Ã¢â€\x9dÅ½', '┒(⌣˛⌣)┎'),
     ('Ã¢â€�â€™(Ã¢Å’Â£Ã‹â€ºÃ¢Å’Â£)Ã¢â€�Å½', '�(⌣˛⌣)�'),
 
+    # You tried
+    ('I just figured out how to tweet emojis! â\x9a½í\xa0½í¸\x80í\xa0½í¸\x81í\xa0½í¸\x82í\xa0½í¸\x86í\xa0½í¸\x8eí\xa0½í¸\x8eí\xa0½í¸\x8eí\xa0½í¸\x8e',
+     'I just figured out how to tweet emojis! ⚽😀😁😂😆😎😎😎😎')
+
     ## Current false positives:
     #("├┤a┼┐a┼┐a┼┐a┼┐a", "├┤a┼┐a┼┐a┼┐a┼┐a"),
     #("ESSE CARA AI QUEM É¿", "ESSE CARA AI QUEM É¿")
