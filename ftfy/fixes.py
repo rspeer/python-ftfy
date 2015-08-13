@@ -199,7 +199,7 @@ def fix_one_step_and_explain(text):
 
                 # Check for the byte 0x1a, which indicates where one of our
                 # 'sloppy' codecs found a replacement character.
-                if b'\x1a' in encoded_bytes:
+                if encoding.startswith('sloppy') and b'\x1a' in encoded_bytes:
                     encoded_bytes = replace_lossy_sequences(encoded_bytes)
                     transcode_steps.append(('transcode', 'replace_lossy_sequences', 0))
 
@@ -594,9 +594,9 @@ def restore_byte_a0(byts):
 
 def replace_lossy_sequences(byts):
     """
-    This function identifies sequences where information has been lost,
-    indicated by byte 1A, and if they would otherwise look like a UTF-8
-    sequence, it replaces them with the UTF-8 sequence for U+FFFD.
+    This function identifies sequences where information has been lost in
+    a "sloppy" codec, indicated by byte 1A, and if they would otherwise look
+    like a UTF-8 sequence, it replaces them with the UTF-8 sequence for U+FFFD.
 
     A further explanation:
 
@@ -622,10 +622,11 @@ def replace_lossy_sequences(byts):
     As a result, the above text ``â€œ like this â€�`` will decode as
     ``“ like this �``.
 
-    This is used as a step within `fix_encoding`.
+    If U+1A was actually in the original string, then the sloppy codecs will
+    not be used, and this function will not be run, so your weird control
+    character will be left alone but wacky fixes like this won't be possible.
 
-    One consequence of this transformation is that `fix_encoding` will no
-    longer pass through byte 1A if you were using it for something else.
+    This is used as a step within `fix_encoding`.
     """
     def replacement(match):
         "The function to apply when this regex matches."

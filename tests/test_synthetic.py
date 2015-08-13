@@ -15,7 +15,9 @@ phrases = [
     "\u2014ALLÍ ESTÁ\u2014",
     "AHÅ™, the new sofa from IKEA®",
     "ВІКІ is Ukrainian for WIKI",
-    #"\u2014a radius of 10 Å\u2014",
+    'These control characters \x1a are apparently intentional \x81',
+    "I don't know what this is \x1a but this is the euro sign €",
+    "\u2014a radius of 10 Å\u2014",
 ]
 # These phrases should not be erroneously "fixed"
 def test_valid_phrases():
