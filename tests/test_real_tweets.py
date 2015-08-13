@@ -45,6 +45,14 @@ TEST_CASES = [
     ('Engkau masih yg terindah, indah di dalam hatikuâ™«~',
      'Engkau masih yg terindah, indah di dalam hatiku♫~'),
     ('SENSЕ - Oleg Tsedryk', 'SENSЕ - Oleg Tsedryk'),   # this Е is a Ukrainian letter
+    ('OK??:(   `¬´    ):', 'OK??:(   `¬´    ):'),
+    ("selamat berpuasa sob (Ã\xa0Â¸â€¡'ÃŒâ‚¬Ã¢Å’Â£'ÃŒÂ\x81)Ã\xa0Â¸â€¡",
+     "selamat berpuasa sob (ง'̀⌣'́)ง"),
+
+    # This one has two differently-broken layers of Windows-1252 <=> UTF-8,
+    # and it's kind of amazing that we solve it.
+    ('Arsenal v Wolfsburg: pre-season friendly â\x80â\x80\x9c live!',
+     'Arsenal v Wolfsburg: pre-season friendly – live!'),
 
     # Test that we can mostly decode this face when the nonprintable
     # character \x9d is lost
