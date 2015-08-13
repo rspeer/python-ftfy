@@ -639,7 +639,7 @@ def fix_partial_utf8_punct_in_1252(text):
     """
     Fix particular characters that seem to be found in the wild encoded in
     UTF-8 and decoded in Latin-1 or Windows-1252, even when this fix can't be
-    consistently applied. This is used as a step within `fix_encoding`.
+    consistently applied.
 
     For this function, we assume the text has been decoded in Windows-1252.
     If it was decoded in Latin-1, we'll call this right after it goes through
