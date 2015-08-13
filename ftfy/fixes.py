@@ -578,8 +578,8 @@ def _restore_byte_a0_with_cost(byts):
 def restore_byte_a0(byts):
     """
     Some mojibake has been additionally altered by a process that said "hmm,
-    \\xa0, that's basically a space!" and replaced it with an ASCII space.
-    When the \\xa0 is part of a sequence that we intend to decode as UTF-8,
+    byte A0, that's basically a space!" and replaced it with an ASCII space.
+    When the A0 is part of a sequence that we intend to decode as UTF-8,
     changing byte A0 to 20 would make it fail to decode.
 
     This process finds sequences that would convincingly decode as UTF-8 if
@@ -593,6 +593,40 @@ def restore_byte_a0(byts):
 
 
 def replace_lossy_sequences(byts):
+    """
+    This function identifies sequences where information has been lost,
+    indicated by byte 1A, and if they would otherwise look like a UTF-8
+    sequence, it replaces them with the UTF-8 sequence for U+FFFD.
+
+    A further explanation:
+
+    ftfy can now fix text in a few cases that it would previously fix
+    incompletely, because of the fact that it can't successfully apply the fix
+    to the entire string. A very common case of this is when characters have
+    been erroneously decoded as windows-1252, but instead of the "sloppy"
+    windows-1252 that passes through unassigned bytes, the unassigned bytes get
+    turned into U+FFFD (�), so we can't tell what they were.
+
+    This most commonly happens with curly quotation marks that appear
+    ``â€œ like this â€�``.
+
+    We can do better by building on ftfy's "sloppy codecs" to let them handle
+    less-sloppy but more-lossy text. When they encounter the character ``�``,
+    instead of refusing to encode it, they encode it as byte 1A -- an
+    ASCII control code called SUBSTITUTE that once was meant for about the same
+    purpose. We can then apply a fixer that looks for UTF-8 sequences where
+    some continuation bytes have been replaced by byte 1A, and decode the whole
+    sequence as �; if that doesn't work, it'll just turn the byte back into �
+    itself.
+
+    As a result, the above text ``â€œ like this â€�`` will decode as
+    ``“ like this �``.
+
+    This is used as a step within `fix_encoding`.
+
+    One consequence of this transformation is that `fix_encoding` will no
+    longer pass through byte 1A if you were using it for something else.
+    """
     def replacement(match):
         "The function to apply when this regex matches."
         return '\ufffd'.encode('utf-8')
@@ -610,6 +644,8 @@ def fix_partial_utf8_punct_in_1252(text):
     For this function, we assume the text has been decoded in Windows-1252.
     If it was decoded in Latin-1, we'll call this right after it goes through
     the Latin-1-to-Windows-1252 fixer.
+
+    This is used as a step within `fix_encoding`.
     """
     def replacement(match):
         "The function to apply when this regex matches."
