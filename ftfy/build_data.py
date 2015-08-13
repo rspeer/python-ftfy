@@ -112,8 +112,12 @@ def make_char_data_file(do_it_anyway=False):
     # Mark whitespace control characters as whitespace
     cclasses[9] = cclasses[10] = cclasses[12] = cclasses[13] = ' '
 
-    # Tilde is not a "math symbol" the way it's used
-    cclasses[ord('~')] = 'o'
+    # Some other exceptions for characters that are more commonly used as
+    # punctuation or decoration than for their ostensible purpose.
+    # For example, tilde is not usually a "math symbol", and the accents
+    # `´ are much more like quotation marks than modifiers.
+    for char in "^~`´˝＾｀":
+        cclasses[ord(char)] = 'o'
 
     out = open('char_classes.dat', 'wb')
     out.write(zlib.compress(''.join(cclasses).encode('ascii')))
