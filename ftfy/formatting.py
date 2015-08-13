@@ -91,8 +91,7 @@ def display_ljust(text, width, fillchar=' '):
     """
     if character_width(fillchar) != 1:
         raise ValueError("The padding character must have display width 1")
-    text_width = monospaced_width(text)
-    padding = max(0, width - text_width)
+    padding = max(0, width - monospaced_width(text))
     return text + fillchar * padding
 
 
@@ -116,8 +115,7 @@ def display_rjust(text, width, fillchar=' '):
     """
     if character_width(fillchar) != 1:
         raise ValueError("The padding character must have display width 1")
-    text_width = monospaced_width(text)
-    padding = max(0, width - text_width)
+    padding = max(0, width - monospaced_width(text))
     return fillchar * padding + text
 
 
@@ -137,8 +135,7 @@ def display_center(text, width, fillchar=' '):
     """
     if character_width(fillchar) != 1:
         raise ValueError("The padding character must have display width 1")
-    text_width = monospaced_width(text)
-    padding = max(0, width - text_width)
+    padding = max(0, width - monospaced_width(text))
     left_padding = padding // 2
     right_padding = padding - left_padding
     return fillchar * left_padding + text + fillchar * right_padding
