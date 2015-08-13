@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 from ftfy import fix_text
+from ftfy.fixes import fix_encoding_and_explain, apply_plan
 from nose.tools import eq_
+
 
 TEST_CASES = [
     ## These are excerpts from tweets actually seen on the public Twitter
@@ -43,20 +45,34 @@ TEST_CASES = [
     ('Engkau masih yg terindah, indah di dalam hatikuâ™«~',
      'Engkau masih yg terindah, indah di dalam hatiku♫~'),
     ('SENSЕ - Oleg Tsedryk', 'SENSЕ - Oleg Tsedryk'),   # this Е is a Ukrainian letter
+    ('OK??:(   `¬´    ):', 'OK??:(   `¬´    ):'),
+    ("selamat berpuasa sob (Ã\xa0Â¸â€¡'ÃŒâ‚¬Ã¢Å’Â£'ÃŒÂ\x81)Ã\xa0Â¸â€¡",
+     "selamat berpuasa sob (ง'̀⌣'́)ง"),
+
+    # This one has two differently-broken layers of Windows-1252 <=> UTF-8,
+    # and it's kind of amazing that we solve it.
+    ('Arsenal v Wolfsburg: pre-season friendly â\x80â\x80\x9c live!',
+     'Arsenal v Wolfsburg: pre-season friendly – live!'),
+
+    # Test that we can mostly decode this face when the nonprintable
+    # character \x9d is lost
+    ('Ã¢â€\x9dâ€™(Ã¢Å’Â£Ã‹â€ºÃ¢Å’Â£)Ã¢â€\x9dÅ½', '┒(⌣˛⌣)┎'),
+    ('Ã¢â€�â€™(Ã¢Å’Â£Ã‹â€ºÃ¢Å’Â£)Ã¢â€�Å½', '�(⌣˛⌣)�'),
 
     ## Current false positives:
     #("├┤a┼┐a┼┐a┼┐a┼┐a", "├┤a┼┐a┼┐a┼┐a┼┐a"),
     #("ESSE CARA AI QUEM É¿", "ESSE CARA AI QUEM É¿")
     #("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´", "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´"),
-    
+
     ## This kind of tweet can't be fixed without a full-blown encoding detector.
     #("Deja dos heridos hundimiento de barco tur\x92stico en Acapulco.",
     # "Deja dos heridos hundimiento de barco turístico en Acapulco."),
-    
+
     ## The heuristics aren't confident enough to fix this text and its weird encoding.
     #("Blog Traffic Tip 2 вЂ“ Broadcast Email Your Blog",
     # "Blog Traffic Tip 2 – Broadcast Email Your Blog"),
 ]
+
 
 def test_real_tweets():
     """
@@ -73,6 +89,11 @@ def test_real_tweets():
     text.
     """
     for orig, target in TEST_CASES:
+        # make sure that the fix_encoding step outputs a plan that we can
+        # successfully run to reproduce its result
+        encoding_fix, plan = fix_encoding_and_explain(orig)
+        eq_(apply_plan(orig, plan), encoding_fix)
+
         # make sure we can decode the text as intended
         eq_(fix_text(orig), target)
 

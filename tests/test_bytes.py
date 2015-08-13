@@ -41,6 +41,9 @@ def test_guess_bytes():
 
 
 def test_mangle_surrogates():
+    eq_(b'Eric the half a bee \xed\xa0\x80'.decode('utf-8-variants', 'replace'),
+        'Eric the half a bee ���')
+
     if PYTHON2:
         # These are the encodings of a surrogate character, plus a similar-looking
         # Korean character. Only the surrogate character's bytes should get mangled.
