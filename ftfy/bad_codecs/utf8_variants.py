@@ -48,12 +48,20 @@ import codecs
 NAME = 'utf-8-variants'
 
 # This regular expression matches all possible six-byte CESU-8 sequences,
-# plus truncations of them at the end of the string.
+# plus truncations of them at the end of the string. (If any of the
+# subgroups matches $, then all the subgroups after it also have to match $,
+# as there are no more characters to match.)
 CESU8_EXPR = (
-    b'(\xed[\xa0-\xaf][\x80-\xbf]\xed[\xb0-\xbf][\x80-\xbf]'
-    b'|\xed([\xa0-\xaf]([\x80-\xbf](\xed[\xb0-\xbf]?)?)?)?$'
+    b'('
+    b'\xed'
+    b'([\xa0-\xaf]|$)'
+    b'([\x80-\xbf]|$)'
+    b'(\xed|$)'
+    b'([\xb0-\xbf]|$)'
+    b'([\x80-\xbf]|$)'
     b')'
 )
+
 CESU8_RE = re.compile(CESU8_EXPR)
 
 # This expression matches isolated surrogate characters that aren't
@@ -63,7 +71,7 @@ SURROGATE_EXPR = (b'(\xed[\xa0-\xbf][\x80-\xbf])')
 # This expression matches the Java encoding of U+0. We don't need to check
 # for its truncated version, because that will get passed on to the standard
 # UTF-8 decoder, which will agree that we need to see more bytes.
-NULL_EXPR = b'(\xc0\x80)'
+NULL_EXPR = b'(\xc0(\x80|$))'
 
 
 # This regex matches cases that we need to decode differently from
@@ -150,8 +158,17 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
         # Some byte sequence that we intend to handle specially matches
         # at the beginning of the input.
         if input.startswith(b'\xc0'):
-            # Decode the two-byte sequence 0xc0 0x80.
-            return '\u0000', 2
+            if len(input) > 1:
+                # Decode the two-byte sequence 0xc0 0x80.
+                return '\u0000', 2
+            else:
+                if final:
+                    # We hit the end of the stream. Let the superclass method
+                    # handle it.
+                    return sup(input, errors, True)
+                else:
+                    # Wait to see another byte.
+                    return '', 0
         else:
             # Decode a possible six-byte sequence starting with 0xed.
             return self._buffer_decode_surrogates(sup, input, errors, final)
