@@ -281,8 +281,6 @@ Module documentation
     replace_lossy_sequences, fix_partial_utf8_punct_in_1252
 
 
-
-
 *ftfy.badness*: measures the "badness" of text
 ----------------------------------------------
 
