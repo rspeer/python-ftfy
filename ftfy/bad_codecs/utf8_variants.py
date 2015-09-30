@@ -68,9 +68,8 @@ CESU8_RE = re.compile(CESU8_EXPR)
 # CESU-8, which have to be handled carefully on Python 2.
 SURROGATE_EXPR = (b'(\xed[\xa0-\xbf][\x80-\xbf])')
 
-# This expression matches the Java encoding of U+0. We don't need to check
-# for its truncated version, because that will get passed on to the standard
-# UTF-8 decoder, which will agree that we need to see more bytes.
+# This expression matches the Java encoding of U+0, including if it's
+# truncated and we need more bytes.
 NULL_EXPR = b'(\xc0(\x80|$))'
 
 
