@@ -194,7 +194,8 @@ def fix_one_step_and_explain(text):
                 # Check encoded_bytes for sequences that would be UTF-8,
                 # except they have b' ' where b'\xa0' would belong.
                 if ALTERED_UTF8_RE.search(encoded_bytes):
-                    encoded_bytes, cost = _restore_byte_a0_with_cost(encoded_bytes)
+                    encoded_bytes = restore_byte_a0(encoded_bytes)
+                    cost = encoded_bytes.count(b'\xa0') * 2
                     transcode_steps.append(('transcode', 'restore_byte_a0', cost))
 
                 # Check for the byte 0x1a, which indicates where one of our
@@ -562,19 +563,6 @@ def decode_escapes(text):
     return ESCAPE_SEQUENCE_RE.sub(decode_match, text)
 
 
-def _restore_byte_a0_with_cost(byts):
-    """
-    See `restore_byte_a0`. This version of the function additionally
-    returns a cost, which is twice the number of bytes being replaced.
-    """
-    def replacement(match):
-        "The function to apply when this regex matches."
-        return match.group(0).replace(b'\x20', b'\xa0')
-
-    fixed = ALTERED_UTF8_RE.sub(replacement, byts)
-    return fixed, fixed.count(b'\xa0') * 2
-
-
 def restore_byte_a0(byts):
     """
     Some mojibake has been additionally altered by a process that said "hmm,
@@ -589,7 +577,11 @@ def restore_byte_a0(byts):
 
     This is used as a step within `fix_encoding`.
     """
-    return _restore_byte_a0_with_cost(byts)[0]
+    def replacement(match):
+        "The function to apply when this regex matches."
+        return match.group(0).replace(b'\x20', b'\xa0')
+
+    return ALTERED_UTF8_RE.sub(replacement, byts)
 
 
 def replace_lossy_sequences(byts):
