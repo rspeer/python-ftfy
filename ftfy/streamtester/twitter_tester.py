@@ -48,7 +48,7 @@ class TwitterTester(StreamTester):
         for lang, lines in self.lines_by_lang.items():
             filename = 'tweets.{}.txt'.format(lang)
             fullname = os.path.join(self.OUTPUT_DIR, filename)
-            langfile = open(fullname, 'a')
+            langfile = open(fullname, 'a', encoding='utf-8')
             for line in lines:
                 print(line.replace('\n', ' '), file=langfile)
             langfile.close()
