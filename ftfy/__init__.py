@@ -269,7 +269,7 @@ def fix_text_segment(text,
         if remove_terminal_escapes:
             text = fixes.remove_terminal_escapes(text)
         if fix_encoding:
-            text = fixes.fix_text_encoding(text)
+            text = fixes.fix_encoding(text)
         if fix_latin_ligatures:
             text = fixes.fix_latin_ligatures(text)
         if fix_character_width:
