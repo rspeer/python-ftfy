@@ -17,7 +17,7 @@ from ftfy.formatting import display_ljust
 from ftfy.compatibility import is_printable
 import unicodedata
 
-__version__ = '4.0.0'
+__version__ = '4.1.0'
 
 
 def fix_text(text,
