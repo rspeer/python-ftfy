@@ -46,8 +46,36 @@ import re
 import codecs
 
 NAME = 'utf-8-variants'
-# This regular expression matches all possible six-byte CESU-8 sequences.
-CESU8_RE = re.compile(b'\xed[\xa0-\xaf][\x80-\xbf]\xed[\xb0-\xbf][\x80-\xbf]')
+
+# This regular expression matches all possible six-byte CESU-8 sequences,
+# plus truncations of them at the end of the string. (If any of the
+# subgroups matches $, then all the subgroups after it also have to match $,
+# as there are no more characters to match.)
+CESU8_EXPR = (
+    b'('
+    b'\xed'
+    b'([\xa0-\xaf]|$)'
+    b'([\x80-\xbf]|$)'
+    b'(\xed|$)'
+    b'([\xb0-\xbf]|$)'
+    b'([\x80-\xbf]|$)'
+    b')'
+)
+
+CESU8_RE = re.compile(CESU8_EXPR)
+
+# This expression matches isolated surrogate characters that aren't
+# CESU-8, which have to be handled carefully on Python 2.
+SURROGATE_EXPR = (b'(\xed[\xa0-\xbf][\x80-\xbf])')
+
+# This expression matches the Java encoding of U+0, including if it's
+# truncated and we need more bytes.
+NULL_EXPR = b'(\xc0(\x80|$))'
+
+
+# This regex matches cases that we need to decode differently from
+# standard UTF-8.
+SPECIAL_BYTES_RE = re.compile(b'|'.join([NULL_EXPR, CESU8_EXPR, SURROGATE_EXPR]))
 
 
 class IncrementalDecoder(UTF8IncrementalDecoder):
@@ -118,58 +146,31 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
         sup = UTF8IncrementalDecoder._buffer_decode
 
         # Find the next byte position that indicates a variant of UTF-8.
-        # CESU-8 sequences always start with 0xed, and Java nulls always
-        # start with 0xc0.
-        cutoff1 = input.find(b'\xed')
-        cutoff2 = input.find(b'\xc0')
-
-        # Set `cutoff` to whichever cutoff comes first.
-        if cutoff1 != -1 and cutoff2 != -1:
-            cutoff = min(cutoff1, cutoff2)
-        elif cutoff1 != -1:
-            cutoff = cutoff1
-        elif cutoff2 != -1:
-            cutoff = cutoff2
-        else:
-            # Decode the input as standard UTF-8.
+        match = SPECIAL_BYTES_RE.search(input)
+        if match is None:
             return sup(input, errors, final)
 
-        if cutoff1 == 0:
-            # Decode a possible six-byte sequence starting with 0xed.
-            return self._buffer_decode_surrogates(sup, input, errors, final)
-        elif cutoff2 == 0:
-            # Decode a possible two-byte sequence, 0xc0 0x80.
-            return self._buffer_decode_null(sup, input, errors, final)
-        else:
-            # Decode the bytes up until the next weird thing as UTF-8.
-            # Set final=True because 0xc0 and 0xed don't make sense in the
-            # middle of a sequence, in any variant.
+        cutoff = match.start()
+        if cutoff > 0:
             return sup(input[:cutoff], errors, True)
 
-    @staticmethod
-    def _buffer_decode_null(sup, input, errors, final):
-        """
-        Decode the bytes 0xc0 0x80 as U+0000, like Java does.
-        """
-        nextbyte = input[1:2]
-        if nextbyte == b'':
-            if final:
-                # We found 0xc0 at the end of the stream, which is an error.
-                # Delegate to the superclass method to handle that error.
-                return sup(input, errors, final)
+        # Some byte sequence that we intend to handle specially matches
+        # at the beginning of the input.
+        if input.startswith(b'\xc0'):
+            if len(input) > 1:
+                # Decode the two-byte sequence 0xc0 0x80.
+                return '\u0000', 2
             else:
-                # We found 0xc0 and we don't know what comes next, so consume
-                # no bytes and wait.
-                return '', 0
-        elif nextbyte == b'\x80':
-            # We found the usual 0xc0 0x80 sequence, so decode it and consume
-            # two bytes.
-            return '\u0000', 2
+                if final:
+                    # We hit the end of the stream. Let the superclass method
+                    # handle it.
+                    return sup(input, errors, True)
+                else:
+                    # Wait to see another byte.
+                    return '', 0
         else:
-            # We found 0xc0 followed by something else, which is an error.
-            # Whatever should happen is equivalent to what happens when the
-            # superclass is given just the byte 0xc0, with final=True.
-            return sup(b'\xc0', errors, True)
+            # Decode a possible six-byte sequence starting with 0xed.
+            return self._buffer_decode_surrogates(sup, input, errors, final)
 
     @staticmethod
     def _buffer_decode_surrogates(sup, input, errors, final):
@@ -190,21 +191,20 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
             if final:
                 # We found 0xed near the end of the stream, and there aren't
                 # six bytes to decode. Delegate to the superclass method to
-                # handle it as normal UTF-8. It might be a Hangul character
-                # or an error.
+                # handle it as an error.
                 if PYTHON2 and len(input) >= 3:
                     # We can't trust Python 2 to raise an error when it's
                     # asked to decode a surrogate, so let's force the issue.
                     input = mangle_surrogates(input)
                 return sup(input, errors, final)
             else:
-                # We found 0xed, the stream isn't over yet, and we don't know
-                # enough of the following bytes to decode anything, so consume
-                # zero bytes and wait.
+                # We found a surrogate, the stream isn't over yet, and we don't
+                # know enough of the following bytes to decode anything, so
+                # consume zero bytes and wait.
                 return '', 0
         else:
             if CESU8_RE.match(input):
-                # If this is a CESU-8 sequence, do some math to pull out
+                # Given this is a CESU-8 sequence, do some math to pull out
                 # the intended 20-bit value, and consume six bytes.
                 bytenums = bytes_to_ints(input[:6])
                 codepoint = (

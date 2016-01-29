@@ -277,7 +277,8 @@ Module documentation
    :members: unescape_html, remove_terminal_escapes, uncurl_quotes,
     fix_latin_ligatures, fix_character_width, fix_line_breaks,
     fix_surrogates, remove_control_chars, remove_bom, decode_escapes,
-    fix_one_step_and_explain, apply_plan
+    fix_one_step_and_explain, apply_plan, restore_byte_a0,
+    replace_lossy_sequences, fix_partial_utf8_punct_in_1252
 
 
 *ftfy.badness*: measures the "badness" of text
