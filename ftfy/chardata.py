@@ -33,14 +33,16 @@ def _build_regexes():
     encoding_regexes = {'ascii': re.compile('^[\x00-\x7f]*$')}
 
     for encoding in CHARMAP_ENCODINGS:
-        latin1table = ''.join(unichr(i) for i in range(128, 256))
+        latin1table = ''.join(unichr(i) for i in range(128, 256)) + '\x1a'
         charlist = latin1table.encode('latin-1').decode(encoding)
 
         # Build a regex from the ASCII range, followed by the decodings of
-        # bytes 0x80-0xff in this character set. (This uses the fact that all
-        # regex special characters are ASCII, and therefore won't appear in the
-        # string.)
-        regex = '^[\x00-\x7f{0}]*$'.format(charlist)
+        # bytes 0x80-0xff in this character set, followed by the decoding of
+        # byte 0x1a in case we made that one special.
+        #
+        # All regex special characters are in the \x1b-\x7f range, so we don't
+        # need to worry about escaping them in the regex.
+        regex = '^[\x00-\x19\x1b-\x7f{0}]*$'.format(charlist)
         encoding_regexes[encoding] = re.compile(regex)
     return encoding_regexes
 ENCODING_REGEXES = _build_regexes()
@@ -101,6 +103,22 @@ ALTERED_UTF8_RE = re.compile(b'[\xc2\xc3\xc5\xce\xd0][ ]'
                              b'|[\xf0-\xf4][\x80-\xbf][ ][\x80-\xbf]'
                              b'|[\xf0-\xf4][\x80-\xbf][\x80-\xbf][ ]')
 
+# This expression matches UTF-8 and CESU-8 sequences where some of the
+# continuation bytes have been lost. The byte 0x1a (sometimes written as ^Z) is
+# used within ftfy to represent a byte that produced the replacement character
+# \ufffd. We don't know which byte it was, but we can at least decode the UTF-8
+# sequence as \ufffd instead of failing to re-decode it at all.
+LOSSY_UTF8_RE = re.compile(
+    b'[\xc2-\xdf][\x1a]'
+    b'|\xed[\xa0-\xaf][\x1a]\xed[\xb0-\xbf][\x1a\x80-\xbf]'
+    b'|\xed[\xa0-\xaf][\x1a\x80-\xbf]\xed[\xb0-\xbf][\x1a]'
+    b'|[\xe0-\xef][\x1a][\x1a\x80-\xbf]'
+    b'|[\xe0-\xef][\x1a\x80-\xbf][\x1a]'
+    b'|[\xf0-\xf4][\x1a][\x1a\x80-\xbf][\x1a\x80-\xbf]'
+    b'|[\xf0-\xf4][\x1a\x80-\xbf][\x1a][\x1a\x80-\xbf]'
+    b'|[\xf0-\xf4][\x1a\x80-\xbf][\x1a\x80-\xbf][\x1a]'
+    b'|\x1a'
+)
 
 # These regexes match various Unicode variations on single and double quotes.
 SINGLE_QUOTE_RE = re.compile('[\u2018-\u201b]')
