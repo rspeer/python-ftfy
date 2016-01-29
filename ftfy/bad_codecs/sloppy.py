@@ -107,6 +107,10 @@ def make_sloppy_codec(encoding):
         if char != REPLACEMENT_CHAR:
             sloppy_chars[i] = char
 
+    # For ftfy's own purposes, we're going to allow byte 1A, the "Substitute"
+    # control code, to encode the Unicode replacement character U+FFFD.
+    sloppy_chars[0x1a] = REPLACEMENT_CHAR
+
     # Create the data structures that tell the charmap methods how to encode
     # and decode in this sloppy encoding.
     decoding_table = ''.join(sloppy_chars)
