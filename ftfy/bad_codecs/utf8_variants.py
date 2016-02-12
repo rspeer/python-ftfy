@@ -72,7 +72,6 @@ SURROGATE_EXPR = (b'(\xed[\xa0-\xbf][\x80-\xbf])')
 # truncated and we need more bytes.
 NULL_EXPR = b'(\xc0(\x80|$))'
 
-
 # This regex matches cases that we need to decode differently from
 # standard UTF-8.
 SPECIAL_BYTES_RE = re.compile(b'|'.join([NULL_EXPR, CESU8_EXPR, SURROGATE_EXPR]))
