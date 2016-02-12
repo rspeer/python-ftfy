@@ -620,12 +620,7 @@ def replace_lossy_sequences(byts):
 
     This is used as a step within `fix_encoding`.
     """
-    def replacement(match):
-        "The function to apply when this regex matches."
-        return '\ufffd'.encode('utf-8')
-
-    fixed = LOSSY_UTF8_RE.sub(replacement, byts)
-    return fixed
+    return LOSSY_UTF8_RE.sub('\ufffd'.encode('utf-8'), byts)
 
 
 def fix_partial_utf8_punct_in_1252(text):
