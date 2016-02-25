@@ -66,7 +66,7 @@ CESU8_RE = re.compile(CESU8_EXPR)
 
 # This expression matches isolated surrogate characters that aren't
 # CESU-8, which have to be handled carefully on Python 2.
-SURROGATE_EXPR = (b'(\xed[\xa0-\xbf][\x80-\xbf])')
+SURROGATE_EXPR = (b'(\xed([\xa0-\xbf]|$)([\x80-\xbf]|$))')
 
 # This expression matches the Java encoding of U+0, including if it's
 # truncated and we need more bytes.
