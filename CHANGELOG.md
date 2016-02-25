@@ -8,7 +8,7 @@ Heuristic changes:
   unassigned in Windows-1252.
 
   Although ftfy won't recover the lost information, it can now detect this
-  situation, replace the entire lossy character as �, and decode the rest of
+  situation, replace the entire lossy character with �, and decode the rest of
   the characters. Previous versions would be unable to fix any string that
   contained U+FFFD.
 
@@ -18,7 +18,13 @@ Heuristic changes:
 - Heuristics now count characters such as `~` and `^` as punctuation instead
   of wacky math symbols, improving the detection of mojibake in some edge cases.
 
-Additionally, the `utf-8-variants` codec was simplified and optimized.
+New features:
+
+- A new module, `ftfy.formatting`, can be used to justify Unicode text in a
+  monospaced terminal. It takes into account that each character can take up
+  anywhere from 0 to 2 character cells.
+
+- Internally, the `utf-8-variants` codec was simplified and optimized.
 
 
 ## Version 4.0.0 (April 10, 2015)
