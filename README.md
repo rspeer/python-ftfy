@@ -110,6 +110,16 @@ LOUD NOISES
 ```
 
 
+## Installing
+
+ftfy is a package that can be installed using `pip`:
+
+    pip install ftfy
+
+You can also clone this Git repository and install it with
+`python setup.py install`.
+
+
 ## Who maintains ftfy?
 
 I'm Robyn Speer (rspeer@luminoso.com).  I develop this tool as part of my
