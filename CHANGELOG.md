@@ -15,6 +15,10 @@ Heuristic changes:
   As an example, text in curly quotes that gets corrupted `â€œ like this â€�`
   now gets fixed to be `“ like this �`.
 
+- Updated the data file of Unicode character categories to Unicode 8.0, as used
+  in Python 3.5.0. (No matter what version of Python you're on, ftfy uses the
+  same data.)
+
 - Heuristics now count characters such as `~` and `^` as punctuation instead
   of wacky math symbols, improving the detection of mojibake in some edge cases.
 
