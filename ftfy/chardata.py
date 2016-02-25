@@ -33,15 +33,17 @@ def _build_regexes():
     encoding_regexes = {'ascii': re.compile('^[\x00-\x7f]*$')}
 
     for encoding in CHARMAP_ENCODINGS:
+        # Make a sequence of characters that bytes \x80 to \xFF decode to
+        # in each encoding, as well as byte \x1A, which is used to represent
+        # the replacement character � in the sloppy-* encodings.
         latin1table = ''.join(unichr(i) for i in range(128, 256)) + '\x1a'
         charlist = latin1table.encode('latin-1').decode(encoding)
 
-        # Build a regex from the ASCII range, followed by the decodings of
-        # bytes 0x80-0xff in this character set, followed by the decoding of
-        # byte 0x1a in case we made that one special.
-        #
-        # All regex special characters are in the \x1b-\x7f range, so we don't
-        # need to worry about escaping them in the regex.
+        # The rest of the ASCII bytes -- bytes \x00 to \x19 and \x1B
+        # to \x7F -- will decode as those ASCII characters in any encoding we
+        # support, so we can just include them as ranges. This also lets us
+        # not worry about escaping regex special characters, because all of
+        # them are in the \x1B to \x7F range.
         regex = '^[\x00-\x19\x1b-\x7f{0}]*$'.format(charlist)
         encoding_regexes[encoding] = re.compile(regex)
     return encoding_regexes
