@@ -1,3 +1,26 @@
+## Version 4.1.0 (February 25, 2016)
+
+Heuristic changes:
+
+- ftfy can now deal with "lossy" mojibake. If your text has been run through
+  a strict Windows-1252 decoder, such as the one in Python, it may contain
+  the replacement character � (U+FFFD) where there were bytes that are
+  unassigned in Windows-1252.
+
+  Although ftfy won't recover the lost information, it can now detect this
+  situation, replace the entire lossy character as �, and decode the rest of
+  the characters. Previous versions would be unable to fix any string that
+  contained U+FFFD.
+
+  As an example, text in curly quotes that gets corrupted `â€œ like this â€�`
+  now gets fixed to be `“ like this �`.
+
+- Heuristics now count characters such as `~` and `^` as punctuation instead
+  of wacky math symbols, improving the detection of mojibake in some edge cases.
+
+Additionally, the `utf-8-variants` codec was simplified and optimized.
+
+
 ## Version 4.0.0 (April 10, 2015)
 
 Breaking changes:
