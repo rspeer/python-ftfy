@@ -90,6 +90,10 @@ def display_ljust(text, width, fillchar=' '):
     Table flip▒▒▒▒▒▒▒▒▒▒
     (╯°□°)╯︵ ┻━┻▒▒▒▒▒▒▒
     ちゃぶ台返し▒▒▒▒▒▒▒▒
+    
+    This example, and the similar ones that follow, should come out justified
+    correctly when viewed in a monospaced terminal. It will probably not look
+    correct if you're viewing this code or documentation in a Web browser.
     """
     if character_width(fillchar) != 1:
         raise ValueError("The padding character must have display width 1")

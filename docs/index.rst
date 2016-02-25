@@ -302,6 +302,12 @@ Variants of UTF-8
 .. automodule:: ftfy.bad_codecs.utf8_variants
 
 
+*ftfy.formatting*: justify Unicode text in a monospaced terminal
+----------------------------------------------------------------
+.. automodule:: ftfy.formatting
+   :members:
+
+
 *ftfy.chardata* and *ftfy.build_data*: trivia about characters
 --------------------------------------------------------------
 These files load information about the character properties in Unicode 7.0.
