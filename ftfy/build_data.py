@@ -5,7 +5,7 @@ This never needs to run in normal usage. It needs to be run if the character
 classes we care about change, or if a new version of Python supports a new
 Unicode standard and we want it to affect our string decoding.
 
-The file that we generate is based on Unicode 7.0, as supported by Python 3.5.
+The file that we generate is based on Unicode 8.0, as supported by Python 3.5.
 You can certainly use it in earlier versions. This simply makes sure that we
 get consistent results from running ftfy on different versions of Python.
 
@@ -43,9 +43,8 @@ def make_char_data_file(do_it_anyway=False):
     Build the compressed data file 'char_classes.dat' and write it to the
     current directory.
 
-    If you run this, run it in Python 3.5 or later, even though that requires
-    an alpha version at the time of writing this code. It will run in earlier
-    versions, but you won't get the Unicode 7 standard, leading to inconsistent
+    If you run this, run it in Python 3.5 or later. It will run in earlier
+    versions, but you won't get the Unicode 8 standard, leading to inconsistent
     behavior.
 
     To protect against this, running this in the wrong version of Python will

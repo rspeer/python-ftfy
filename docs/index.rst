@@ -310,8 +310,8 @@ Variants of UTF-8
 
 *ftfy.chardata* and *ftfy.build_data*: trivia about characters
 --------------------------------------------------------------
-These files load information about the character properties in Unicode 7.0.
-Yes, even if your version of Python doesn't support Unicode 7.0. This ensures
+These files load information about the character properties in Unicode 8.0.
+Yes, even if your version of Python doesn't support Unicode 8.0. This ensures
 that ftfy's behavior is consistent across versions.
 
 .. automodule:: ftfy.chardata
@@ -323,7 +323,7 @@ that ftfy's behavior is consistent across versions.
 Future versions of ftfy
 =======================
     
-ftfy has full support for Python 2.7, even including a backport of Unicode 7
+ftfy has full support for Python 2.7, even including a backport of Unicode 8
 character classes to Python 2. But given the sweeping changes to Unicode in
 Python, it's getting inconvenient to add new features to ftfy that work the
 same on both versions.
