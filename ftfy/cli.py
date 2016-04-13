@@ -5,7 +5,8 @@ from ftfy import fix_file, __version__
 
 import sys
 import io
-ENCODE_STDIO = (sys.hexversion < 0x03000000)
+import codecs
+PY2 = (sys.hexversion < 0x03000000)
 
 
 ENCODE_ERROR_TEXT_UNIX = """ftfy error:
@@ -72,12 +73,18 @@ def main():
         encoding = None
 
     if args.filename == '-':
-        file = sys.stdin
+        # Get a standard input stream made of bytes, so we can decode it as
+        # whatever encoding is necessary.
+        if PY2:
+            file = sys.stdin
+        else:
+            file = sys.stdin.buffer
+
     else:
         file = open(args.filename, 'rb')
 
     if args.output == '-':
-        encode_output = ENCODE_STDIO
+        encode_output = PY2
         outfile = sys.stdout
     else:
         encode_output = False
