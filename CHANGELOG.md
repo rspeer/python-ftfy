@@ -1,3 +1,9 @@
+## Version 4.1.1 (April 13, 2016)
+
+- Bug fix: in the command-line interface, the `-e` option had no effect on
+  Python 3 when using standard input. Now, it correctly lets you specify
+  a different encoding for standard input.
+
 ## Version 4.1.0 (February 25, 2016)
 
 Heuristic changes:
