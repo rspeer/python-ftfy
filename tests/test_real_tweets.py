@@ -48,6 +48,8 @@ TEST_CASES = [
     ('OK??:(   `¬´    ):', 'OK??:(   `¬´    ):'),
     ("selamat berpuasa sob (Ã\xa0Â¸â€¡'ÃŒâ‚¬Ã¢Å’Â£'ÃŒÂ\x81)Ã\xa0Â¸â€¡",
      "selamat berpuasa sob (ง'̀⌣'́)ง"),
+    ("The Mona Lisa doesnÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢t have eyebrows.",
+     "The Mona Lisa doesn't have eyebrows."),
 
     # This one has two differently-broken layers of Windows-1252 <=> UTF-8,
     # and it's kind of amazing that we solve it.
@@ -62,17 +64,22 @@ TEST_CASES = [
     # You tried
     ('I just figured out how to tweet emojis! â\x9a½í\xa0½í¸\x80í\xa0½í¸\x81í\xa0½í¸\x82í\xa0½í¸\x86í\xa0½í¸\x8eí\xa0½í¸\x8eí\xa0½í¸\x8eí\xa0½í¸\x8e',
      'I just figured out how to tweet emojis! ⚽😀😁😂😆😎😎😎😎'),
-    ('CÃ\xa0nan nan GÃ\xa0idheal', 'Cànan nan Gàidheal'),
 
-    ## Current false positives:
-    #("├┤a┼┐a┼┐a┼┐a┼┐a", "├┤a┼┐a┼┐a┼┐a┼┐a"),
-    #("ESSE CARA AI QUEM É¿", "ESSE CARA AI QUEM É¿"),
-    #("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´", "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´"),
-    #("SELKÄ\xa0EDELLÄ\xa0MAAHAN via @YouTube", "SELKÄ EDELLÄ MAAHAN via @YouTube"),
+    # Former false positives
+    ("ESSE CARA AI QUEM É¿", "ESSE CARA AI QUEM É¿"),
+    ("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´", "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´"),
+    ("SELKÄ\xa0EDELLÄ\xa0MAAHAN via @YouTube", "SELKÄ\xa0EDELLÄ\xa0MAAHAN via @YouTube"),
+    ("Offering 5×£35 pin ups", "Offering 5×£35 pin ups"),
+
+    ## This remains a false positive
+    # ("├┤a┼┐a┼┐a┼┐a┼┐a", "├┤a┼┐a┼┐a┼┐a┼┐a"),
 
     ## This kind of tweet can't be fixed without a full-blown encoding detector.
     #("Deja dos heridos hundimiento de barco tur\x92stico en Acapulco.",
     # "Deja dos heridos hundimiento de barco turístico en Acapulco."),
+
+    ## The original text looks too plausible
+    # ('CÃ\xa0nan nan GÃ\xa0idheal', 'Cànan nan Gàidheal'),
 
     ## The heuristics aren't confident enough to fix this text and its weird encoding.
     #("Blog Traffic Tip 2 вЂ“ Broadcast Email Your Blog",
