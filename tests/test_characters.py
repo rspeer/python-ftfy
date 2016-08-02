@@ -39,6 +39,12 @@ def test_byte_order_mark():
     eq_(fix_encoding('ï»¿'), '\ufeff')
 
 
+def test_emoji_variation_selector():
+    # The hearts here are explicitly marked as emoji using the variation
+    # selector U+FE0F. This is not weird.
+    eq_(sequence_weirdness('❤️❤️❤️❤️❤️❤️❤️❤️❤️'), 0)
+
+
 def test_surrogates():
     eq_(fix_surrogates('\udbff\udfff'), '\U0010ffff')
     eq_(fix_surrogates('\ud800\udc00'), '\U00010000')
