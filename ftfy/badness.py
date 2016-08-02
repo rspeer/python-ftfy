@@ -97,6 +97,7 @@ COMMON_SYMBOL_RE = re.compile(
     '\N{RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK}'
     '\N{NO-BREAK SPACE}'
     '\N{ACUTE ACCENT}\N{MULTIPLICATION SIGN}\N{LATIN SMALL LETTER SHARP S}'
+    '\ufeff'  # The byte-order mark, whose encoding 'ï»¿' looks common
     ']'
 )
 
