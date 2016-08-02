@@ -25,8 +25,6 @@ def test_bmp_characters():
                     fixed, plan = fix_encoding_and_explain(garb)
                     eq_(fixed, char)
                     eq_(apply_plan(garb, plan), char)
-            else:
-                print("%r <- %r" % (char, garble))
 
 
 def test_possible_encoding():
