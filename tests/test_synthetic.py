@@ -82,5 +82,5 @@ def test_unknown_emoji():
     # Increment the first byte to get a very similar test case, but a
     # codepoint that will definitely not exist anytime soon. In this case,
     # we consider the existing text, "ñŸ¥\xa0", to be more probable.
-    not_emoji = "\U0005f960 I see mojibake in your present"
+    not_emoji = "\U0005f960 I see mojibake in your present".encode('utf-8').decode('windows-1252')
     eq_(fix_encoding(not_emoji), not_emoji)
