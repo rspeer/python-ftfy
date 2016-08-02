@@ -50,6 +50,8 @@ TEST_CASES = [
      "selamat berpuasa sob (ง'̀⌣'́)ง"),
     ("The Mona Lisa doesnÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢t have eyebrows.",
      "The Mona Lisa doesn't have eyebrows."),
+    ("#╨┐╤Ç╨░╨▓╨╕╨╗╤î╨╜╨╛╨╡╨┐╨╕╤é╨░╨╜╨╕╨╡", "#правильноепитание"),
+    ('∆°', '∆°'),
 
     # This one has two differently-broken layers of Windows-1252 <=> UTF-8,
     # and it's kind of amazing that we solve it.
