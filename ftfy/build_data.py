@@ -114,6 +114,10 @@ def make_char_data_file(do_it_anyway=False):
     # `´ are much more like quotation marks than modifiers.
     for char in "^~`´˝＾｀":
         cclasses[ord(char)] = 'o'
+    
+    # Variation selectors often go with symbols
+    for codept in range(0xfe00, 0xfe10):
+        cclasses[codept] = '3'
 
     out = open('char_classes.dat', 'wb')
     out.write(zlib.compress(''.join(cclasses).encode('ascii')))
