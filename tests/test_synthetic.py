@@ -78,6 +78,7 @@ def test_unknown_emoji():
     # We believe enough in the future of this codepoint that we'll even
     # recognize it with a mangled byte A0
     emojibake = emojibake.replace('\xa0', ' ')
+    eq_(fix_encoding(emojibake), emoji_text)
 
     # Increment the first byte to get a very similar test case, but a
     # codepoint that will definitely not exist anytime soon. In this case,
