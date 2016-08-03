@@ -61,12 +61,12 @@ def make_char_data_file(do_it_anyway=False):
 
         if category.startswith('L'):  # letters
             is_latin = unicodedata.name(char).startswith('LATIN')
-            if is_latin and codepoint < 0x200:
+            if is_latin:
                 if category == 'Lu':
                     cclasses[codepoint] = 'L'
                 else:
                     cclasses[codepoint] = 'l'
-            else:  # non-Latin letter, or close enough
+            else:
                 if category == 'Lu' or category == 'Lt':
                     cclasses[codepoint] = 'A'
                 elif category == 'Ll':
