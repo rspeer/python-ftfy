@@ -21,8 +21,7 @@ import unicodedata
 # m = Letter modifier (Lm)
 # M = Mark (Mc, Me, Mn)
 # N = Miscellaneous numbers (No)
-# 0 = Math symbol (Sm)
-# 1 = Currency symbol (Sc)
+# 1 = Math symbol (Sm) or currency symbol (Sc)
 # 2 = Symbol modifier (Sk)
 # 3 = Other symbol (So)
 # S = UTF-16 surrogate
@@ -71,9 +70,9 @@ def _make_weirdness_regex():
     # - Modifier marks (M)
     # - Letter modifiers (m)
     # - Miscellaneous numbers (N)
-    # - Symbols (0123)
+    # - Symbols (123)
 
-    exclusive_categories = 'MmN0123'
+    exclusive_categories = 'MmN123'
     for cat1 in exclusive_categories:
         others_range = ''.join(c for c in exclusive_categories if c != cat1)
         groups.append('{cat1}[{others_range}]'.format(
@@ -84,16 +83,21 @@ def _make_weirdness_regex():
 
 WEIRDNESS_RE = _make_weirdness_regex()
 
-# A few characters are common ending punctuation that can show up at the end
-# of a mojibake sequence. It's plausible that such a character could appear
-# after an accented capital letter, for example, so we'll want to add a
-# slight preference to leave these characters alone.
-ENDING_PUNCT_RE = re.compile(
+# These characters appear in mojibake but also appear commonly on their own.
+# We have a slight preference to leave them alone.
+COMMON_SYMBOL_RE = re.compile(
     '['
     '\N{HORIZONTAL ELLIPSIS}\N{EM DASH}\N{EN DASH}'
+    '\N{LEFT SINGLE QUOTATION MARK}\N{LEFT DOUBLE QUOTATION MARK}'
     '\N{RIGHT SINGLE QUOTATION MARK}\N{RIGHT DOUBLE QUOTATION MARK}'
+    '\N{INVERTED EXCLAMATION MARK}\N{INVERTED QUESTION MARK}\N{DEGREE SIGN}'
+    '\N{SINGLE LEFT-POINTING ANGLE QUOTATION MARK}'
     '\N{SINGLE RIGHT-POINTING ANGLE QUOTATION MARK}'
+    '\N{LEFT-POINTING DOUBLE ANGLE QUOTATION MARK}'
     '\N{RIGHT-POINTING DOUBLE ANGLE QUOTATION MARK}'
+    '\N{NO-BREAK SPACE}'
+    '\N{ACUTE ACCENT}\N{MULTIPLICATION SIGN}\N{LATIN SMALL LETTER SHARP S}'
+    '\ufeff'  # The byte-order mark, whose encoding 'ï»¿' looks common
     ']'
 )
 
@@ -126,7 +130,7 @@ def sequence_weirdness(text):
     """
     text2 = unicodedata.normalize('NFC', text)
     weirdness = len(WEIRDNESS_RE.findall(chars_to_classes(text2)))
-    punct_discount = len(ENDING_PUNCT_RE.findall(text2))
+    punct_discount = len(COMMON_SYMBOL_RE.findall(text2))
     return weirdness * 2 - punct_discount
 
 
