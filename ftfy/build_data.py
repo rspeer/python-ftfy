@@ -28,8 +28,7 @@ if sys.hexversion >= 0x03000000:
 # M = Mark (Mc, Me, Mn)
 # N = Miscellaneous numbers (No)
 # P = Private use (Co)
-# 0 = Math symbol (Sm)
-# 1 = Currency symbol (Sc)
+# 1 = Math symbol (Sm) or currency symbol (Sc)
 # 2 = Symbol modifier (Sk)
 # 3 = Other symbol (So)
 # S = UTF-16 surrogate
@@ -82,15 +81,13 @@ def make_char_data_file(do_it_anyway=False):
             cclasses[codepoint] = 'M'
         elif category == 'No':
             cclasses[codepoint] = 'N'
-        elif category == 'Sm':
-            cclasses[codepoint] = '0'
-        elif category == 'Sc':
+        elif category == 'Sm' or category == 'Sc':
             cclasses[codepoint] = '1'
         elif category == 'Sk':
             cclasses[codepoint] = '2'
         elif category == 'So':
             cclasses[codepoint] = '3'
-        elif 0x1f000 <= codepoint < 0x1f900:
+        elif 0x1f000 <= codepoint <= 0x1ffff:
             # This range is rapidly having emoji added to it. Assume that
             # an unassigned codepoint in this range is just a symbol we
             # don't know yet.
@@ -117,6 +114,10 @@ def make_char_data_file(do_it_anyway=False):
     # `´ are much more like quotation marks than modifiers.
     for char in "^~`´˝＾｀":
         cclasses[ord(char)] = 'o'
+    
+    # Variation selectors often go with symbols
+    for codept in range(0xfe00, 0xfe10):
+        cclasses[codept] = '3'
 
     out = open('char_classes.dat', 'wb')
     out.write(zlib.compress(''.join(cclasses).encode('ascii')))
