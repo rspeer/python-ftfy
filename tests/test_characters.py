@@ -43,6 +43,12 @@ def test_emoji_variation_selector():
     eq_(sequence_weirdness('❤\ufe0f' * 10), 0)
 
 
+def test_emoji_skintone_selector():
+    # Dear heuristic, you can't call skin-tone selectors weird anymore.
+    # We welcome Santa Clauses of all colors.
+    eq_(sequence_weirdness('🎅🏿🎅🏽🎅🏼🎅🏻'), 0)
+
+
 def test_surrogates():
     eq_(fix_surrogates('\udbff\udfff'), '\U0010ffff')
     eq_(fix_surrogates('\ud800\udc00'), '\U00010000')
