@@ -77,6 +77,10 @@ def make_char_data_file(do_it_anyway=False):
                     cclasses[codepoint] = 'm'
                 else:
                     raise ValueError('got some weird kind of letter')
+        elif 0xfe00 <= codepoint <= 0xfe0f or 0x1f3fb <= codepoint <= 0x1f3ff:
+            # Variation selectors and skin-tone modifiers have the category
+            # of non-spacing marks, but they act like symbols
+            cclasses[codepoint] = '3'
         elif category.startswith('M'):  # marks
             cclasses[codepoint] = 'M'
         elif category == 'No':
@@ -87,13 +91,6 @@ def make_char_data_file(do_it_anyway=False):
             cclasses[codepoint] = '2'
         elif category == 'So':
             cclasses[codepoint] = '3'
-        elif 0x1f000 <= codepoint <= 0x1ffff:
-            # This range is rapidly having emoji added to it. Assume that
-            # an unassigned codepoint in this range is just a symbol we
-            # don't know yet.
-            cclasses[codepoint] = '3'
-        elif category == 'Cn':
-            cclasses[codepoint] = '_'
         elif category == 'Cc':
             cclasses[codepoint] = 'X'
         elif category == 'Cs':
@@ -102,6 +99,13 @@ def make_char_data_file(do_it_anyway=False):
             cclasses[codepoint] = 'P'
         elif category.startswith('Z'):
             cclasses[codepoint] = ' '
+        elif 0x1f000 <= codepoint <= 0x1ffff:
+            # This range is rapidly having emoji added to it. Assume that
+            # an unassigned codepoint in this range is just a symbol we
+            # don't know yet.
+            cclasses[codepoint] = '3'
+        elif category == 'Cn':
+            cclasses[codepoint] = '_'
         else:
             cclasses[codepoint] = 'o'
 
@@ -115,10 +119,6 @@ def make_char_data_file(do_it_anyway=False):
     for char in "^~`´˝＾｀":
         cclasses[ord(char)] = 'o'
     
-    # Variation selectors often go with symbols
-    for codept in range(0xfe00, 0xfe10):
-        cclasses[codept] = '3'
-
     out = open('char_classes.dat', 'wb')
     out.write(zlib.compress(''.join(cclasses).encode('ascii')))
     out.close()
