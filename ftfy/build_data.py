@@ -60,8 +60,7 @@ def make_char_data_file(do_it_anyway=False):
         category = unicodedata.category(char)
 
         if category.startswith('L'):  # letters
-            is_latin = unicodedata.name(char).startswith('LATIN')
-            if is_latin:
+            if unicodedata.name(char).startswith('LATIN'):
                 if category == 'Lu':
                     cclasses[codepoint] = 'L'
                 else:
@@ -118,7 +117,7 @@ def make_char_data_file(do_it_anyway=False):
     # `´ are much more like quotation marks than modifiers.
     for char in "^~`´˝＾｀":
         cclasses[ord(char)] = 'o'
-    
+
     out = open('char_classes.dat', 'wb')
     out.write(zlib.compress(''.join(cclasses).encode('ascii')))
     out.close()
