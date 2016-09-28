@@ -32,10 +32,12 @@ class StreamTester:
                 fixed = fix_text(text, uncurl_quotes=False, fix_character_width=False)
             if text != fixed:
                 # possibly filter common bots before printing
-                print(u'\nText:\t{text!r}\nFixed:\t{fixed!r}\n'.format(
+                print('\nText:\t{text!r}\nFixed:\t{fixed!r}\n'.format(
                     text=text, fixed=fixed
                 ))
                 self.num_fixed += 1
+            elif 'â€' in text or '\x80' in text:
+                print('\nNot fixed:\t{text!r}'.format(text=text))
 
         # Print status updates once in a while
         if self.count % 100 == 0:
