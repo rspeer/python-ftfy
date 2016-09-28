@@ -1,3 +1,40 @@
+## Version 4.2.0 (September 28, 2016)
+
+Heuristic changes:
+
+- Math symbols next to currency symbols are no longer considered 'weird' by the
+  heuristic. This fixes a false positive where text that involved the
+  multiplication sign and British pounds or euros (as in '5×£35') could turn
+  into Hebrew letters.
+
+- A heuristic that used to be a bonus for certain punctuation now also gives a
+  bonus to successfully decoding other common codepoints, such as the
+  non-breaking space, the degree sign, and the byte order mark.
+
+- In version 4.0, we tried to "future-proof" the categorization of emoji (as a
+  kind of symbol) to include codepoints that would likely be assigned to emoji
+  later. The future happened, and there are even more emoji than we expected.
+  We have expanded the range to include those emoji, too.
+
+  ftfy is still mostly based on information from Unicode 8 (as Python 3.5 is),
+  but this expanded range should include the emoji from Unicode 9 and 10.
+
+- Emoji are increasingly being modified by variation selectors and skin-tone
+  modifiers. Those codepoints are now grouped with 'symbols' in ftfy, so they
+  fit right in with emoji, instead of being considered 'marks' as their Unicode
+  category would suggest.
+
+  This enables fixing mojibake that involves iOS's new diverse emoji.
+
+- An old heuristic that wasn't necessary anymore considered Latin text with
+  high-numbered codepoints to be 'weird', but this is normal in languages such
+  as Vietnamese and Azerbaijani. This does not seem to have caused any false
+  positives, but it caused ftfy to be too reluctant to fix some cases of broken
+  text in those languages.
+
+  The heuristic has been changed, and all languages that use Latin letters
+  should be on even footing now.
+
 ## Version 4.1.1 (April 13, 2016)
 
 - Bug fix: in the command-line interface, the `-e` option had no effect on
