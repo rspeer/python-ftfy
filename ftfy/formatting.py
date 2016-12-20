@@ -2,59 +2,34 @@
 """
 This module provides functions for justifying Unicode text in a monospaced
 display such as a terminal.
+
+We used to have our own implementation here, but now we mostly rely on
+the 'wcwidth' library.
 """
 from __future__ import unicode_literals, division
-from unicodedata import east_asian_width, combining, category, normalize
+from unicodedata import normalize
+from wcwidth import wcwidth, wcswidth
 
 
 def character_width(char):
-    """
+    r"""
     Determine the width that a character is likely to be displayed as in
-    a monospaced terminal. The width will always be 0, 1, or 2.
+    a monospaced terminal. The width for a printable character will
+    always be 0, 1, or 2.
 
-    We are assuming that the character will appear in a modern, Unicode-aware
-    terminal emulator, where CJK characters -- plus characters designated
-    "fullwidth" by CJK encodings -- will span two character cells. (Maybe
-    it's an over-simplification to call these displays "monospaced".)
-
-    When a character width is "Ambiguous", we assume it to span one character
-    cell, because we assume that the monospaced display you're using is
-    designed mostly to display Western characters with CJK characters as the
-    exception. This assumption will go wrong, for example, if your display is
-    actually on a Japanese flip-phone... but let's assume it isn't.
-
-    Combining marks and formatting codepoints do not advance the cursor,
-    so their width is 0.
-
-    If the character is a particular kind of control code -- the kind
-    represented by the lowest bytes of ASCII, with Unicode category Cc -- the
-    idea of it having a "width" probably doesn't even apply, because it will
-    probably have some other effect on your terminal. For example, there's no
-    sensible width for a line break. We return the default of 1 in the absence
-    of anything sensible to do there.
+    Nonprintable or control characters will return -1, a convention that comes
+    from wcwidth.
 
     >>> character_width('車')
     2
     >>> character_width('A')
     1
-    >>> character_width('\N{SOFT HYPHEN}')
+    >>> character_width('\N{ZERO WIDTH JOINER}')
     0
+    >>> character_width('\n')
+    -1
     """
-    if combining(char) != 0:
-        # Combining characters don't advance the cursor; they modify the
-        # previous character instead.
-        return 0
-    elif east_asian_width(char) in 'FW':
-        # Characters designated Wide (W) or Fullwidth (F) will take up two
-        # columns in many Unicode-aware terminal emulators.
-        return 2
-    elif category(char) == 'Cf':
-        # Characters in category Cf are un-printable formatting characters
-        # that do not advance the cursor, such as zero-width spaces or
-        # right-to-left marks.
-        return 0
-    else:
-        return 1
+    return wcwidth(char)
 
 
 def monospaced_width(text):
@@ -66,15 +41,27 @@ def monospaced_width(text):
     This can be useful for formatting text that may contain non-spacing
     characters, or CJK characters that take up two character cells.
 
+    Returns -1 if the string contains a non-printable or control character.
+
     >>> monospaced_width('ちゃぶ台返し')
     12
     >>> len('ちゃぶ台返し')
     6
+    >>> monospaced_width('owl\N{SOFT HYPHEN}flavored')
+    12
+    >>> monospaced_width('example\x80')
+    -1
+
+    # The Korean word 'ibnida' can be written with 3 characters or 7 jamo.
+    # Either way, it *looks* the same and takes up 6 character cells.
+    >>> monospaced_width('입니다')
+    6
+    >>> monospaced_width('\u110b\u1175\u11b8\u1102\u1175\u1103\u1161')
+    6
     """
     # NFC-normalize the text first, so that we don't need special cases for
     # Hangul jamo.
-    text = normalize('NFC', text)
-    return sum([character_width(char) for char in text])
+    return wcswidth(normalize('NFC', text))
 
 
 def display_ljust(text, width, fillchar=' '):
@@ -101,7 +88,13 @@ def display_ljust(text, width, fillchar=' '):
     """
     if character_width(fillchar) != 1:
         raise ValueError("The padding character must have display width 1")
-    padding = max(0, width - monospaced_width(text))
+
+    text_width = monospaced_width(text)
+    if text_width == -1:
+        # There's a control character here, so just don't add padding
+        return text
+
+    padding = max(0, width - text_width)
     return text + fillchar * padding
 
 
@@ -125,7 +118,12 @@ def display_rjust(text, width, fillchar=' '):
     """
     if character_width(fillchar) != 1:
         raise ValueError("The padding character must have display width 1")
-    padding = max(0, width - monospaced_width(text))
+
+    text_width = monospaced_width(text)
+    if text_width == -1:
+        return text
+
+    padding = max(0, width - text_width)
     return fillchar * padding + text
 
 
@@ -145,7 +143,12 @@ def display_center(text, width, fillchar=' '):
     """
     if character_width(fillchar) != 1:
         raise ValueError("The padding character must have display width 1")
-    padding = max(0, width - monospaced_width(text))
+
+    text_width = monospaced_width(text)
+    if text_width == -1:
+        return text
+
+    padding = max(0, width - text_width)
     left_padding = padding // 2
     right_padding = padding - left_padding
     return fillchar * left_padding + text + fillchar * right_padding
