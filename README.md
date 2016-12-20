@@ -33,9 +33,8 @@ and it's built on Python and open-source technologies.
 We use ftfy every day at Luminoso, because the first step in understanding text
 is making sure it has the correct characters in it!
 
-Luminoso is growing fast and hiring in all areas. If you're interested in
-joining us, take a look at [our careers
-page](http://www.luminoso.com/career.html).
+Luminoso is growing fast and hiring. If you're interested in joining us, take a
+look at [our careers page](http://www.luminoso.com/career.html).
 
 ## What it does
 
