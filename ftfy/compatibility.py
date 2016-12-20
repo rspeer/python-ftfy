@@ -7,16 +7,13 @@ import sys
 import unicodedata
 
 if sys.hexversion >= 0x03000000:
-    from html import entities
     unichr = chr
     xrange = range
     PYTHON2 = False
 else:
-    import htmlentitydefs as entities
     unichr = unichr
     xrange = xrange
     PYTHON2 = True
-htmlentitydefs = entities
 
 PYTHON34_OR_LATER = (sys.hexversion >= 0x03040000)
 
