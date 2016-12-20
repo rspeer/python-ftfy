@@ -1,4 +1,8 @@
 # coding: utf-8
+"""
+This module provides functions for justifying Unicode text in a monospaced
+display such as a terminal.
+"""
 from __future__ import unicode_literals, division
 from unicodedata import east_asian_width, combining, category, normalize
 
@@ -90,7 +94,7 @@ def display_ljust(text, width, fillchar=' '):
     Table flip▒▒▒▒▒▒▒▒▒▒
     (╯°□°)╯︵ ┻━┻▒▒▒▒▒▒▒
     ちゃぶ台返し▒▒▒▒▒▒▒▒
-    
+
     This example, and the similar ones that follow, should come out justified
     correctly when viewed in a monospaced terminal. It will probably not look
     correct if you're viewing this code or documentation in a Web browser.
@@ -145,4 +149,3 @@ def display_center(text, width, fillchar=' '):
     left_padding = padding // 2
     right_padding = padding - left_padding
     return fillchar * left_padding + text + fillchar * right_padding
-

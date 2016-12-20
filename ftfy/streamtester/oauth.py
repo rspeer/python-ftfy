@@ -70,4 +70,3 @@ def get_auth():
         consumer_key=consumer_key,
         consumer_secret=unhide(fig_leaf)
     )
-
