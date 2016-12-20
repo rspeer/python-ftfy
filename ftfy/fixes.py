@@ -10,7 +10,8 @@ from ftfy.chardata import (possible_encoding, CHARMAP_ENCODINGS,
                            PARTIAL_UTF8_PUNCT_RE, ALTERED_UTF8_RE,
                            LOSSY_UTF8_RE, SINGLE_QUOTE_RE, DOUBLE_QUOTE_RE)
 from ftfy.badness import text_cost
-from ftfy.compatibility import htmlentitydefs, unichr
+from ftfy.compatibility import unichr
+from html5lib.constants import entities
 import re
 import sys
 import codecs
@@ -322,7 +323,7 @@ def unescape_html(text):
         else:
             # named entity
             try:
-                text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+                text = entities[text[1:]]
             except KeyError:
                 pass
         return text  # leave as is
