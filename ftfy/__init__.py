@@ -106,12 +106,15 @@ def fix_text(text,
       when they're appropriately paired, or replacing them with \ufffd
       otherwise.
 
-    - If `fix_control_characters` is true, remove all C0 control characters
-      except the common useful ones: TAB, CR, LF, and FF. (CR characters
-      may have already been removed by the `fix_line_breaks` step.)
+    - If `fix_control_characters` is true, remove control characters that are
+      not suitable for use in text. This includes most of the ASCII control
+      characters, plus some Unicode controls such as the byte order mark
+      (U+FEFF). Useful control characters such as Tab and Line Feed are left
+      as they are.
 
-    - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
-      (This is a decoded Unicode string. It doesn't have a "byte order".)
+    - If `remove_bom` is True, remove the Byte-Order Mark at the start of the
+      string if it exists. It may be that you don't want to remove all
+      control characters (as above) but you still want to remove the BOM.
 
     - If `normalization` is not None, apply the specified form of Unicode
       normalization, which can be one of 'NFC', 'NFKC', 'NFD', and 'NFKD'.
@@ -282,7 +285,9 @@ def fix_text_segment(text,
             text = fixes.fix_surrogates(text)
         if remove_control_chars:
             text = fixes.remove_control_chars(text)
-        if remove_bom:
+        if remove_bom and not remove_control_chars:
+            # Skip this step if we've already done `remove_control_chars`,
+            # because it would be redundant.
             text = fixes.remove_bom(text)
         if normalization is not None:
             text = unicodedata.normalize(normalization, text)
