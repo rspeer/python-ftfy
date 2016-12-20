@@ -1,11 +1,11 @@
 """
 A command-line utility for fixing text found in a file.
 """
-from ftfy import fix_file, __version__
 
 import sys
 import io
 import codecs
+from ftfy import fix_file, __version__
 from ftfy.compatibility import PYTHON2
 
 
