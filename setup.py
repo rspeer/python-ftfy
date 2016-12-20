@@ -13,10 +13,10 @@ setup(
     packages=['ftfy', 'ftfy.bad_codecs'],
     package_data={'ftfy': ['char_classes.dat']},
 
-    # Oh no, we grew a dependency! We could actually go back to having no
-    # dependencies if we drop support for Python <= 3.4, because the feature
-    # we need from html5lib is now in the standard library, as html.unescape.
-    install_requires=['html5lib'],
+    # We could drop the html5lib dependency if we drop support for Python <=
+    # 3.4, because the feature we need from html5lib is now in the standard
+    # library, as html.unescape.
+    install_requires=['html5lib', 'wcwidth'],
     classifiers=[
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.6",
