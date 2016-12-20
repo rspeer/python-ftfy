@@ -139,7 +139,7 @@ However, ftfy cannot understand other mixups between single-byte encodings,
 because it is extremely difficult to detect which mixup in particular is the
 one that happened.
 
-We also can't handle the non-UTF encodings used for Chinese, Japanese, and
+We also can't handle the legacy encodings used for Chinese, Japanese, and
 Korean, such as ``shift-jis`` and ``gb18030``.  See `issue #34
 <https://github.com/LuminosoInsight/python-ftfy/issues/34>`_ for why this is so
 hard.
