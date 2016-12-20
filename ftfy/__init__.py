@@ -7,17 +7,17 @@ for more information.
 """
 
 from __future__ import unicode_literals
-
-# See the docstring for ftfy.bad_codecs to see what we're doing here.
+import unicodedata
 import ftfy.bad_codecs
-ftfy.bad_codecs.ok()
-
 from ftfy import fixes
 from ftfy.formatting import display_ljust
 from ftfy.compatibility import is_printable
-import unicodedata
 
-__version__ = '4.2.0'
+__version__ = '4.3.0'
+
+
+# See the docstring for ftfy.bad_codecs to see what we're doing here.
+ftfy.bad_codecs.ok()
 
 
 def fix_text(text,
