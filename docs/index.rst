@@ -169,7 +169,7 @@ Check that the default fixes are appropriate for your use case. For example:
   marks with nice typography. You could even consider doing quite the opposite
   of `uncurl_quotes`, running `smartypants`_ on the result to make all the
   punctuation nice.
-  
+
 .. _smartypants: http://pythonhosted.org/smartypants/
 
 If the only fix you need is to detect and repair decoding errors (mojibake), then
@@ -322,7 +322,7 @@ that ftfy's behavior is consistent across versions.
 
 Future versions of ftfy
 =======================
-    
+
 ftfy has full support for Python 2.7, even including a backport of Unicode 8
 character classes to Python 2. But given the sweeping changes to Unicode in
 Python, it's getting inconvenient to add new features to ftfy that work the
