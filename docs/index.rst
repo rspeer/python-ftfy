@@ -148,6 +148,7 @@ But remember that the input to `ftfy` is Unicode, so it handles actual
 CJK *text* just fine. It just can't discover that a CJK *encoding* introduced
 mojibake into the text.
 
+
 Using ftfy
 ----------
 
@@ -190,6 +191,7 @@ you should use :func:`ftfy.fix_encoding` directly.
 
 .. autofunction:: ftfy.explain_unicode
 
+
 Non-Unicode strings
 -------------------
 
@@ -205,6 +207,7 @@ Unicode string, ftfy will point you to the `Python Unicode HOWTO`_.
 Reasonable ways that you might exchange data, such as JSON or XML, already have
 perfectly good ways of expressing Unicode strings. Given a Unicode string, ftfy
 can apply fixes that are very likely to work without false positives.
+
 
 A note on encoding detection
 ----------------------------
@@ -310,8 +313,8 @@ Variants of UTF-8
 
 *ftfy.chardata* and *ftfy.build_data*: trivia about characters
 --------------------------------------------------------------
-These files load information about the character properties in Unicode 8.0.
-Yes, even if your version of Python doesn't support Unicode 8.0. This ensures
+These files load information about the character properties in Unicode 9.0.
+Yes, even if your version of Python doesn't support Unicode 9.0. This ensures
 that ftfy's behavior is consistent across versions.
 
 .. automodule:: ftfy.chardata
@@ -323,7 +326,7 @@ that ftfy's behavior is consistent across versions.
 Future versions of ftfy
 =======================
 
-ftfy has full support for Python 2.7, even including a backport of Unicode 8
+ftfy has full support for Python 2.7, even including a backport of Unicode 9
 character classes to Python 2. But given the sweeping changes to Unicode in
 Python, it's getting inconvenient to add new features to ftfy that work the
 same on both versions.
