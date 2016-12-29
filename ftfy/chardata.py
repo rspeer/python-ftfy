@@ -211,4 +211,3 @@ def _build_width_map():
             width_map[i] = alternate
     return width_map
 WIDTH_MAP = _build_width_map()
-

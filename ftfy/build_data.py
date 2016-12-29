@@ -5,7 +5,7 @@ This never needs to run in normal usage. It needs to be run if the character
 classes we care about change, or if a new version of Python supports a new
 Unicode standard and we want it to affect our string decoding.
 
-The file that we generate is based on Unicode 8.0, as supported by Python 3.5.
+The file that we generate is based on Unicode 9.0, as supported by Python 3.6.
 You can certainly use it in earlier versions. This simply makes sure that we
 get consistent results from running ftfy on different versions of Python.
 
@@ -42,16 +42,16 @@ def make_char_data_file(do_it_anyway=False):
     Build the compressed data file 'char_classes.dat' and write it to the
     current directory.
 
-    If you run this, run it in Python 3.5 or later. It will run in earlier
-    versions, but you won't get the Unicode 8 standard, leading to inconsistent
+    If you run this, run it in Python 3.6 or later. It will run in earlier
+    versions, but you won't get the Unicode 9 standard, leading to inconsistent
     behavior.
 
     To protect against this, running this in the wrong version of Python will
     raise an error unless you pass `do_it_anyway=True`.
     """
-    if sys.hexversion < 0x03050000 and not do_it_anyway:
+    if sys.hexversion < 0x03060000 and not do_it_anyway:
         raise RuntimeError(
-            "This function should be run in Python 3.5 or later."
+            "This function should be run in Python 3.6 or later."
         )
 
     cclasses = [None] * 0x110000
@@ -60,7 +60,7 @@ def make_char_data_file(do_it_anyway=False):
         category = unicodedata.category(char)
 
         if category.startswith('L'):  # letters
-            if unicodedata.name(char).startswith('LATIN'):
+            if unicodedata.name(char, '').startswith('LATIN'):
                 if category == 'Lu':
                     cclasses[codepoint] = 'L'
                 else:
