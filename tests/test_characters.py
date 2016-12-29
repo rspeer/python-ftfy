@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 from ftfy.fixes import (
     fix_encoding, fix_encoding_and_explain, apply_plan, possible_encoding,
     remove_control_chars, fix_surrogates
