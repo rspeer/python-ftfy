@@ -3,7 +3,7 @@ import sys
 
 setup(
     name="ftfy",
-    version='4.2.0',
+    version='4.3.0',
     maintainer='Luminoso Technologies, Inc.',
     maintainer_email='info@luminoso.com',
     license="MIT",
@@ -12,6 +12,11 @@ setup(
     description="Fixes some problems with Unicode text after the fact",
     packages=['ftfy', 'ftfy.bad_codecs'],
     package_data={'ftfy': ['char_classes.dat']},
+
+    # We could drop the html5lib dependency if we drop support for Python <=
+    # 3.4, because the feature we need from html5lib is now in the standard
+    # library, as html.unescape.
+    install_requires=['html5lib', 'wcwidth'],
     classifiers=[
         "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.6",

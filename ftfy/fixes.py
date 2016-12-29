@@ -5,16 +5,17 @@ can perform.
 """
 
 from __future__ import unicode_literals
+import re
+import sys
+import codecs
+import warnings
 from ftfy.chardata import (possible_encoding, CHARMAP_ENCODINGS,
                            CONTROL_CHARS, LIGATURES, WIDTH_MAP,
                            PARTIAL_UTF8_PUNCT_RE, ALTERED_UTF8_RE,
                            LOSSY_UTF8_RE, SINGLE_QUOTE_RE, DOUBLE_QUOTE_RE)
 from ftfy.badness import text_cost
-from ftfy.compatibility import htmlentitydefs, unichr
-import re
-import sys
-import codecs
-import warnings
+from ftfy.compatibility import unichr
+from html5lib.constants import entities
 
 
 BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
@@ -322,7 +323,7 @@ def unescape_html(text):
         else:
             # named entity
             try:
-                text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+                text = entities[text[1:]]
             except KeyError:
                 pass
         return text  # leave as is
@@ -482,24 +483,31 @@ def fix_surrogates(text):
 
 def remove_control_chars(text):
     """
-    Remove all ASCII control characters except for the important ones.
+    Remove various control characters that you probably didn't intend to be in
+    your text. Many of these characters appear in the table of "Characters not
+    suitable for use with markup" at
+    http://www.unicode.org/reports/tr20/tr20-9.html.
 
-    This removes characters in these ranges:
+    This includes:
 
-    - U+0000 to U+0008
-    - U+000B
-    - U+000E to U+001F
-    - U+007F
+    - ASCII control characters, except for the important whitespace characters
+      (U+00 to U+08, U+0B, U+0E to U+1F, U+7F)
+    - Deprecated Arabic control characters (U+206A to U+206F)
+    - Interlinear annotation characters (U+FFF9 to U+FFFB)
+    - The Object Replacement Character (U+FFFC)
+    - The byte order mark (U+FEFF)
+    - Musical notation control characters (U+1D173 to U+1D17A)
+    - Tag characters (U+E0000 to U+E007F)
 
-    It leaves alone these characters that are commonly used for formatting:
+    However, these similar characters are left alone:
 
-    - TAB (U+0009)
-    - LF (U+000A)
-    - FF (U+000C)
-    - CR (U+000D)
-
-    Feel free to object that FF isn't "commonly" used for formatting. I've at
-    least seen it used.
+    - Control characters that produce whitespace (U+09, U+0A, U+0C, U+0D,
+      U+2028, and U+2029)
+    - C1 control characters (U+80 to U+9F) -- even though they are basically
+      never used intentionally, they are important clues about what mojibake
+      has happened
+    - Control characters that affect glyph rendering, such as joiners and
+      right-to-left marks (U+200C to U+200F, U+202A to U+202E)
     """
     return text.translate(CONTROL_CHARS)
 
@@ -646,4 +654,3 @@ TRANSCODERS = {
     'replace_lossy_sequences': replace_lossy_sequences,
     'fix_partial_utf8_punct_in_1252': fix_partial_utf8_punct_in_1252
 }
-
