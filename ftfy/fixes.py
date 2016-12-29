@@ -5,16 +5,17 @@ can perform.
 """
 
 from __future__ import unicode_literals
+import re
+import sys
+import codecs
+import warnings
 from ftfy.chardata import (possible_encoding, CHARMAP_ENCODINGS,
                            CONTROL_CHARS, LIGATURES, WIDTH_MAP,
                            PARTIAL_UTF8_PUNCT_RE, ALTERED_UTF8_RE,
                            LOSSY_UTF8_RE, SINGLE_QUOTE_RE, DOUBLE_QUOTE_RE)
 from ftfy.badness import text_cost
-from ftfy.compatibility import htmlentitydefs, unichr
-import re
-import sys
-import codecs
-import warnings
+from ftfy.compatibility import unichr
+from html5lib.constants import entities
 
 
 BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
@@ -322,7 +323,7 @@ def unescape_html(text):
         else:
             # named entity
             try:
-                text = unichr(htmlentitydefs.name2codepoint[text[1:-1]])
+                text = entities[text[1:]]
             except KeyError:
                 pass
         return text  # leave as is
@@ -653,4 +654,3 @@ TRANSCODERS = {
     'replace_lossy_sequences': replace_lossy_sequences,
     'fix_partial_utf8_punct_in_1252': fix_partial_utf8_punct_in_1252
 }
-

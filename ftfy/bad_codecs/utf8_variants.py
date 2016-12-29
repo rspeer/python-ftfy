@@ -39,11 +39,11 @@ never.
 """
 
 from __future__ import unicode_literals
-from ftfy.compatibility import bytes_to_ints, unichr, PYTHON2
-from encodings.utf_8 import (IncrementalDecoder as UTF8IncrementalDecoder,
-                             IncrementalEncoder as UTF8IncrementalEncoder)
 import re
 import codecs
+from encodings.utf_8 import (IncrementalDecoder as UTF8IncrementalDecoder,
+                             IncrementalEncoder as UTF8IncrementalEncoder)
+from ftfy.compatibility import bytes_to_ints, unichr, PYTHON2
 
 NAME = 'utf-8-variants'
 
@@ -235,6 +235,9 @@ def mangle_surrogates(bytestring):
     applications from malformed strings, we turn surrogate sequences at the
     start of the string into the bytes `ff ff ff`, which we're *sure* won't
     decode, and which turn into three replacement characters in 'replace' mode.
+
+    This function does nothing in Python 3, and it will be deprecated in ftfy
+    5.0.
     """
     if PYTHON2:
         if bytestring.startswith(b'\xed') and len(bytestring) >= 3:

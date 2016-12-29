@@ -1,3 +1,44 @@
+## Version 4.3.0 (December 29, 2016)
+
+ftfy has gotten by for four years without dependencies on other Python
+libraries, but now we can spare ourselves some code and some maintenance burden
+by delegating certain tasks to other libraries that already solve them well.
+This version now depends on the `html5lib` and `wcwidth` libraries.
+
+Feature changes:
+
+- The `remove_control_chars` fixer will now remove some non-ASCII control
+  characters as well, such as deprecated Arabic control characters and
+  byte-order marks. Bidirectional controls are still left as is.
+
+  This should have no impact on well-formed text, while cleaning up many
+  characters that the Unicode Consortium deems "not suitable for markup"
+  (see Unicode Technical Report #20).
+
+- The `unescape_html` fixer uses a more thorough list of HTML entities,
+  which it imports from `html5lib`.
+
+- `ftfy.formatting` now uses `wcwidth` to compute the width that a string
+  will occupy in a text console.
+
+Heuristic changes:
+
+- Updated the data file of Unicode character categories to Unicode 9, as used
+  in Python 3.6.0. (No matter what version of Python you're on, ftfy uses the
+  same data.)
+
+Pending deprecations:
+
+- The `remove_bom` option will become deprecated in 5.0, because it has been
+  superseded by `remove_control_chars`.
+
+- ftfy 5.0 will remove the previously deprecated name `fix_text_encoding`. It
+  was renamed to `fix_encoding` in 4.0.
+
+- ftfy 5.0 will require Python 3.2 or later, as planned. Python 2 users, please
+  specify `ftfy < 5` in your dependencies if you haven't already.
+
+
 ## Version 4.2.0 (September 28, 2016)
 
 Heuristic changes:
@@ -35,11 +76,13 @@ Heuristic changes:
   The heuristic has been changed, and all languages that use Latin letters
   should be on even footing now.
 
+
 ## Version 4.1.1 (April 13, 2016)
 
 - Bug fix: in the command-line interface, the `-e` option had no effect on
   Python 3 when using standard input. Now, it correctly lets you specify
   a different encoding for standard input.
+
 
 ## Version 4.1.0 (February 25, 2016)
 
