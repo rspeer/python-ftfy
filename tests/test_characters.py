@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from ftfy.fixes import fix_encoding, fix_encoding_and_explain, apply_plan, possible_encoding, fix_surrogates
+from ftfy.fixes import (
+    fix_encoding, fix_encoding_and_explain, apply_plan, possible_encoding,
+    remove_control_chars, fix_surrogates
+)
 from ftfy.badness import sequence_weirdness
 import unicodedata
 import sys
@@ -35,6 +38,15 @@ def test_possible_encoding():
 
 def test_byte_order_mark():
     eq_(fix_encoding('ï»¿'), '\ufeff')
+
+
+def test_control_chars():
+    text = (
+        "\ufeffSometimes, \ufffcbad ideas \x7f\ufffalike these characters\ufffb "
+        "\u206aget standardized\U000E0065\U000E006E.\n"
+    )
+    fixed = "Sometimes, bad ideas like these characters get standardized.\n"
+    eq_(remove_control_chars(text), fixed)
 
 
 def test_emoji_variation_selector():

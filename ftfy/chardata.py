@@ -8,6 +8,7 @@ from __future__ import unicode_literals
 import re
 import zlib
 import unicodedata
+import itertools
 from pkg_resources import resource_string
 from ftfy.compatibility import unichr
 
@@ -154,16 +155,23 @@ def chars_to_classes(string):
 
 def _build_control_char_mapping():
     """
-    Build a translate mapping that strips all C0 control characters,
-    except those that represent whitespace.
+    Build a translate mapping that strips likely-unintended control characters.
+    See :func:`ftfy.fixes.remove_control_chars` for a description of these
+    codepoint ranges and why they should be removed.
     """
     control_chars = {}
-    for i in range(32):
+
+    for i in itertools.chain(
+        range(0x00, 0x09), [0x0b],
+        range(0x0d, 0x20), [0x7f],
+        range(0x206a, 0x2070),
+        [0xfeff],
+        range(0xfff9, 0xfffd),
+        range(0x1d173, 0x1d17b),
+        range(0xe0000, 0xe0080)
+    ):
         control_chars[i] = None
 
-    # Map whitespace control characters to themselves.
-    for char in '\t\n\f\r':
-        del control_chars[ord(char)]
     return control_chars
 CONTROL_CHARS = _build_control_char_mapping()
 
@@ -203,4 +211,3 @@ def _build_width_map():
             width_map[i] = alternate
     return width_map
 WIDTH_MAP = _build_width_map()
-
