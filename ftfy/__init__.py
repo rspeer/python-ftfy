@@ -7,17 +7,17 @@ for more information.
 """
 
 from __future__ import unicode_literals
-
-# See the docstring for ftfy.bad_codecs to see what we're doing here.
+import unicodedata
 import ftfy.bad_codecs
-ftfy.bad_codecs.ok()
-
 from ftfy import fixes
 from ftfy.formatting import display_ljust
 from ftfy.compatibility import is_printable
-import unicodedata
 
-__version__ = '4.2.0'
+__version__ = '4.3.0'
+
+
+# See the docstring for ftfy.bad_codecs to see what we're doing here.
+ftfy.bad_codecs.ok()
 
 
 def fix_text(text,
@@ -106,12 +106,16 @@ def fix_text(text,
       when they're appropriately paired, or replacing them with \ufffd
       otherwise.
 
-    - If `fix_control_characters` is true, remove all C0 control characters
-      except the common useful ones: TAB, CR, LF, and FF. (CR characters
-      may have already been removed by the `fix_line_breaks` step.)
+    - If `remove_control_characters` is true, remove control characters that
+      are not suitable for use in text. This includes most of the ASCII control
+      characters, plus some Unicode controls such as the byte order mark
+      (U+FEFF). Useful control characters, such as Tab, Line Feed, and
+      bidirectional marks, are left as they are.
 
-    - If `remove_bom` is True, remove the Byte-Order Mark if it exists.
-      (This is a decoded Unicode string. It doesn't have a "byte order".)
+    - If `remove_bom` is True, remove the Byte-Order Mark at the start of the
+      string if it exists. (This is largely redundant, because it's a special
+      case of `remove_control_characters`. This option will become deprecated
+      in a later version.)
 
     - If `normalization` is not None, apply the specified form of Unicode
       normalization, which can be one of 'NFC', 'NFKC', 'NFD', and 'NFKD'.
@@ -282,7 +286,9 @@ def fix_text_segment(text,
             text = fixes.fix_surrogates(text)
         if remove_control_chars:
             text = fixes.remove_control_chars(text)
-        if remove_bom:
+        if remove_bom and not remove_control_chars:
+            # Skip this step if we've already done `remove_control_chars`,
+            # because it would be redundant.
             text = fixes.remove_bom(text)
         if normalization is not None:
             text = unicodedata.normalize(normalization, text)
