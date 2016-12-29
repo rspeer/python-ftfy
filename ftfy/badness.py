@@ -5,9 +5,9 @@ more reasonable.
 """
 
 from __future__ import unicode_literals
-from ftfy.chardata import chars_to_classes
 import re
 import unicodedata
+from ftfy.chardata import chars_to_classes
 
 # The following regex uses the mapping of character classes to ASCII
 # characters defined in chardata.py and build_data.py:

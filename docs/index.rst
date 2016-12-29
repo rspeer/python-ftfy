@@ -139,7 +139,7 @@ However, ftfy cannot understand other mixups between single-byte encodings,
 because it is extremely difficult to detect which mixup in particular is the
 one that happened.
 
-We also can't handle the non-UTF encodings used for Chinese, Japanese, and
+We also can't handle the legacy encodings used for Chinese, Japanese, and
 Korean, such as ``shift-jis`` and ``gb18030``.  See `issue #34
 <https://github.com/LuminosoInsight/python-ftfy/issues/34>`_ for why this is so
 hard.
@@ -147,6 +147,7 @@ hard.
 But remember that the input to `ftfy` is Unicode, so it handles actual
 CJK *text* just fine. It just can't discover that a CJK *encoding* introduced
 mojibake into the text.
+
 
 Using ftfy
 ----------
@@ -190,6 +191,7 @@ you should use :func:`ftfy.fix_encoding` directly.
 
 .. autofunction:: ftfy.explain_unicode
 
+
 Non-Unicode strings
 -------------------
 
@@ -205,6 +207,7 @@ Unicode string, ftfy will point you to the `Python Unicode HOWTO`_.
 Reasonable ways that you might exchange data, such as JSON or XML, already have
 perfectly good ways of expressing Unicode strings. Given a Unicode string, ftfy
 can apply fixes that are very likely to work without false positives.
+
 
 A note on encoding detection
 ----------------------------
@@ -310,8 +313,8 @@ Variants of UTF-8
 
 *ftfy.chardata* and *ftfy.build_data*: trivia about characters
 --------------------------------------------------------------
-These files load information about the character properties in Unicode 8.0.
-Yes, even if your version of Python doesn't support Unicode 8.0. This ensures
+These files load information about the character properties in Unicode 9.0.
+Yes, even if your version of Python doesn't support Unicode 9.0. This ensures
 that ftfy's behavior is consistent across versions.
 
 .. automodule:: ftfy.chardata
@@ -323,7 +326,7 @@ that ftfy's behavior is consistent across versions.
 Future versions of ftfy
 =======================
 
-ftfy has full support for Python 2.7, even including a backport of Unicode 8
+ftfy has full support for Python 2.7, even including a backport of Unicode 9
 character classes to Python 2. But given the sweeping changes to Unicode in
 Python, it's getting inconvenient to add new features to ftfy that work the
 same on both versions.
@@ -336,11 +339,11 @@ on two versions of Python (which is more like three versions because of Python
 :func:`ftfy.bad_codecs.utf8_variants.mangle_surrogates` and
 :func:`ftfy.compatibility._narrow_unichr_workaround`.
 
-We're following the lead of venerable projects such as jQuery. jQuery dropped
-support for IE 6-8 in version 2.0, and in doing so, it became much simpler and
-faster for people who didn't need to support old versions of IE in their web
-applications. Meanwhile, jQuery 1.9 remained there for those who needed it.
+This will happen soon, and we'll follow the plan that jQuery used years ago
+when it dropped support for IE 6-8. We'll release the last Python 2 version and
+the first Python-3-only version with the same feature set. ftfy 5.0 will
+reduce the size and complexity of the code greatly, but ftfy 4.x will remain
+there for those who need it.
 
-Similarly, ftfy 5.0 will reduce the size and complexity of the code greatly,
-but ftfy 4.x will remain there. If you're running on Python 2, please make sure
-that `ftfy < 5` is in your requirements list, not just `ftfy`.
+If you're running on Python 2, please make sure that `ftfy < 5` is in your
+requirements list, not just `ftfy`.
