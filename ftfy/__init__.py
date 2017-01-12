@@ -13,7 +13,7 @@ from ftfy import fixes
 from ftfy.formatting import display_ljust
 from ftfy.compatibility import is_printable
 
-__version__ = '4.3.0'
+__version__ = '4.3.1'
 
 
 # See the docstring for ftfy.bad_codecs to see what we're doing here.
@@ -106,7 +106,7 @@ def fix_text(text,
       when they're appropriately paired, or replacing them with \ufffd
       otherwise.
 
-    - If `remove_control_characters` is true, remove control characters that
+    - If `remove_control_chars` is true, remove control characters that
       are not suitable for use in text. This includes most of the ASCII control
       characters, plus some Unicode controls such as the byte order mark
       (U+FEFF). Useful control characters, such as Tab, Line Feed, and
