@@ -1,3 +1,11 @@
+## Version 4.3.1 (January 12, 2017)
+
+Bug fix:
+
+' `remove_control_chars` was removing U+0D ('\r') prematurely. That's the
+  job of `fix_line_breaks`.
+
+
 ## Version 4.3.0 (December 29, 2016)
 
 ftfy has gotten by for four years without dependencies on other Python
