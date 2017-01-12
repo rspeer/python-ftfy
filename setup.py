@@ -3,7 +3,7 @@ import sys
 
 setup(
     name="ftfy",
-    version='4.3.0',
+    version='4.3.1',
     maintainer='Luminoso Technologies, Inc.',
     maintainer_email='info@luminoso.com',
     license="MIT",

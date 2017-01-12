@@ -43,9 +43,9 @@ def test_byte_order_mark():
 def test_control_chars():
     text = (
         "\ufeffSometimes, \ufffcbad ideas \x7f\ufffalike these characters\ufffb "
-        "\u206aget standardized\U000E0065\U000E006E.\n"
+        "\u206aget standardized\U000E0065\U000E006E.\r\n"
     )
-    fixed = "Sometimes, bad ideas like these characters get standardized.\n"
+    fixed = "Sometimes, bad ideas like these characters get standardized.\r\n"
     eq_(remove_control_chars(text), fixed)
 
 
