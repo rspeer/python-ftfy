@@ -16,6 +16,8 @@ Full documentation: **http://ftfy.readthedocs.org**
   — [@planarrowspace](http://twitter.com/planarrowspace)
 - “A handy piece of magic”
   — [@simonw](http://twitter.com/simonw)
+- “ftfy did the right thing right away, with no faffing about. Excellent work, solving a very tricky real-world (whole-world!) problem.”
+  — Brennan Young
 - “Hat mir die Tage geholfen. Im Übrigen bin ich der Meinung, dass wir keine komplexen Maschinen mit Computern bauen sollten solange wir nicht einmal Umlaute sicher verarbeiten können. :D”
   — [Bruno Ranieri](http://yrrsinn.de/2012/09/17/gelesen-kw37/)
 - “I have no idea when I’m gonna need this, but I’m definitely bookmarking it.”
