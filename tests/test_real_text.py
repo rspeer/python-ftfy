@@ -58,6 +58,10 @@ TEST_CASES = [
     ("It was namedÂ â€žscarsÂ´ stonesâ€ś after the rock-climbers who got hurt while climbing on it.",
      "It was named\xa0\"scars´ stones\" after the rock-climbers who got hurt while climbing on it."),
 
+    # The second test is different in iso-8859-2
+    ("It was namedÂ\xa0â\x80\x9escarsÂ´ stonesâ\x80\x9c after the rock-climbers who got hurt while climbing on it.",
+     "It was named\xa0\"scars´ stones\" after the rock-climbers who got hurt while climbing on it."),
+
     # This one has two differently-broken layers of Windows-1252 <=> UTF-8,
     # and it's kind of amazing that we solve it.
     ('Arsenal v Wolfsburg: pre-season friendly â\x80â\x80\x9c live!',
@@ -106,7 +110,7 @@ def test_real_text():
 
     TEST_CASES contains the most interesting examples of these, often with some
     trickiness of how to decode them into the actually intended text.
-    
+
     For some reason, sampling Twitter gives no examples of text being
     accidentally decoded as Windows-1250, even though it's one of the more
     common encodings and this mojibake has been spotted in the wild. It may be
