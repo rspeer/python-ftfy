@@ -126,8 +126,10 @@ def fix_text_encoding(text):
 # that these encodings will only be used if they fix multiple problems.
 ENCODING_COSTS = {
     'macroman': 2,
+    'iso-8859-2': 2,
+    'sloppy-windows-1250': 2,
+    'sloppy-windows-1251': 3,
     'cp437': 3,
-    'sloppy-windows-1251': 5
 }
 
 
