@@ -53,6 +53,9 @@ TEST_CASES = [
     ("#╨┐╤Ç╨░╨▓╨╕╨╗╤î╨╜╨╛╨╡╨┐╨╕╤é╨░╨╜╨╕╨╡", "#правильноепитание"),
     ('∆°', '∆°'),
 
+    # Test Windows-1250 mixups
+    ("LiĂ¨ge Avenue de l'HĂ´pital", "Liège Avenue de l'Hôpital"),
+
     # This one has two differently-broken layers of Windows-1252 <=> UTF-8,
     # and it's kind of amazing that we solve it.
     ('Arsenal v Wolfsburg: pre-season friendly â\x80â\x80\x9c live!',

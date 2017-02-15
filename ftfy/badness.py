@@ -58,6 +58,13 @@ def _make_weirdness_regex():
     groups.append('[Ll][AaC]')
     groups.append('[AaC][Ll]')
 
+    # Match non-combining diacritics. We've already set aside the common ones
+    # like ^ (the CIRCUMFLEX ACCENT, repurposed as a caret, exponent sign,
+    # or happy eye) and assigned them to category 'o'. The remaining ones,
+    # like the diaeresis (¨), are pretty weird to see on their own instead
+    # of combined with a letter.
+    groups.append('2')
+
     # Match C1 control characters, which are almost always the result of
     # decoding Latin-1 that was meant to be Windows-1252.
     groups.append('X')
@@ -70,9 +77,9 @@ def _make_weirdness_regex():
     # - Modifier marks (M)
     # - Letter modifiers (m)
     # - Miscellaneous numbers (N)
-    # - Symbols (123)
+    # - Symbols (1 or 3, because 2 is already weird on its own)
 
-    exclusive_categories = 'MmN123'
+    exclusive_categories = 'MmN13'
     for cat1 in exclusive_categories:
         others_range = ''.join(c for c in exclusive_categories if c != cat1)
         groups.append('{cat1}[{others_range}]'.format(

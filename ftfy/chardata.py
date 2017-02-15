@@ -12,14 +12,16 @@ import itertools
 from pkg_resources import resource_string
 from ftfy.compatibility import unichr
 
-# These are the five encodings we will try to fix in ftfy, in the
+# These are the encodings we will try to fix in ftfy, in the
 # order that they should be tried.
 CHARMAP_ENCODINGS = [
     'latin-1',
     'sloppy-windows-1252',
+    'sloppy-windows-1250',
+    'iso-8859-2',
+    'sloppy-windows-1251',
     'macroman',
     'cp437',
-    'sloppy-windows-1251',
 ]
 
 
