@@ -6,8 +6,8 @@ from nose.tools import eq_
 
 
 TEST_CASES = [
-    ## These are excerpts from tweets actually seen on the public Twitter
-    ## stream. Usernames and links have been removed.
+    ## These are excerpts from text actually seen in the wild, mostly on
+    ## Twitter. Usernames and links have been removed.
     ("He's Justinâ¤", "He's Justin❤"),
     ("Le Schtroumpf Docteur conseille g√¢teaux et baies schtroumpfantes pour un r√©gime √©quilibr√©.",
      "Le Schtroumpf Docteur conseille gâteaux et baies schtroumpfantes pour un régime équilibré."),
@@ -55,6 +55,8 @@ TEST_CASES = [
 
     # Test Windows-1250 mixups
     ("LiĂ¨ge Avenue de l'HĂ´pital", "Liège Avenue de l'Hôpital"),
+    ("It was namedÂ â€žscarsÂ´ stonesâ€ś after the rock-climbers who got hurt while climbing on it.",
+     "It was named\xa0\"scars´ stones\" after the rock-climbers who got hurt while climbing on it."),
 
     # This one has two differently-broken layers of Windows-1252 <=> UTF-8,
     # and it's kind of amazing that we solve it.
@@ -92,19 +94,26 @@ TEST_CASES = [
 ]
 
 
-def test_real_tweets():
+def test_real_text():
     """
-    Test with text actually found on Twitter.
+    Test with text actually found in the wild (mostly on Twitter).
 
-    I collected these test cases by listening to the Twitter streaming API for
+    I collected test cases by listening to the Twitter streaming API for
     a million or so tweets, picking out examples with high weirdness according
     to ftfy version 2, and seeing what ftfy decoded them to. There are some
     impressive things that can happen to text, even in an ecosystem that is
     supposedly entirely UTF-8.
 
-    The tweets that appear in TEST_CASES are the most interesting examples of
-    these, with some trickiness of how to decode them into the actually intended
-    text.
+    TEST_CASES contains the most interesting examples of these, often with some
+    trickiness of how to decode them into the actually intended text.
+    
+    For some reason, sampling Twitter gives no examples of text being
+    accidentally decoded as Windows-1250, even though it's one of the more
+    common encodings and this mojibake has been spotted in the wild. It may be
+    that Windows-1250 is used in places that culturally don't use Twitter much
+    (Central and Eastern Europe), and therefore nobody designs a Twitter app or
+    bot to use Windows-1250. I've collected a couple of examples of
+    Windows-1250 mojibake from elsewhere.
     """
     for orig, target in TEST_CASES:
         # make sure that the fix_encoding step outputs a plan that we can
