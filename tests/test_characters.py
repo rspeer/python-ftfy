@@ -18,7 +18,7 @@ def test_bmp_characters():
     for index in range(0xa0, 0xfffd):
         char = unichr(index)
         # Exclude code points that are not assigned
-        if unicodedata.category(char) not in ('Co', 'Cn', 'Cs', 'Mc', 'Mn'):
+        if unicodedata.category(char) not in ('Co', 'Cn', 'Cs', 'Mc', 'Mn', 'Sk'):
             garble = char.encode('utf-8').decode('latin-1')
             # Exclude characters whose re-encoding is protected by the
             # 'sequence_weirdness' metric
