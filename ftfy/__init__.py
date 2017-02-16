@@ -52,9 +52,8 @@ def fix_text(text,
         >>> print(fix_text('<em>HTML entities &lt;3</em>'))
         <em>HTML entities &lt;3</em>
 
-        >>> print(fix_text('\001\033[36;44mI&#x92;m blue, da ba dee da ba '
-        ...               'doo&#133;\033[0m', normalization='NFKC'))
-        I'm blue, da ba dee da ba doo...
+        >>> print(fix_text("&macr;\\_(ã\x83\x84)_/&macr;"))
+        ¯\_(ツ)_/¯
 
         >>> # This example string starts with a byte-order mark, even if
         >>> # you can't see it on the Web.
