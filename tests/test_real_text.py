@@ -57,6 +57,8 @@ TEST_CASES = [
     ("LiĂ¨ge Avenue de l'HĂ´pital", "Liège Avenue de l'Hôpital"),
     ("It was namedÂ â€žscarsÂ´ stonesâ€ś after the rock-climbers who got hurt while climbing on it.",
      "It was named\xa0\"scars´ stones\" after the rock-climbers who got hurt while climbing on it."),
+    ("vedere Ă®nceĹŁoĹźatÄ\x83", "vedere înceţoşată"),
+    ("NapĂ\xadĹˇte nĂˇm !", "Napíšte nám !"),
 
     # The second test is different in iso-8859-2
     ("It was namedÂ\xa0â\x80\x9escarsÂ´ stonesâ\x80\x9c after the rock-climbers who got hurt while climbing on it.",
