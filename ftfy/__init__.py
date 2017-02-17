@@ -340,10 +340,8 @@ def guess_bytes(bstring):
         return bstring.decode('utf-16'), 'utf-16'
 
     byteset = set(bytes(bstring))
-    byte_ed, byte_c0, byte_CR, byte_LF = b'\xed\xc0\r\n'
-
     try:
-        if byte_ed in byteset or byte_c0 in byteset:
+        if 0xed in byteset or 0xc0 in byteset:
             # Byte 0xed can be used to encode a range of codepoints that
             # are UTF-16 surrogates. UTF-8 does not use UTF-16 surrogates,
             # so when we see 0xed, it's very likely we're being asked to
@@ -370,7 +368,8 @@ def guess_bytes(bstring):
     except UnicodeDecodeError:
         pass
 
-    if byte_CR in bstring and byte_LF not in bstring:
+    if 0x0d in byteset and 0x0a not in byteset:
+        # Files that contain CR and not LF are likely to be MacRoman.
         return bstring.decode('macroman'), 'macroman'
     else:
         return bstring.decode('sloppy-windows-1252'), 'sloppy-windows-1252'
