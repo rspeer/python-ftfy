@@ -195,16 +195,16 @@ def fix_one_step_and_explain(text):
                 # except they have b' ' where b'\xa0' would belong.
                 if ALTERED_UTF8_RE.search(encoded_bytes):
                     encoded_bytes = restore_byte_a0(encoded_bytes)
-                    cost = encoded_bytes.count(b'\xa0') * 2
+                    cost = encoded_bytes.count(0xa0) * 2
                     transcode_steps.append(('transcode', 'restore_byte_a0', cost))
 
                 # Check for the byte 0x1a, which indicates where one of our
                 # 'sloppy' codecs found a replacement character.
-                if encoding.startswith('sloppy') and b'\x1a' in encoded_bytes:
+                if encoding.startswith('sloppy') and 0x1a in encoded_bytes:
                     encoded_bytes = replace_lossy_sequences(encoded_bytes)
                     transcode_steps.append(('transcode', 'replace_lossy_sequences', 0))
 
-                if b'\xed' in encoded_bytes or b'\xc0' in encoded_bytes:
+                if 0xed in encoded_bytes or 0xc0 in encoded_bytes:
                     decoding = 'utf-8-variants'
 
                 decode_step = ('decode', decoding, 0)
