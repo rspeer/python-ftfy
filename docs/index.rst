@@ -122,6 +122,8 @@ encodings:
 - Latin-1 (ISO-8859-1)
 - Windows-1252 (cp1252 -- used in Microsoft products)
 - Windows-1251 (cp1251 -- the Russian version of cp1252)
+- Windows-1250 (cp1250 -- the Eastern European version of cp1252)
+- ISO-8859-2 (which is not quite the same as Windows-1250)
 - MacRoman (used on Mac OS 9 and earlier)
 - cp437 (used in MS-DOS and some versions of the Windows command prompt)
 

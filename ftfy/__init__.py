@@ -13,7 +13,7 @@ from ftfy import fixes
 from ftfy.formatting import display_ljust
 from ftfy.compatibility import is_printable
 
-__version__ = '4.3.1'
+__version__ = '4.4'
 
 
 # See the docstring for ftfy.bad_codecs to see what we're doing here.
@@ -52,9 +52,8 @@ def fix_text(text,
         >>> print(fix_text('<em>HTML entities &lt;3</em>'))
         <em>HTML entities &lt;3</em>
 
-        >>> print(fix_text('\001\033[36;44mI&#x92;m blue, da ba dee da ba '
-        ...               'doo&#133;\033[0m', normalization='NFKC'))
-        I'm blue, da ba dee da ba doo...
+        >>> print(fix_text("&macr;\\_(ã\x83\x84)_/&macr;"))
+        ¯\_(ツ)_/¯
 
         >>> # This example string starts with a byte-order mark, even if
         >>> # you can't see it on the Web.
@@ -73,12 +72,6 @@ def fix_text(text,
 
     Based on the options you provide, ftfy applies these steps in order:
 
-    - If `fix_entities` is True, replace HTML entities with their equivalent
-      characters. If it's "auto" (the default), then consider replacing HTML
-      entities, but don't do so in text where you have seen a pair of actual
-      angle brackets (that's probably actually HTML and you shouldn't mess
-      with the entities).
-
     - If `remove_terminal_escapes` is True, remove sequences of bytes that are
       instructions for Unix terminals, such as the codes that make text appear
       in different colors.
@@ -86,6 +79,12 @@ def fix_text(text,
     - If `fix_encoding` is True, look for common mistakes that come from
       encoding or decoding Unicode text incorrectly, and fix them if they are
       reasonably fixable. See `fixes.fix_encoding` for details.
+
+    - If `fix_entities` is True, replace HTML entities with their equivalent
+      characters. If it's "auto" (the default), then consider replacing HTML
+      entities, but don't do so in text where you have seen a pair of actual
+      angle brackets (that's probably actually HTML and you shouldn't mess
+      with the entities).
 
     - If `uncurl_quotes` is True, replace various curly quotation marks with
       plain-ASCII straight quotes.
@@ -268,12 +267,12 @@ def fix_text_segment(text,
         fix_entities = False
     while True:
         origtext = text
-        if fix_entities:
-            text = fixes.unescape_html(text)
         if remove_terminal_escapes:
             text = fixes.remove_terminal_escapes(text)
         if fix_encoding:
             text = fixes.fix_encoding(text)
+        if fix_entities:
+            text = fixes.unescape_html(text)
         if fix_latin_ligatures:
             text = fixes.fix_latin_ligatures(text)
         if fix_character_width:
