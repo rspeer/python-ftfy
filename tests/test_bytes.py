@@ -32,32 +32,8 @@ def test_guess_bytes():
 
     bowdlerized_null = b'null\xc0\x80separated'
     result_str, result_encoding = guess_bytes(bowdlerized_null)
-<<<<<<< HEAD
     eq_(result_str, u'null\x00separated')
     eq_(result_encoding, u'utf-8-variants')
-
-
-def test_mangle_surrogates():
-    eq_(b'Eric the half a bee \xed\xa0\x80'.decode('utf-8-variants', 'replace'),
-        'Eric the half a bee ���')
-
-    if PYTHON2:
-        # These are the encodings of a surrogate character, plus a similar-looking
-        # Korean character. Only the surrogate character's bytes should get mangled.
-        eq_(mangle_surrogates(b'\xed\xa0\x80\xed\x9e\x99'), b'\xff\xff\xff\xed\x9e\x99')
-
-        # Mangle sequences of surrogates, but don't mangle surrogates later in
-        # the string (there's no need to in our decoders).
-        eq_(mangle_surrogates(b'\xed\xa0\xbd\xed\xb8\xb9test\xed\xb4\xb4'),
-            b'\xff\xff\xff\xff\xff\xfftest\xed\xb4\xb4')
-        eq_(mangle_surrogates(b'test\xed\xb4\xb4'), b'test\xed\xb4\xb4')
-
-        # Handle short bytestrings correctly.
-        eq_(mangle_surrogates(b'\xed'), b'\xed')
-        eq_(mangle_surrogates(b''), b'')
-    else:
-        # Make sure mangle_surrogates doesn't do anything
-        eq_(mangle_surrogates(b'\xed\xa0\x80\xed\x9e\x99'), b'\xed\xa0\x80\xed\x9e\x99')
 
 
 def test_incomplete_sequences():
@@ -74,8 +50,4 @@ def test_incomplete_sequences():
         got = decoder.decode(left, final=False)
         got += decoder.decode(right)
         eq_(got, test_string)
-=======
-    eq_(result_str, 'null\x00separated')
-    eq_(result_encoding, 'utf-8-variants')
->>>>>>> 0485ed5... Simplify code by removing compatibility with Python <= 3.3.
 

@@ -13,7 +13,6 @@ from ftfy.chardata import (possible_encoding, CHARMAP_ENCODINGS,
                            PARTIAL_UTF8_PUNCT_RE, ALTERED_UTF8_RE,
                            LOSSY_UTF8_RE, SINGLE_QUOTE_RE, DOUBLE_QUOTE_RE)
 from ftfy.badness import text_cost
-from ftfy.compatibility import unichr
 from html5lib.constants import entities
 
 
@@ -455,7 +454,7 @@ def convert_surrogate_pair(match):
     """
     pair = match.group(0)
     codept = 0x10000 + (ord(pair[0]) - 0xd800) * 0x400 + (ord(pair[1]) - 0xdc00)
-    return unichr(codept)
+    return chr(codept)
 
 
 def fix_surrogates(text):
@@ -463,8 +462,8 @@ def fix_surrogates(text):
     Replace 16-bit surrogate codepoints with the characters they represent
     (when properly paired), or with \ufffd otherwise.
 
-        >>> high_surrogate = unichr(0xd83d)
-        >>> low_surrogate = unichr(0xdca9)
+        >>> high_surrogate = chr(0xd83d)
+        >>> low_surrogate = chr(0xdca9)
         >>> print(fix_surrogates(high_surrogate + low_surrogate))
         💩
         >>> print(fix_surrogates(low_surrogate + high_surrogate))
