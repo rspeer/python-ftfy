@@ -1,11 +1,7 @@
 """
 Implements a StreamTester that runs over Twitter data. See the class
 docstring.
-
-This module is written for Python 3 only. The __future__ imports you see here
-are just to let Python 2 scan the file without crashing with a SyntaxError.
 """
-from __future__ import print_function, unicode_literals
 import os
 from collections import defaultdict
 from ftfy.streamtester import StreamTester

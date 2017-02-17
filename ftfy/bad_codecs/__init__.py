@@ -1,4 +1,3 @@
-# coding: utf-8
 r"""
 Give Python the ability to decode some common, flawed encodings.
 

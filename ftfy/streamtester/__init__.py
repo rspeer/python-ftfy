@@ -2,7 +2,6 @@
 This file defines a general method for evaluating ftfy using data that arrives
 in a stream. A concrete implementation of it is found in `twitter_tester.py`.
 """
-from __future__ import print_function, unicode_literals
 from ftfy import fix_text
 from ftfy.fixes import fix_encoding, unescape_html
 from ftfy.chardata import possible_encoding

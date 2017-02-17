@@ -1,4 +1,3 @@
-# coding: utf-8
 from ftfy import guess_bytes
 from ftfy.bad_codecs.utf8_variants import IncrementalDecoder
 from nose.tools import eq_

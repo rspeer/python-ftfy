@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from ftfy import bad_codecs, guess_bytes
 from nose.tools import eq_
 
