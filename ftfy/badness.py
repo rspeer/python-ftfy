@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 Heuristics to determine whether re-encoding text is actually making it
 more reasonable.

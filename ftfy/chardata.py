@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 This gives other modules access to the gritty details about characters and the
 encodings that use them.

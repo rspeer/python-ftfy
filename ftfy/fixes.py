@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 This module contains the individual fixes that the main fix_text function
 can perform.

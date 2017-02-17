@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from ftfy import fix_text
 from ftfy.fixes import fix_encoding_and_explain, apply_plan
 from nose.tools import eq_
