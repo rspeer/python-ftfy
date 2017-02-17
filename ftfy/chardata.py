@@ -36,8 +36,8 @@ def _build_regexes():
         # Make a sequence of characters that bytes \x80 to \xFF decode to
         # in each encoding, as well as byte \x1A, which is used to represent
         # the replacement character � in the sloppy-* encodings.
-        latin1table = ''.join(chr(i) for i in range(128, 256)) + '\x1a'
-        charlist = latin1table.encode('latin-1').decode(encoding)
+        byte_range = bytes(list(range(0x80, 0x100)) + [0x1a])
+        charlist = byte_range.decode(encoding)
 
         # The rest of the ASCII bytes -- bytes \x00 to \x19 and \x1B
         # to \x7F -- will decode as those ASCII characters in any encoding we
@@ -67,11 +67,9 @@ def _build_utf8_punct_regex():
     #
     # Unrelatedly, the expression that generates these bytes will be so much
     # prettier when we deprecate Python 2.
-    continuation_char_list = ''.join(
-        chr(i) for i in range(0x80, 0xc0)
-    ).encode('latin-1')
+    continuation_bytes = bytes(range(0x80, 0xc0))
     obvious_utf8 = ('â€['
-                    + continuation_char_list.decode('sloppy-windows-1252')
+                    + continuation_bytes.decode('sloppy-windows-1252')
                     + ']')
     return re.compile(obvious_utf8)
 PARTIAL_UTF8_PUNCT_RE = _build_utf8_punct_regex()
