@@ -78,10 +78,8 @@ def main():
         file = open(args.filename, 'rb')
 
     if args.output == '-':
-        encode_output = PYTHON2
         outfile = sys.stdout
     else:
-        encode_output = False
         outfile = io.open(args.output, 'w', encoding='utf-8')
 
     normalization = args.normalization
@@ -97,17 +95,14 @@ def main():
         for line in fix_file(file, encoding=encoding,
                              fix_entities=fix_entities,
                              normalization=normalization):
-            if encode_output:
-                outfile.write(line.encode('utf-8'))
-            else:
-                try:
-                    outfile.write(line)
-                except UnicodeEncodeError:
-                    if sys.platform == 'win32':
-                        sys.stderr.write(ENCODE_ERROR_TEXT_WINDOWS)
-                    else:
-                        sys.stderr.write(ENCODE_ERROR_TEXT_UNIX)
-                    sys.exit(1)
+            try:
+                outfile.write(line)
+            except UnicodeEncodeError:
+                if sys.platform == 'win32':
+                    sys.stderr.write(ENCODE_ERROR_TEXT_WINDOWS)
+                else:
+                    sys.stderr.write(ENCODE_ERROR_TEXT_UNIX)
+                sys.exit(1)
     except UnicodeDecodeError as err:
         sys.stderr.write(DECODE_ERROR_TEXT % (encoding, err))
         sys.exit(1)

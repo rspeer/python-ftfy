@@ -69,7 +69,7 @@ def _build_utf8_punct_regex():
     # Unrelatedly, the expression that generates these bytes will be so much
     # prettier when we deprecate Python 2.
     continuation_char_list = ''.join(
-        unichr(i) for i in range(0x80, 0xc0)
+        chr(i) for i in range(0x80, 0xc0)
     ).encode('latin-1')
     obvious_utf8 = ('â€['
                     + continuation_char_list.decode('sloppy-windows-1252')
@@ -205,7 +205,7 @@ def _build_width_map():
     # with that in the dictionary.
     width_map = {0x3000: ' '}
     for i in range(0xff01, 0xfff0):
-        char = unichr(i)
+        char = chr(i)
         alternate = unicodedata.normalize('NFKC', char)
         if alternate != char:
             width_map[i] = alternate
