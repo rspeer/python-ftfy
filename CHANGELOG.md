@@ -1,3 +1,21 @@
+## Version 4.4.0 (February 17, 2017)
+
+Heuristic changes:
+
+- ftfy can now fix mojibake involving the Windows-1250 or ISO-8859-2 encodings.
+
+- The `fix_entities` fixer is now applied after `fix_encoding`. This makes
+  more situations resolvable when both fixes are needed.
+
+- With a few exceptions for commonly-used characters such as `^`, it is now
+  considered "weird" whenever a diacritic appears in non-combining form,
+  such as the diaeresis character `¨`.
+
+- These changes to the heuristics, and others we've made in recent versions,
+  let us lower the "cost" for fixing mojibake in some encodings, causing them
+  to be fixed in more cases.
+
+
 ## Version 4.3.1 (January 12, 2017)
 
 Bug fix:
