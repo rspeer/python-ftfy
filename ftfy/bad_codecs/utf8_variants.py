@@ -42,7 +42,6 @@ import re
 import codecs
 from encodings.utf_8 import (IncrementalDecoder as UTF8IncrementalDecoder,
                              IncrementalEncoder as UTF8IncrementalEncoder)
-from ftfy.compatibility import bytes_to_ints, unichr, PYTHON2
 
 NAME = 'utf-8-variants'
 
