@@ -1,4 +1,3 @@
-# coding: utf-8
 r"""
 Decodes single-byte encodings, filling their "holes" in the same messy way that
 everyone else does.
