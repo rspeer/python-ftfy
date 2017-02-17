@@ -75,6 +75,7 @@ import sys
 REPLACEMENT_CHAR = '\ufffd'
 PY26 = sys.version_info[:2] == (2, 6)
 
+
 def make_sloppy_codec(encoding):
     """
     Take a codec name, and return a 'sloppy' version of that codec that can

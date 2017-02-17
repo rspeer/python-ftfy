@@ -3,7 +3,6 @@ A command-line utility for fixing text found in a file.
 """
 import sys
 import io
-import codecs
 from ftfy import fix_file, __version__
 
 
