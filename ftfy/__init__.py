@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ftfy: fixes text for you
 
