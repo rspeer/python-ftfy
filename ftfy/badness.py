@@ -116,6 +116,7 @@ COMMON_SYMBOL_RE = re.compile(
     ']'
 )
 
+
 def sequence_weirdness(text):
     """
     Determine how often a text has unexpected characters or sequences of
