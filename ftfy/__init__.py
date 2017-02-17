@@ -18,6 +18,7 @@ ftfy.bad_codecs.ok()
 
 
 def fix_text(text,
+             *,
              fix_entities='auto',
              remove_terminal_escapes=True,
              fix_encoding=True,
@@ -192,6 +193,7 @@ fix_text_encoding = fixes.fix_text_encoding  # deprecated
 
 def fix_file(input_file,
              encoding=None,
+             *,
              fix_entities='auto',
              remove_terminal_escapes=True,
              fix_encoding=True,
@@ -239,6 +241,7 @@ def fix_file(input_file,
 
 
 def fix_text_segment(text,
+                     *,
                      fix_entities='auto',
                      remove_terminal_escapes=True,
                      fix_encoding=True,
