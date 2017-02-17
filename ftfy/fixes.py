@@ -4,7 +4,6 @@ can perform.
 """
 
 import re
-import sys
 import codecs
 import warnings
 from ftfy.chardata import (possible_encoding, CHARMAP_ENCODINGS,
@@ -292,6 +291,7 @@ def apply_plan(text, plan):
 
 HTML_ENTITY_RE = re.compile(r"&#?\w{0,8};")
 
+
 def unescape_html(text):
     """
     Decode all three types of HTML entities/character references.
@@ -329,6 +329,7 @@ def unescape_html(text):
 
 
 ANSI_RE = re.compile('\033\\[((?:\\d|;)*)([a-zA-Z])')
+
 
 def remove_terminal_escapes(text):
     r"""

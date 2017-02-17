@@ -7,6 +7,7 @@ import os
 
 AUTH_TOKEN_PATH = os.path.expanduser('~/.cache/oauth/twitter_ftfy.auth')
 
+
 def get_auth():
     """
     Twitter has some bizarre requirements about how to authorize an "app" to

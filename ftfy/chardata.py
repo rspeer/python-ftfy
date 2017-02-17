@@ -140,6 +140,7 @@ CHAR_CLASS_STRING = zlib.decompress(
     resource_string(__name__, 'char_classes.dat')
 ).decode('ascii')
 
+
 def chars_to_classes(string):
     """
     Convert each Unicode character to a letter indicating which of many
@@ -159,13 +160,15 @@ def _build_control_char_mapping():
     control_chars = {}
 
     for i in itertools.chain(
-        range(0x00, 0x09), [0x0b],
-        range(0x0e, 0x20), [0x7f],
-        range(0x206a, 0x2070),
-        [0xfeff],
-        range(0xfff9, 0xfffd),
-        range(0x1d173, 0x1d17b),
-        range(0xe0000, 0xe0080)
+            range(0x00, 0x09),
+            [0x0b],
+            range(0x0e, 0x20),
+            [0x7f],
+            range(0x206a, 0x2070),
+            [0xfeff],
+            range(0xfff9, 0xfffd),
+            range(0x1d173, 0x1d17b),
+            range(0xe0000, 0xe0080)
     ):
         control_chars[i] = None
 
