@@ -11,6 +11,9 @@ Heuristic changes:
   considered "weird" whenever a diacritic appears in non-combining form,
   such as the diaeresis character `¨`.
 
+- It is also now weird when IPA phonetic letters, besides `ə`, appear next to
+  capital letters.
+
 - These changes to the heuristics, and others we've made in recent versions,
   let us lower the "cost" for fixing mojibake in some encodings, causing them
   to be fixed in more cases.
