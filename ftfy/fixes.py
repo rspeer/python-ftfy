@@ -522,8 +522,6 @@ def remove_bom(text):
     return text.lstrip(chr(0xfeff))
 
 
-UNSAFE_PRIVATE_USE_RE = re.compile('[\U00100000-\U0010ffff]')
-
 # Define a regex to match valid escape sequences in Python string literals.
 ESCAPE_SEQUENCE_RE = re.compile(r'''
     ( \\U........      # 8-digit hex escapes
