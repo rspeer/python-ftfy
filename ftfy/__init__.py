@@ -339,7 +339,7 @@ def guess_bytes(bstring):
     if bstring.startswith(b'\xfe\xff') or bstring.startswith(b'\xff\xfe'):
         return bstring.decode('utf-16'), 'utf-16'
 
-    byteset = set(bytes(bstring))
+    byteset = set(bstring)
     try:
         if 0xed in byteset or 0xc0 in byteset:
             # Byte 0xed can be used to encode a range of codepoints that
