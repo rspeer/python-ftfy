@@ -42,8 +42,6 @@ TEST_CASES = [
      'eres mía, mía, mía, no te hagas la loca eso muy bien ya lo sabías'),
     ("Direzione Pd, ok âsenza modifiche all'Italicum.",
      "Direzione Pd, ok \"senza modifiche\" all'Italicum."),
-    ('Engkau masih yg terindah, indah di dalam hatikuâ™«~',
-     'Engkau masih yg terindah, indah di dalam hatiku♫~'),
     ('SENSЕ - Oleg Tsedryk', 'SENSЕ - Oleg Tsedryk'),   # this Е is a Ukrainian letter
     ('OK??:(   `¬´    ):', 'OK??:(   `¬´    ):'),
     ("selamat berpuasa sob (Ã\xa0Â¸â€¡'ÃŒâ‚¬Ã¢Å’Â£'ÃŒÂ\x81)Ã\xa0Â¸â€¡",
@@ -83,6 +81,8 @@ TEST_CASES = [
     ("``hogwarts nao existe, voce nao vai pegar o trem pra lá´´", "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´"),
     ("SELKÄ\xa0EDELLÄ\xa0MAAHAN via @YouTube", "SELKÄ\xa0EDELLÄ\xa0MAAHAN via @YouTube"),
     ("Offering 5×£35 pin ups", "Offering 5×£35 pin ups"),
+    ("NESTLÉ® requiere contratar personal para diferentes areas a nivel nacional e internacional",
+     "NESTLÉ® requiere contratar personal para diferentes areas a nivel nacional e internacional"),
 
     ## This remains a false positive
     # ("├┤a┼┐a┼┐a┼┐a┼┐a", "├┤a┼┐a┼┐a┼┐a┼┐a"),
@@ -93,6 +93,11 @@ TEST_CASES = [
 
     ## The original text looks too plausible
     # ('CÃ\xa0nan nan GÃ\xa0idheal', 'Cànan nan Gàidheal'),
+
+    ## Turning sorta-plausible text into musical notes isn't convincing enough
+    ## under the current heuristics
+    # ('Engkau masih yg terindah, indah di dalam hatikuâ™«~',
+    #  'Engkau masih yg terindah, indah di dalam hatiku♫~'),
 
     ## The heuristics aren't confident enough to fix this text and its weird encoding.
     #("Blog Traffic Tip 2 вЂ“ Broadcast Email Your Blog",
