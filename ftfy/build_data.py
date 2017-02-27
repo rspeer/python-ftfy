@@ -59,7 +59,13 @@ def make_char_data_file(do_it_anyway=False):
         char = unichr(codepoint)
         category = unicodedata.category(char)
 
-        if category.startswith('L'):  # letters
+        if (0x250 <= codepoint < 0x300) and char != 'ə':
+            # IPA symbols and modifiers.
+            #
+            # This category excludes the schwa (ə), which is used as a normal
+            # Latin letter in some languages.
+            cclasses[codepoint] = 'i'
+        elif category.startswith('L'):  # letters
             if unicodedata.name(char, '').startswith('LATIN'):
                 if category == 'Lu':
                     cclasses[codepoint] = 'L'
