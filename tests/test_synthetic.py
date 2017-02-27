@@ -19,6 +19,9 @@ phrases = [
     'These control characters \x1a are apparently intentional \x81',
     "I don't know what this is \x1a but this is the euro sign €",
     "\u2014a radius of 10 Å\u2014",
+    # You can point out that these exclamation points are backwards. I know!
+    "!YO SÉ¡"
+
 ]
 # These phrases should not be erroneously "fixed"
 def test_valid_phrases():
