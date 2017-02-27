@@ -58,6 +58,14 @@ def _make_weirdness_regex():
     groups.append('[Ll][AaC]')
     groups.append('[AaC][Ll]')
 
+    # Match IPA letters next to capital letters.
+    #
+    # IPA uses lowercase letters only. Some accented capital letters next to
+    # punctuation can accidentally decode as IPA letters, and an IPA letter
+    # appearing next to a capital letter is a good sign that this happened.
+    groups.append('[LA]i')
+    groups.append('i[LA]')
+
     # Match non-combining diacritics. We've already set aside the common ones
     # like ^ (the CIRCUMFLEX ACCENT, repurposed as a caret, exponent sign,
     # or happy eye) and assigned them to category 'o'. The remaining ones,
@@ -98,6 +106,8 @@ COMMON_SYMBOL_RE = re.compile(
     '\N{LEFT SINGLE QUOTATION MARK}\N{LEFT DOUBLE QUOTATION MARK}'
     '\N{RIGHT SINGLE QUOTATION MARK}\N{RIGHT DOUBLE QUOTATION MARK}'
     '\N{INVERTED EXCLAMATION MARK}\N{INVERTED QUESTION MARK}\N{DEGREE SIGN}'
+    '\N{TRADE MARK SIGN}'
+    '\N{REGISTERED SIGN}'
     '\N{SINGLE LEFT-POINTING ANGLE QUOTATION MARK}'
     '\N{SINGLE RIGHT-POINTING ANGLE QUOTATION MARK}'
     '\N{LEFT-POINTING DOUBLE ANGLE QUOTATION MARK}'
