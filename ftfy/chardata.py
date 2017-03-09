@@ -64,12 +64,8 @@ def _build_utf8_punct_regex():
     # a range. "Couldn't this have just said [\x80-\xbf]?", you might ask.
     # However, when we decode the regex as Windows-1252, the resulting
     # characters won't even be remotely contiguous.
-    #
-    # Unrelatedly, the expression that generates these bytes will be so much
-    # prettier when we deprecate Python 2.
-    continuation_bytes = bytes(range(0x80, 0xc0))
     obvious_utf8 = ('â€['
-                    + continuation_bytes.decode('sloppy-windows-1252')
+                    + bytes(range(0x80, 0xc0)).decode('sloppy-windows-1252')
                     + ']')
     return re.compile(obvious_utf8)
 PARTIAL_UTF8_PUNCT_RE = _build_utf8_punct_regex()
