@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 ftfy: fixes text for you
 
@@ -6,14 +5,12 @@ This is a module for making text less broken. See the `fix_text` function
 for more information.
 """
 
-from __future__ import unicode_literals
 import unicodedata
 import ftfy.bad_codecs
 from ftfy import fixes
 from ftfy.formatting import display_ljust
-from ftfy.compatibility import is_printable
 
-__version__ = '4.4'
+__version__ = '5.0'
 
 
 # See the docstring for ftfy.bad_codecs to see what we're doing here.
@@ -21,6 +18,7 @@ ftfy.bad_codecs.ok()
 
 
 def fix_text(text,
+             *,
              fix_entities='auto',
              remove_terminal_escapes=True,
              fix_encoding=True,
@@ -195,6 +193,7 @@ fix_text_encoding = fixes.fix_text_encoding  # deprecated
 
 def fix_file(input_file,
              encoding=None,
+             *,
              fix_entities='auto',
              remove_terminal_escapes=True,
              fix_encoding=True,
@@ -242,6 +241,7 @@ def fix_file(input_file,
 
 
 def fix_text_segment(text,
+                     *,
                      fix_entities='auto',
                      remove_terminal_escapes=True,
                      fix_encoding=True,
@@ -330,7 +330,7 @@ def guess_bytes(bstring):
     - "sloppy-windows-1252", the Latin-1-like encoding that is the most common
       single-byte encoding
     """
-    if type(bstring) == type(''):
+    if isinstance(bstring, str):
         raise UnicodeError(
             "This string was already decoded as Unicode. You should pass "
             "bytes to guess_bytes, not Unicode."
@@ -339,11 +339,9 @@ def guess_bytes(bstring):
     if bstring.startswith(b'\xfe\xff') or bstring.startswith(b'\xff\xfe'):
         return bstring.decode('utf-16'), 'utf-16'
 
-    byteset = set(bytes(bstring))
-    byte_ed, byte_c0, byte_CR, byte_LF = b'\xed\xc0\r\n'
-
+    byteset = set(bstring)
     try:
-        if byte_ed in byteset or byte_c0 in byteset:
+        if 0xed in byteset or 0xc0 in byteset:
             # Byte 0xed can be used to encode a range of codepoints that
             # are UTF-16 surrogates. UTF-8 does not use UTF-16 surrogates,
             # so when we see 0xed, it's very likely we're being asked to
@@ -370,7 +368,8 @@ def guess_bytes(bstring):
     except UnicodeDecodeError:
         pass
 
-    if byte_CR in bstring and byte_LF not in bstring:
+    if 0x0d in byteset and 0x0a not in byteset:
+        # Files that contain CR and not LF are likely to be MacRoman.
         return bstring.decode('macroman'), 'macroman'
     else:
         return bstring.decode('sloppy-windows-1252'), 'sloppy-windows-1252'
@@ -399,7 +398,7 @@ def explain_unicode(text):
         U+253B  ┻       [So] BOX DRAWINGS HEAVY UP AND HORIZONTAL
     """
     for char in text:
-        if is_printable(char):
+        if char.isprintable():
             display = char
         else:
             display = char.encode('unicode-escape').decode('ascii')

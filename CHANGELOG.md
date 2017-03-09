@@ -1,3 +1,16 @@
+## Version 5.0 (February 17, 2017)
+
+Breaking changes:
+
+- Dropped support for Python 2. If you need Python 2 support, you should get
+  version 4.4, which has the same features as this version.
+
+- The top-level functions require their arguments to be given as keyword
+  arguments.
+
+Version 5.0 also now has tests for the command-line invocation of ftfy.
+
+
 ## Version 4.4.0 (February 17, 2017)
 
 Heuristic changes:

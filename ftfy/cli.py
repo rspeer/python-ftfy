@@ -1,12 +1,9 @@
 """
 A command-line utility for fixing text found in a file.
 """
-
 import sys
 import io
-import codecs
 from ftfy import fix_file, __version__
-from ftfy.compatibility import PYTHON2
 
 
 ENCODE_ERROR_TEXT_UNIX = """ftfy error:
@@ -75,18 +72,13 @@ def main():
     if args.filename == '-':
         # Get a standard input stream made of bytes, so we can decode it as
         # whatever encoding is necessary.
-        if PYTHON2:
-            file = sys.stdin
-        else:
-            file = sys.stdin.buffer
+        file = sys.stdin.buffer
     else:
         file = open(args.filename, 'rb')
 
     if args.output == '-':
-        encode_output = PYTHON2
         outfile = sys.stdout
     else:
-        encode_output = False
         outfile = io.open(args.output, 'w', encoding='utf-8')
 
     normalization = args.normalization
@@ -102,17 +94,14 @@ def main():
         for line in fix_file(file, encoding=encoding,
                              fix_entities=fix_entities,
                              normalization=normalization):
-            if encode_output:
-                outfile.write(line.encode('utf-8'))
-            else:
-                try:
-                    outfile.write(line)
-                except UnicodeEncodeError:
-                    if sys.platform == 'win32':
-                        sys.stderr.write(ENCODE_ERROR_TEXT_WINDOWS)
-                    else:
-                        sys.stderr.write(ENCODE_ERROR_TEXT_UNIX)
-                    sys.exit(1)
+            try:
+                outfile.write(line)
+            except UnicodeEncodeError:
+                if sys.platform == 'win32':
+                    sys.stderr.write(ENCODE_ERROR_TEXT_WINDOWS)
+                else:
+                    sys.stderr.write(ENCODE_ERROR_TEXT_UNIX)
+                sys.exit(1)
     except UnicodeDecodeError as err:
         sys.stderr.write(DECODE_ERROR_TEXT % (encoding, err))
         sys.exit(1)
