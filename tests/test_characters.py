@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from ftfy.fixes import (
     fix_encoding, fix_encoding_and_explain, apply_plan, possible_encoding,
     remove_control_chars, fix_surrogates
@@ -9,14 +7,11 @@ import unicodedata
 import sys
 from nose.tools import eq_
 
-if sys.hexversion >= 0x03000000:
-    unichr = chr
-
 
 # Most single-character strings which have been misencoded should be restored.
 def test_bmp_characters():
     for index in range(0xa0, 0xfffd):
-        char = unichr(index)
+        char = chr(index)
         # Exclude code points that are not assigned
         if unicodedata.category(char) not in ('Co', 'Cn', 'Cs', 'Mc', 'Mn', 'Sk'):
             garble = char.encode('utf-8').decode('latin-1')
