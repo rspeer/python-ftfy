@@ -1,12 +1,7 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
 from ftfy.fixes import fix_encoding
 from ftfy.badness import sequence_weirdness
 import sys
 from nose.tools import eq_
-
-if sys.hexversion >= 0x03000000:
-    unichr = chr
 
 
 phrases = [
