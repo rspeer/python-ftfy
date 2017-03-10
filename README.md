@@ -40,8 +40,7 @@ look at [our careers page](http://www.luminoso.com/career.html).
 
 ## What it does
 
-`ftfy` fixes Unicode that's broken in various ways. It works in Python 2.7,
-Python 3.2, or later.
+`ftfy` fixes Unicode that's broken in various ways.
 
 The goal of `ftfy` is to **take in bad Unicode and output good Unicode**, for use
 in your Unicode-aware code. This is different from taking in non-Unicode and
@@ -113,9 +112,16 @@ LOUD NOISES
 
 ## Installing
 
-ftfy is a package that can be installed using `pip`:
+ftfy is a Python 3 package that can be installed using `pip`:
 
     pip install ftfy
+
+(Or use `pip3 install ftfy` on systems where Python 2 and 3 are both globally
+installed and `pip` refers to Python 2.)
+
+If you're on Python 2.7, you can install an older version:
+
+    pip install 'ftfy<5'
 
 You can also clone this Git repository and install it with
 `python setup.py install`.
