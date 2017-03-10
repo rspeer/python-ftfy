@@ -313,9 +313,15 @@ def unescape_html(text):
             # character reference
             try:
                 if text[:3] == "&#x":
-                    return chr(int(text[3:-1], 16))
+                    codept = int(text[3:-1], 16)
                 else:
-                    return chr(int(text[2:-1]))
+                    codept = int(text[2:-1])
+                if 0x80 <= codept < 0xa0:
+                    # Decode this range of characters as Windows-1252, as Web
+                    # browsers do in practice.
+                    return bytes([codept]).decode('sloppy-windows-1252')
+                else:
+                    return chr(codept)
             except ValueError:
                 pass
         else:
