@@ -13,7 +13,7 @@ from ftfy import fixes
 from ftfy.formatting import display_ljust
 from ftfy.compatibility import is_printable
 
-__version__ = '4.4'
+__version__ = '4.4.1'
 
 
 # See the docstring for ftfy.bad_codecs to see what we're doing here.

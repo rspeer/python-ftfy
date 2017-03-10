@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 from ftfy import fix_text, fix_text_segment
+from ftfy.fixes import unescape_html
 from nose.tools import eq_
 
 
@@ -19,3 +20,7 @@ def test_entities():
     eq_(fix_text_segment('&lt;&gt;'), '<>')
     eq_(fix_text_segment('jednocze&sacute;nie'), 'jednocześnie')
     eq_(fix_text_segment('JEDNOCZE&Sacute;NIE'), 'JEDNOCZEŚNIE')
+    eq_(fix_text_segment('ellipsis&#133;', normalization='NFKC'), 'ellipsis...')
+    eq_(fix_text_segment('ellipsis&#x85;', normalization='NFKC'), 'ellipsis...')
+    eq_(fix_text_segment('broken&#x81;'), 'broken\x81')
+    eq_(unescape_html('euro &#x80;'), 'euro €')
