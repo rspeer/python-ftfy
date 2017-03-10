@@ -1,3 +1,15 @@
+## Version 5.0.1 and 4.4.1 (March 10, 2017)
+
+Bug fix:
+
+- The `unescape_html` fixer will decode entities between `&#128;` and `&#159;`
+  as what they would be in Windows-1252, even without the help of
+  `fix_encoding`.
+
+  This better matches what Web browsers do, and fixes a regression that version
+  4.4 introduced in an example that uses `&#133;` as an ellipsis.
+
+
 ## Version 5.0 (February 17, 2017)
 
 Breaking changes:
@@ -36,7 +48,7 @@ Heuristic changes:
 
 Bug fix:
 
-' `remove_control_chars` was removing U+0D ('\r') prematurely. That's the
+- `remove_control_chars` was removing U+0D ('\r') prematurely. That's the
   job of `fix_line_breaks`.
 
 
