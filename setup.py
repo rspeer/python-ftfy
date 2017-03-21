@@ -13,7 +13,7 @@ of it and write better, simpler code.
 The older version of ftfy, version 4.4, is still available and can run on
 Python 2. Try this:
 
-    pip install ftfy==4.4.1
+    pip install ftfy==4.4.2
 """
 
 
@@ -24,7 +24,7 @@ if sys.version_info[0] < 3:
 
 setup(
     name="ftfy",
-    version='5.0.1',
+    version='5.0.2',
     maintainer='Luminoso Technologies, Inc.',
     maintainer_email='info@luminoso.com',
     license="MIT",
@@ -44,6 +44,7 @@ setup(
         "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries :: Python Modules",
