@@ -1,0 +1,6 @@
+graft tests
+
+include *.md
+include *.txt
+
+global-exclude __pycache__ *.py[cod]
