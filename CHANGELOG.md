@@ -1,3 +1,8 @@
+## Version 5.0.2 and 4.4.2 (March 21, 2017)
+
+Added a `MANIFEST.in` that puts files such as the license file and this
+changelog inside the source distribution.
+
 ## Version 5.0.1 and 4.4.1 (March 10, 2017)
 
 Bug fix:
