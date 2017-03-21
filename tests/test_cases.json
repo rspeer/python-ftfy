@@ -1,0 +1,409 @@
+[
+    {
+        "label": "Low-codepoint emoji",
+        "original": "He's Justinâ\u009d¤",
+        "fixed": "He's Justin❤",
+        "enabled": true
+    },
+    {
+        "label": "UTF-8 / MacRoman mix-up about smurfs",
+        "original": "Le Schtroumpf Docteur conseille g√¢teaux et baies schtroumpfantes pour un r√©gime √©quilibr√©.",
+        "fixed": "Le Schtroumpf Docteur conseille gâteaux et baies schtroumpfantes pour un régime équilibré.",
+        "enabled": true
+    },
+    {
+        "label": "Checkmark that almost looks okay as mojibake",
+        "original": "âœ” No problems",
+        "fixed": "✔ No problems",
+        "enabled": true
+    },
+    {
+        "label": "UTF-8 / Windows-1251 Russian mixup about futbol",
+        "original": "РґРѕСЂРѕРіРµ Р\u0098Р·-РїРѕРґ #С„СѓС‚Р±РѕР»",
+        "fixed": "дороге Из-под #футбол",
+        "enabled": true
+    },
+    {
+        "label": "Latin-1 / Windows-1252 mixup in German",
+        "original": "\u0084Handwerk bringt dich überall hin\u0093: Von der YOU bis nach Monaco",
+        "fixed-encoding": "„Handwerk bringt dich überall hin“: Von der YOU bis nach Monaco",
+        "fixed": "\"Handwerk bringt dich überall hin\": Von der YOU bis nach Monaco",
+        "enabled": true
+    },
+    {
+        "label": "CESU-8 / Windows-1252 emoji",
+        "original": "Hi guys í ½í¸\u008d",
+        "fixed": "Hi guys 😍",
+        "enabled": true
+    },
+    {
+        "label": "CESU-8 / Latin-1 emoji",
+        "original": "hihi RT username: â\u0098ºí ½í¸\u0098",
+        "fixed": "hihi RT username: ☺😘",
+        "enabled": true
+    },
+    {
+        "label": "Latin-1 / Windows-1252 mixup in Turkish",
+        "original": "Beta Haber: HÄ±rsÄ±zÄ± BÃ¼yÃ¼ Korkuttu",
+        "fixed": "Beta Haber: Hırsızı Büyü Korkuttu",
+        "enabled": true
+    },
+    {
+        "label": "Negative: 'è' preceded by a non-breaking space is not a small capital Y",
+        "original": "Con il corpo e lo spirito ammaccato,\u00a0è come se nel cuore avessi un vetro conficcato.",
+        "fixed": "Con il corpo e lo spirito ammaccato,\u00a0è come se nel cuore avessi un vetro conficcato.",
+        "enabled": true
+    },
+    {
+        "label": "UTF-8 / Windows-1251 mixed up twice in Russian",
+        "original": "Р С—РЎР‚Р С‘РЎРЏРЎвЂљР Р…Р С•РЎРѓРЎвЂљР С‘. РІСњВ¤",
+        "fixed": "приятности. ❤",
+        "enabled": true
+    },
+    {
+        "label": "UTF-8 / Windows-1252 mixed up twice in Malay",
+        "original": "Kayanya laptopku error deh, soalnya tiap mau ngetik deket-deket kamu font yg keluar selalu Times New Ã¢â‚¬Å“ RomanceÃ¢â‚¬Â\u009d.",
+        "fixed-encoding": "Kayanya laptopku error deh, soalnya tiap mau ngetik deket-deket kamu font yg keluar selalu Times New “ Romance”.",
+        "fixed": "Kayanya laptopku error deh, soalnya tiap mau ngetik deket-deket kamu font yg keluar selalu Times New \" Romance\".",
+        "enabled": true
+    },
+    {
+        "label": "Negative: accents are sometimes used as quotes",
+        "original": "``toda produzida pronta pra assa aí´´",
+        "fixed": "``toda produzida pronta pra assa aí´´",
+        "enabled": true
+    },
+    {
+        "label": "Negative: 'Õ' followed by an ellipsis",
+        "comment": "Should not turn into the Armenian letter Յ",
+        "original": "HUHLL Õ…",
+        "fixed": "HUHLL Õ…",
+        "enabled": true
+    },
+    {
+        "label": "UTF-8 / Windows-1252 mixed up twice in naming Iggy Pop",
+        "original": "Iggy Pop (nÃƒÂ© Jim Osterberg)",
+        "fixed": "Iggy Pop (né Jim Osterberg)",
+        "enabled": true
+    },
+    {
+        "label": "Left quote is UTF-8, right quote is Latin-1, both encoded in Windows-1252",
+        "original": "Direzione Pd, ok â\u0080\u009csenza modifiche\u0094 all'Italicum.",
+        "fixed-encoding": "Direzione Pd, ok “senza modifiche” all'Italicum.",
+        "fixed": "Direzione Pd, ok \"senza modifiche\" all'Italicum.",
+        "enabled": true
+    },
+    {
+        "label": "UTF-8 / sloppy Windows-1252 mixed up twice in a triumphant emoticon",
+        "original": "selamat berpuasa sob (Ã\u00a0Â¸â€¡'ÃŒâ‚¬Ã¢Å’Â£'ÃŒÂ\u0081)Ã\u00a0Â¸â€¡",
+        "fixed": "selamat berpuasa sob (ง'̀⌣'́)ง",
+        "enabled": true
+    },
+    {
+        "label": "UTF-8 / Windows-1252 mixed up three times",
+        "original": "The Mona Lisa doesnÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢t have eyebrows.",
+        "fixed-encoding": "The Mona Lisa doesn’t have eyebrows.",
+        "fixed": "The Mona Lisa doesn't have eyebrows.",
+        "enabled": true
+    },
+    {
+        "label": "UTF-8 / Codepage 437 mixup in Russian",
+        "original": "#╨┐╤Ç╨░╨▓╨╕╨╗╤î╨╜╨╛╨╡╨┐╨╕╤é╨░╨╜╨╕╨╡",
+        "fixed": "#правильноепитание",
+        "enabled": true
+    },
+    {
+        "label": "UTF-8 / Windows-1250 mixup in French",
+        "original": "LiĂ¨ge Avenue de l'HĂ´pital",
+        "fixed": "Liège Avenue de l'Hôpital",
+        "enabled": true
+    },
+    {
+        "label": "UTF-8 / sloppy Windows-1250 mixup in English",
+        "original": "It was namedÂ â€žscarsÂ´ stonesâ€ś after the rock-climbers who got hurt while climbing on it.",
+        "fixed-encoding": "It was named\u00a0„scars´ stones“ after the rock-climbers who got hurt while climbing on it.",
+        "fixed": "It was named\u00a0\"scars´ stones\" after the rock-climbers who got hurt while climbing on it.",
+        "enabled": true
+    },
+    {
+        "label": "The same text as above, but as a UTF-8 / ISO-8859-2 mixup",
+        "original": "It was namedÂ\u00a0â\u0080\u009escarsÂ´ stonesâ\u0080\u009c after the rock-climbers who got hurt while climbing on it.",
+        "fixed-encoding": "It was named\u00a0„scars´ stones“ after the rock-climbers who got hurt while climbing on it.",
+        "fixed": "It was named\u00a0\"scars´ stones\" after the rock-climbers who got hurt while climbing on it.",
+        "enabled": true
+    },
+    {
+        "label": "UTF-8 / sloppy Windows-1250 mixup in Romanian",
+        "original": "vedere Ă®nceĹŁoĹźatÄ\u0083",
+        "fixed": "vedere înceţoşată",
+        "enabled": true
+    },
+    {
+        "label": "UTF-8 / Windows-1250 mixup in Slovak",
+        "original": "NapĂ\u00adĹˇte nĂˇm !",
+        "fixed": "Napíšte nám !",
+        "enabled": true
+    },
+    {
+        "label": "A face with UTF-8 / sloppy Windows-1252 mixed up twice",
+        "original": "Ã¢â€\u009dâ€™(Ã¢Å’Â£Ã‹â€ºÃ¢Å’Â£)Ã¢â€\u009dÅ½",
+        "fixed": "┒(⌣˛⌣)┎",
+        "enabled": true
+    },
+    {
+        "label": "We can mostly decode the face above when we lose the character U+009D",
+        "original": "Ã¢â€�â€™(Ã¢Å’Â£Ã‹â€ºÃ¢Å’Â£)Ã¢â€�Å½",
+        "fixed": "�(⌣˛⌣)�",
+        "enabled": true
+    },
+    {
+        "label": "CESU-8 / Latin-1 mixup over several emoji",
+        "comment": "You tried",
+        "original": "I just figured out how to tweet emojis! â\u009a½í\u00a0½í¸\u0080í\u00a0½í¸\u0081í\u00a0½í¸\u0082í\u00a0½í¸\u0086í\u00a0½í¸\u008eí\u00a0½í¸\u008eí\u00a0½í¸\u008eí\u00a0½í¸\u008e",
+        "fixed": "I just figured out how to tweet emojis! ⚽😀😁😂😆😎😎😎😎",
+        "enabled": true
+    },
+    {
+        "label": "Two levels of inconsistent mojibake",
+        "comment": "The en-dash was mojibaked in UTF-8 / Windows-1252 as three characters, two of which were mojibaked again as Windows-1252 / Latin-1, and the third of which was mojibaked as UTF-8 / Latin-1",
+        "original": "Arsenal v Wolfsburg: pre-season friendly â\u0080â\u0080\u009c live!",
+        "fixed": "Arsenal v Wolfsburg: pre-season friendly – live!",
+        "enabled": true
+    },
+    {
+        "label": "Negative: multiplication sign and ellipsis",
+        "comment": "Should not turn into a dot below",
+        "original": "4288×…",
+        "fixed": "4288×…",
+        "enabled": true
+    },
+    {
+        "label": "Negative: 'Ê' followed by an ellipsis",
+        "comment": "Should not turn into a squat reversed esh",
+        "original": "RETWEET SE VOCÊ…",
+        "fixed": "RETWEET SE VOCÊ…",
+        "enabled": true
+    },
+    {
+        "label": "Negative: 'É' followed by an ellipsis",
+        "comment": "Should not turn into 'MARQUɅ'",
+        "original": "PARCE QUE SUR LEURS PLAQUES IL Y MARQUÉ…",
+        "fixed": "PARCE QUE SUR LEURS PLAQUES IL Y MARQUÉ…",
+        "enabled": true
+    },
+    {
+        "label": "Negative: 'Ó' followed by an ellipsis",
+        "comment": "Should not turn into 'SӅ'",
+        "original": "TEM QUE SEGUIR, SDV SÓ…",
+        "fixed": "TEM QUE SEGUIR, SDV SÓ…",
+        "enabled": true
+    },
+    {
+        "label": "Negative: 'É' followed by a curly apostrophe",
+        "comment": "Should not turn into 'ZZAJɒs'",
+        "original": "Join ZZAJÉ’s Official Fan List and receive news, events, and more!",
+        "fixed-encoding": "Join ZZAJÉ’s Official Fan List and receive news, events, and more!",
+        "fixed": "Join ZZAJÉ's Official Fan List and receive news, events, and more!",
+        "enabled": true
+    },
+    {
+        "label": "Negative: 'é' preceded by curly apostrophe",
+        "comment": "Should not turn into 'LՎpisode'",
+        "original": "L’épisode 8 est trop fou ouahh",
+        "fixed-encoding": "L’épisode 8 est trop fou ouahh",
+        "fixed": "L'épisode 8 est trop fou ouahh",
+        "enabled": true
+    },
+    {
+        "label": "Negative: three raised eyebrows or something?",
+        "comment": "Should not turn into private use character U+F659",
+        "original": "Ôôô VIDA MINHA",
+        "fixed": "Ôôô VIDA MINHA",
+        "enabled": true
+    },
+    {
+        "label": "Negative: copyright sign preceded by non-breaking space",
+        "comment": "Should not turn into 'ʩ'",
+        "original": "[x]\u00a0©",
+        "fixed": "[x]\u00a0©",
+        "enabled": true
+    },
+    {
+        "label": "Negative: en dash and infinity sign",
+        "comment": "Should not turn into '2012Ѱ'",
+        "original": "2012—∞",
+        "fixed": "2012—∞",
+        "enabled": true
+    },
+    {
+        "label": "Negative: This Е is a Ukrainian letter, but nothing else is wrong",
+        "original": "SENSЕ - Oleg Tsedryk",
+        "fixed": "SENSЕ - Oleg Tsedryk",
+        "enabled": true
+    },
+    {
+        "label": "Negative: angry face",
+        "comment": "The face should not turn into '`«'",
+        "original": "OK??:(   `¬´    ):",
+        "fixed": "OK??:(   `¬´    ):",
+        "enabled": true
+    },
+    {
+        "label": "Negative: triangle and degree sign",
+        "comment": "I'm not really sure what it *is* supposed to be, but it's not 'ơ'",
+        "original": "∆°",
+        "fixed": "∆°",
+        "enabled": true
+    },
+    {
+        "label": "Negative: Portuguese with inverted question mark",
+        "comment": "Former false positive - it should not turn into 'QUEM ɿ'",
+        "original": "ESSE CARA AI QUEM É¿",
+        "fixed": "ESSE CARA AI QUEM É¿",
+        "enabled": true
+    },
+    {
+        "label": "Negative: Portuguese with acute accents as quotation marks",
+        "comment": "Former false positive - the end should not turn into a superscript H",
+        "original": "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´",
+        "fixed": "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´",
+        "enabled": true
+    },
+    {
+        "label": "Negative: Finnish Ä followed by a non-breaking space",
+        "comment": "Former false positive - should not become a G with a dot",
+        "original": "SELKÄ\u00a0EDELLÄ\u00a0MAAHAN via @YouTube",
+        "fixed": "SELKÄ\u00a0EDELLÄ\u00a0MAAHAN via @YouTube",
+        "enabled": true
+    },
+    {
+        "label": "Negative: multiplying by currency",
+        "comment": "Former false positive - should not become the Hebrew letter 'final pe'",
+        "original": "Offering 5×£35 pin ups",
+        "fixed": "Offering 5×£35 pin ups",
+        "enabled": true
+    },
+    {
+        "label": "Negative: registered chocolate brand name",
+        "comment": "Former false positive - should not become the IPA letter 'lezh'",
+        "original": "NESTLÉ® requiere contratar personal para diferentes areas a nivel nacional e internacional",
+        "fixed": "NESTLÉ® requiere contratar personal para diferentes areas a nivel nacional e internacional",
+        "enabled": true
+    },
+
+    {
+        "label": "Punctuation pile-up should actually be musical notes",
+        "comment": "Unfortunately, the difference doesn't look convincing to ftfy",
+        "original": "Engkau masih yg terindah, indah di dalam hatikuâ™«~",
+        "fixed": "Engkau masih yg terindah, indah di dalam hatiku♫~",
+        "enabled": false
+    },
+    {
+        "label": "UTF-8 / Windows-1252 mixup in Gaelic involving non-breaking spaces",
+        "comment": "Too similar to the Finnish negative example with non-breaking spaces",
+        "original": "CÃ\u00a0nan nan GÃ\u00a0idheal",
+        "fixed": "Cànan nan Gàidheal",
+        "enabled": false
+    },
+    {
+        "label": "Windows-1252 / MacRoman mixup in Spanish",
+        "comment": "Requires something like encoding detection",
+        "original": "Deja dos heridos hundimiento de barco tur\u0092stico en Acapulco.",
+        "fixed": "Deja dos heridos hundimiento de barco turístico en Acapulco.",
+        "enabled": false
+    },
+    {
+        "label": "UTF-8 / Windows-1251 mixup in tweet spam",
+        "comment": "The Windows-1251-fixing plan is too conservative to fix this",
+        "original": "Blog Traffic Tip 2 вЂ“ Broadcast Email Your Blog",
+        "fixed": "Blog Traffic Tip 2 – Broadcast Email Your Blog",
+        "enabled": false
+    },
+    {
+        "label": "Negative: Leet line-art",
+        "comment": "Current false positive: it concidentally all decodes as UTF-8/CP437 mojibake and becomes 'ôaſaſaſaſa'",
+        "original": "├┤a┼┐a┼┐a┼┐a┼┐a",
+        "fixed": "├┤a┼┐a┼┐a┼┐a┼┐a",
+        "enabled": false
+    },
+
+    {
+        "label": "Synthetic, negative: Brontë's name does not end with a Korean syllable",
+        "comment": "The original example of why ftfy needs heuristics",
+        "original": "I'm not such a fan of Charlotte Brontë…”",
+        "fixed-encoding": "I'm not such a fan of Charlotte Brontë…”",
+        "fixed": "I'm not such a fan of Charlotte Brontë…\"",
+        "enabled": true
+    },
+    {
+        "label": "Synthetic, negative: hypothetical Swedish product name",
+        "comment": "This used to be a constructed example of a false positive, until you added another symbol",
+        "original": "AHÅ™, the new sofa from IKEA",
+        "fixed": "AHÅ™, the new sofa from IKEA",
+        "enabled": true
+    },
+    {
+        "label": "Synthetic, negative: Ukrainian capital letters",
+        "comment": "We need to fix Windows-1251 conservatively, or else this decodes as '²ʲ'",
+        "original": "ВІКІ is Ukrainian for WIKI",
+        "fixed": "ВІКІ is Ukrainian for WIKI",
+        "enabled": true
+    },
+    {
+        "label": "Synthetic, negative: don't leak our internal use of byte 0x1A",
+        "comment": "We use byte 0x1A internally as an encoding of U+FFFD, but literal occurrences of U+1A are just ASCII control characters",
+        "original": "These control characters \u001a are apparently intentional \u0081",
+        "fixed-encoding": "These control characters \u001a are apparently intentional \u0081",
+        "fixed": "These control characters  are apparently intentional \u0081",
+        "enabled": true
+    },
+    {
+        "label": "Synthetic, negative: U+1A on its own",
+        "comment": "We use byte 0x1A internally as an encoding of U+FFFD, but literal occurrences of U+1A are just ASCII control characters",
+        "original": "Here's a control character: \u001a",
+        "fixed-encoding": "Here's a control character: \u001a",
+        "fixed": "Here's a control character: ",
+        "enabled": true
+    },
+    {
+        "label": "Synthetic, negative: A-with-circle as an Angstrom sign",
+        "comment": "Should not turn into '10 ŗ'",
+        "original": "a radius of 10 Å—",
+        "fixed": "a radius of 10 Å—",
+        "enabled": true
+    },
+    {
+        "label": "Synthetic, negative: Spanish with exclamation points on the wrong sides",
+        "original": "!YO SÉ¡",
+        "fixed": "!YO SÉ¡",
+        "enabled": true
+    },
+    {
+        "label": "Synthetic: fix text with backslashes in it",
+        "comment": "Tests for a regression on a long-ago bug",
+        "original": "<40\\% vs \u00e2\u0089\u00a540\\%",
+        "fixed": "<40\\% vs ≥40\\%",
+        "enabled": true
+    },
+    {
+        "label": "Synthetic: curly quotes with mismatched encoding glitches in Latin-1",
+        "original": "\u00e2\u0080\u009cmismatched quotes\u0085\u0094",
+        "fixed-encoding": "“mismatched quotes…”",
+        "fixed": "\"mismatched quotes…\"",
+        "enabled": true
+    },
+    {
+        "label": "Synthetic: curly quotes with mismatched encoding glitches in Windows-1252",
+        "original": "â€œmismatched quotesâ€¦”",
+        "fixed-encoding": "“mismatched quotes…”",
+        "fixed": "\"mismatched quotes…\"",
+        "enabled": true
+    },
+    {
+        "label": "Synthetic: lossy decoding in sloppy-windows-1252",
+        "original": "â€œlossy decodingâ€�",
+        "fixed-encoding": "“lossy decoding�",
+        "fixed": "\"lossy decoding�",
+        "enabled": true
+    }
+]
