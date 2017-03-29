@@ -11,7 +11,7 @@ from ftfy.chardata import (possible_encoding, CHARMAP_ENCODINGS,
                            PARTIAL_UTF8_PUNCT_RE, ALTERED_UTF8_RE,
                            LOSSY_UTF8_RE, SINGLE_QUOTE_RE, DOUBLE_QUOTE_RE)
 from ftfy.badness import text_cost
-from html5lib.constants import entities
+from html import entities
 
 
 BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
@@ -325,12 +325,12 @@ def unescape_html(text):
             except ValueError:
                 pass
         else:
-            # named entity
+            # This is a named entity; if it's a known HTML5 entity, replace
+            # it with the appropriate character.
             try:
-                text = entities[text[1:]]
+                return entities.html5[text[1:]]
             except KeyError:
-                pass
-        return text  # leave as is
+                return text
     return HTML_ENTITY_RE.sub(fixup, text)
 
 
