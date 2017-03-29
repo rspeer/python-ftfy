@@ -23,3 +23,4 @@ def test_entities():
     eq_(fix_text_segment('ellipsis&#x85;', normalization='NFKC'), 'ellipsis...')
     eq_(fix_text_segment('broken&#x81;'), 'broken\x81')
     eq_(unescape_html('euro &#x80;'), 'euro €')
+    eq_(unescape_html('not an entity &#20x6;'), 'not an entity &#20x6;')

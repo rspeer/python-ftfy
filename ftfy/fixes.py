@@ -11,7 +11,7 @@ from ftfy.chardata import (possible_encoding, CHARMAP_ENCODINGS,
                            PARTIAL_UTF8_PUNCT_RE, ALTERED_UTF8_RE,
                            LOSSY_UTF8_RE, SINGLE_QUOTE_RE, DOUBLE_QUOTE_RE)
 from ftfy.badness import text_cost
-from html5lib.constants import entities
+from html import entities
 
 
 BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
@@ -292,6 +292,36 @@ def apply_plan(text, plan):
 HTML_ENTITY_RE = re.compile(r"&#?\w{0,8};")
 
 
+def _unescape_fixup(match):
+    """
+    Replace one matched HTML entity with the character it represents,
+    if possible.
+    """
+    text = match.group(0)
+    if text[:2] == "&#":
+        # character reference
+        try:
+            if text[:3] == "&#x":
+                codept = int(text[3:-1], 16)
+            else:
+                codept = int(text[2:-1])
+            if 0x80 <= codept < 0xa0:
+                # Decode this range of characters as Windows-1252, as Web
+                # browsers do in practice.
+                return bytes([codept]).decode('sloppy-windows-1252')
+            else:
+                return chr(codept)
+        except ValueError:
+            return text
+    else:
+        # This is a named entity; if it's a known HTML5 entity, replace
+        # it with the appropriate character.
+        try:
+            return entities.html5[text[1:]]
+        except KeyError:
+            return text
+
+
 def unescape_html(text):
     """
     Decode all three types of HTML entities/character references.
@@ -303,35 +333,7 @@ def unescape_html(text):
         >>> print(unescape_html('&lt;tag&gt;'))
         <tag>
     """
-    def fixup(match):
-        """
-        Replace one matched HTML entity with the character it represents,
-        if possible.
-        """
-        text = match.group(0)
-        if text[:2] == "&#":
-            # character reference
-            try:
-                if text[:3] == "&#x":
-                    codept = int(text[3:-1], 16)
-                else:
-                    codept = int(text[2:-1])
-                if 0x80 <= codept < 0xa0:
-                    # Decode this range of characters as Windows-1252, as Web
-                    # browsers do in practice.
-                    return bytes([codept]).decode('sloppy-windows-1252')
-                else:
-                    return chr(codept)
-            except ValueError:
-                pass
-        else:
-            # named entity
-            try:
-                text = entities[text[1:]]
-            except KeyError:
-                pass
-        return text  # leave as is
-    return HTML_ENTITY_RE.sub(fixup, text)
+    return HTML_ENTITY_RE.sub(_unescape_fixup, text)
 
 
 ANSI_RE = re.compile('\033\\[((?:\\d|;)*)([a-zA-Z])')
