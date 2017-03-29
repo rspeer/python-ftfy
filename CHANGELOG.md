@@ -1,3 +1,11 @@
+## Version 5.1 (April ??, 2017)
+
+Removed the dependency on `html5lib` by dropping support for Python 3.2.
+
+We previously used the dictionary `html5lib.constants.entities` to decode HTML
+entities.  In Python 3.3 and later, that exact dictionary is now in the
+standard library as `html.entities.html5`.
+
 ## Version 5.0.2 and 4.4.2 (March 21, 2017)
 
 Added a `MANIFEST.in` that puts files such as the license file and this
