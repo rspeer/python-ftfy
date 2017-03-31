@@ -4,50 +4,6 @@ import sys
 from nose.tools import eq_
 
 
-phrases = [
-    "\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
-    "\u201CI'm not such a fan of Charlotte Brontë\u2026\u201D",
-    "\u2039ALLÍ ESTÁ\u203A",
-    "\u2014ALLÍ ESTÁ\u2014",
-    "AHÅ™, the new sofa from IKEA®",
-    "ВІКІ is Ukrainian for WIKI",
-    'These control characters \x1a are apparently intentional \x81',
-    "I don't know what this is \x1a but this is the euro sign €",
-    "\u2014a radius of 10 Å\u2014",
-    # You can point out that these exclamation points are backwards. I know!
-    "!YO SÉ¡"
-
-]
-# These phrases should not be erroneously "fixed"
-def test_valid_phrases():
-    for phrase in phrases:
-        yield check_phrase, phrase
-
-
-def check_phrase(text):
-    # Check each valid phrase above, making sure that it doesn't get changed
-    eq_(fix_encoding(text), text)
-    eq_(fix_encoding(text.encode('utf-8').decode('latin-1')), text)
-
-    # make sure that the opening punctuation is not the only thing that makes
-    # it work
-    eq_(fix_encoding(text[1:]), text[1:])
-    eq_(fix_encoding(text[1:].encode('utf-8').decode('latin-1')), text[1:])
-
-
-def test_fix_with_backslash():
-    eq_(fix_encoding("<40\\% vs \xe2\x89\xa540\\%"), "<40\\% vs ≥40\\%")
-
-
-def test_mixed_utf8():
-    eq_(fix_encoding('\xe2\x80\x9cmismatched quotes\x85\x94'), '“mismatched quotes…”')
-    eq_(fix_encoding('â€œmismatched quotesâ€¦”'), '“mismatched quotes…”')
-
-
-def test_lossy_utf8():
-    eq_(fix_encoding('â€œlossy decodingâ€�'), '“lossy decoding�')
-
-
 def test_burritos():
     # Make a string with two burritos in it. Python doesn't know about Unicode
     # burritos, but ftfy can guess they're probably emoji anyway.
