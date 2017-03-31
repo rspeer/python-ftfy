@@ -1,22 +1,27 @@
 """
-Test with text actually found in the wild (mostly on Twitter).
+Test ftfy's fixes using the data in `test_cases.json`.
 
-I collected test cases by listening to the Twitter streaming API for
-a million or so tweets, picking out examples with high weirdness according
-to ftfy version 2, and seeing what ftfy decoded them to. There are some
-impressive things that can happen to text, even in an ecosystem that is
-supposedly entirely UTF-8.
+I collected many test cases by listening to the Twitter streaming API for
+millions of tweets, picking out examples with high weirdness, and seeing what
+ftfy decoded them to. There are some impressive things that can happen to text,
+even in an ecosystem that is supposedly entirely UTF-8.
 
-TEST_CASES contains the most interesting examples of these, often with some
-trickiness of how to decode them into the actually intended text.
+Some examples come from the Common Crawl (particularly those involving
+Windows-1250 mojibake, which is more common on arbitrary Web pages than on
+Twitter), and some examples marked as 'synthetic' are contrived to test
+particular features of ftfy.
 
-For some reason, sampling Twitter gives no examples of text being
-accidentally decoded as Windows-1250, even though it's one of the more
-common encodings and this mojibake has been spotted in the wild. It may be
-that Windows-1250 is used in places that culturally don't use Twitter much
-(Central and Eastern Europe), and therefore nobody designs a Twitter app or
-bot to use Windows-1250. I've collected a couple of examples of
-Windows-1250 mojibake from elsewhere.
+Each test case is a dictionary containing the following items:
+
+- "label": a label that will identify the test case in nosetests
+- "original": the text to be ftfy'd
+- "fixed": what the result of ftfy.fix_text should be on this text
+
+There are also two optional fields:
+
+- "fixed-encoding": what the result of just ftfy.fix_encoding should be.
+  If missing, it will be considered to be the same as "fixed".
+- "comment": possibly-enlightening commentary on the test case.
 """
 from ftfy import fix_text
 from ftfy.fixes import fix_encoding_and_explain, apply_plan
@@ -70,7 +75,8 @@ def check_example(label):
     eq_(fix_text(extra_bad), fixed)
 
 
-def test_real_text():
+def test_cases():
+    # Run all the test cases in `test_cases.json`
     for test_case in TEST_DATA:
         if test_case['enabled']:
             label = test_case['label']
