@@ -35,29 +35,8 @@ TEST_FILENAME = os.path.join(THIS_DIR, 'test_cases.json')
 TEST_DATA = json.load(open(TEST_FILENAME, encoding='utf-8'))
 
 
-# We set up the tests as a dictionary where they can be looked up by label,
-# even though we already have them in a list, so we can call 'check_example' by
-# the test label. This will make the test label show up in the name of the test
-# in nose.
-
-def _make_tests():
-    available_tests = {}
-    for val in TEST_DATA:
-        label = val['label']
-        available_tests[label] = {
-            'original': val['original'],
-            'fixed': val['fixed'],
-            'fixed-encoding': val.get('fixed-encoding', val['fixed'])
-        }
-    return available_tests
-
-
-AVAILABLE_TESTS = _make_tests()
-
-
-def check_example(label):
-    # Run the test with the given label in the data file
-    val = AVAILABLE_TESTS[label]
+def check_example(val):
+    # Run one example from the data file
     orig = val['original']
     fixed = val['fixed']
 
@@ -68,7 +47,7 @@ def check_example(label):
 
     # Make sure we can decode the text as intended
     eq_(fix_text(orig), fixed)
-    eq_(encoding_fix, val['fixed-encoding'])
+    eq_(encoding_fix, val.get('fixed-encoding', val['fixed']))
 
     # Make sure we can decode as intended even with an extra layer of badness
     extra_bad = orig.encode('utf-8').decode('latin-1')
@@ -79,5 +58,5 @@ def test_cases():
     # Run all the test cases in `test_cases.json`
     for test_case in TEST_DATA:
         if test_case['enabled']:
-            label = test_case['label']
-            yield check_example, label
+            check_example.description = "test_examples_in_json.check_example({!r})".format(test_case['label'])
+            yield check_example, test_case
