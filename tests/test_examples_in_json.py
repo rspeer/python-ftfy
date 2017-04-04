@@ -47,7 +47,7 @@ def check_example(val):
 
     # Make sure we can decode the text as intended
     eq_(fix_text(orig), fixed)
-    eq_(encoding_fix, val.get('fixed-encoding', val['fixed']))
+    eq_(encoding_fix, val.get('fixed-encoding', fixed))
 
     # Make sure we can decode as intended even with an extra layer of badness
     extra_bad = orig.encode('utf-8').decode('latin-1')
@@ -58,5 +58,8 @@ def test_cases():
     # Run all the test cases in `test_cases.json`
     for test_case in TEST_DATA:
         if test_case['enabled']:
-            check_example.description = "test_examples_in_json.check_example({!r})".format(test_case['label'])
+            desc = "test_examples_in_json.check_example({!r})".format(
+                test_case['label']
+            )
+            check_example.description = desc
             yield check_example, test_case
