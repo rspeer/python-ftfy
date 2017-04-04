@@ -4,26 +4,6 @@ import sys
 from nose.tools import eq_
 
 
-def test_burritos():
-    # Make a string with two burritos in it. Python doesn't know about Unicode
-    # burritos, but ftfy can guess they're probably emoji anyway.
-    emoji_text = 'dos burritos: \U0001f32f\U0001f32f'
-
-    # Mangle the burritos into a mess of Cyrillic characters. (It would have
-    # been great if we could have decoded them in cp437 instead, to turn them
-    # into "DOS burritos", but the resulting string is one that ftfy has been
-    # able to fix even without knowledge of Unicode 9.)
-    emojibake = emoji_text.encode('utf-8').decode('windows-1251')
-
-    # Restore the original text.
-    eq_(fix_encoding(emojibake), emoji_text)
-
-    # This doesn't happen if we replace the burritos with arbitrary unassigned
-    # characters. The mangled text passes through as is.
-    not_emoji = 'dos burritos: \U0003f32f\U0003f32f'.encode('utf-8').decode('windows-1251')
-    eq_(fix_encoding(not_emoji), not_emoji)
-
-
 def test_unknown_emoji():
     # The range we accept as emoji has gotten larger. Let's make sure we can
     # decode the futuristic emoji U+1F960, which will probably be a picture of
