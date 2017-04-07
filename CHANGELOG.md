@@ -1,15 +1,22 @@
-## Version 5.1 (April ??, 2017)
+## Version 5.1 (April 7, 2017)
 
-Removed the dependency on `html5lib` by dropping support for Python 3.2.
+- Removed the dependency on `html5lib` by dropping support for Python 3.2.
 
-We previously used the dictionary `html5lib.constants.entities` to decode HTML
-entities.  In Python 3.3 and later, that exact dictionary is now in the
-standard library as `html.entities.html5`.
+  We previously used the dictionary `html5lib.constants.entities` to decode
+  HTML entities.  In Python 3.3 and later, that exact dictionary is now in the
+  standard library as `html.entities.html5`.
+
+- Moved many test cases about how particular text should be fixed into
+  `test_cases.json`, which may ease porting to other languages.
+
+The functionality of this version remains the same as 5.0.2 and 4.4.2.
+
 
 ## Version 5.0.2 and 4.4.2 (March 21, 2017)
 
 Added a `MANIFEST.in` that puts files such as the license file and this
 changelog inside the source distribution.
+
 
 ## Version 5.0.1 and 4.4.1 (March 10, 2017)
 
