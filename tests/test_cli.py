@@ -1,6 +1,6 @@
 import subprocess
 import os
-from nose.tools import eq_
+from nose.tools import eq_, assert_raises
 
 
 # Get the filename of 'halibote.txt', which contains some mojibake about
@@ -42,11 +42,10 @@ def test_alternate_encoding():
 
 def test_wrong_encoding():
     # It's more of a problem when the file doesn't actually decode.
-    try:
+    with assert_raises(subprocess.CalledProcessError) as context:
         get_command_output(['ftfy', '-e', 'windows-1252', TEST_FILENAME])
-        assert False, "Should have raised a CalledProcessError"
-    except subprocess.CalledProcessError as e:
-        eq_(e.output.decode('utf-8'), FAILED_OUTPUT)
+    e = context.exception
+    eq_(e.output.decode('utf-8'), FAILED_OUTPUT)
 
 
 def test_stdin():
