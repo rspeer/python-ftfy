@@ -322,7 +322,7 @@
     },
     {
         "label": "Negative: Leet line-art",
-        "comment": "Current false positive: it concidentally all decodes as UTF-8/CP437 mojibake and becomes 'ôaſaſaſaſa'",
+        "comment": "Current false positive: it coincidentally all decodes as UTF-8/CP437 mojibake and becomes 'ôaſaſaſaſa'",
         "original": "├┤a┼┐a┼┐a┼┐a┼┐a",
         "fixed": "├┤a┼┐a┼┐a┼┐a┼┐a",
         "enabled": false
