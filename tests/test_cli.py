@@ -7,16 +7,18 @@ from nose.tools import eq_, assert_raises
 # Harry Potter in Chinese
 THIS_DIR = os.path.dirname(__file__)
 TEST_FILENAME = os.path.join(THIS_DIR, 'halibote.txt')
-CORRECT_OUTPUT = '【更新】《哈利波特》石堧卜才新婚娶初戀今痠逝\n'
-FAILED_OUTPUT = '''ftfy error:
-This input couldn't be decoded as 'windows-1252'. We got the following error:
-
-    'charmap' codec can't decode byte 0x90 in position 5: character maps to <undefined>
-
-ftfy works best when its input is in a known encoding. You can use `ftfy -g`
-to guess, if you're desperate. Otherwise, give the encoding name with the
-`-e` option, such as `ftfy -e latin-1`.
-'''
+CORRECT_OUTPUT = os.linesep.join(['【更新】《哈利波特》石堧卜才新婚娶初戀今痠逝', ''])
+FAILED_OUTPUT = os.linesep.join([
+    "ftfy error:",
+    "This input couldn't be decoded as 'windows-1252'. We got the following error:",
+    "",
+    "    'charmap' codec can't decode byte 0x90 in position 5: character maps to <undefined>",
+    "",
+    "ftfy works best when its input is in a known encoding. You can use `ftfy -g`",
+    "to guess, if you're desperate. Otherwise, give the encoding name with the",
+    "`-e` option, such as `ftfy -e latin-1`.",
+    "",
+])
 
 
 def get_command_output(args, stdin=None):
