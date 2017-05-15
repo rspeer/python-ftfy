@@ -1,3 +1,13 @@
+## Version 5.1.1 and 4.4.3 (May 15, 2017)
+
+These releases fix two unrelated problems with the tests, one in each version.
+
+- v5.1.1: fixed the CLI tests (which are new in v5) so that they pass
+  on Windows, as long as the Python output encoding is UTF-8.
+
+- v4.4.3: added the `# coding: utf-8` declaration to two files that were
+  missing it, so that tests can run on Python 2.
+
 ## Version 5.1 (April 7, 2017)
 
 - Removed the dependency on `html5lib` by dropping support for Python 3.2.
