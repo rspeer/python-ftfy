@@ -50,6 +50,13 @@ def test_wrong_encoding():
     eq_(e.output.decode('utf-8'), FAILED_OUTPUT)
 
 
+def test_same_file():
+    with assert_raises(subprocess.CalledProcessError) as context:
+        get_command_output(['ftfy', TEST_FILENAME, '-o', TEST_FILENAME])
+    e = context.exception
+    assert e.output.decode('utf-8').startswith("ftfy error:\nCan't read and write the same file.")
+
+
 def test_stdin():
     with open(TEST_FILENAME, 'rb') as infile:
         output = get_command_output(['ftfy'], stdin=infile)

@@ -2,7 +2,7 @@
 A command-line utility for fixing text found in a file.
 """
 import sys
-import io
+import os
 from ftfy import fix_file, __version__
 
 
@@ -34,6 +34,9 @@ to guess, if you're desperate. Otherwise, give the encoding name with the
 `-e` option, such as `ftfy -e latin-1`.
 """
 
+SAME_FILE_ERROR_TEXT = """ftfy error:
+Can't read and write the same file. Please output to a new file instead.
+"""
 
 def main():
     """
@@ -79,7 +82,10 @@ def main():
     if args.output == '-':
         outfile = sys.stdout
     else:
-        outfile = io.open(args.output, 'w', encoding='utf-8')
+        if os.path.abspath(args.output) == os.path.abspath(args.filename):
+            sys.stderr.write(SAME_FILE_ERROR_TEXT)
+            sys.exit(1)
+        outfile = open(args.output, 'w', encoding='utf-8')
 
     normalization = args.normalization
     if normalization.lower() == 'none':
