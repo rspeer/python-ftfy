@@ -187,7 +187,8 @@ LIGATURES = {
     ord('ﬃ'): 'ffi',
     ord('ﬄ'): 'ffl',
     ord('ﬅ'): 'ſt',
-    ord('ﬆ'): 'st'
+    ord('ﬆ'): 'st',
+    ord('ŉ'): "ʼn",
 }
 
 
