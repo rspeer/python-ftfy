@@ -117,7 +117,7 @@ LOSSY_UTF8_RE = re.compile(
 )
 
 # These regexes match various Unicode variations on single and double quotes.
-SINGLE_QUOTE_RE = re.compile('[\u2018-\u201b]')
+SINGLE_QUOTE_RE = re.compile('[\u02bc\u2018-\u201b]')
 DOUBLE_QUOTE_RE = re.compile('[\u201c-\u201f]')
 
 
