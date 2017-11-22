@@ -152,6 +152,13 @@
         "enabled": true
     },
     {
+        "label": "Handle Afrikaans 'n character",
+        "original": "ŉ Chloroplas is ŉ organel wat in fotosinterende plante voorkom.",
+        "fixed-encoding": "ŉ Chloroplas is ŉ organel wat in fotosinterende plante voorkom.",
+        "fixed": "'n Chloroplas is 'n organel wat in fotosinterende plante voorkom.",
+        "enabled": true
+    },
+    {
         "label": "Negative: 'è' preceded by a non-breaking space is not a small capital Y",
         "original": "Con il corpo e lo spirito ammaccato,\u00a0è come se nel cuore avessi un vetro conficcato.",
         "fixed": "Con il corpo e lo spirito ammaccato,\u00a0è come se nel cuore avessi un vetro conficcato.",
