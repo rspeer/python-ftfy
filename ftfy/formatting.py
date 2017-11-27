@@ -31,7 +31,7 @@ def character_width(char):
 
 
 def monospaced_width(text):
-    """
+    r"""
     Return the number of character cells that this string is likely to occupy
     when displayed in a monospaced, modern, Unicode-aware terminal emulator.
     We refer to this as the "display width" of the string.
@@ -50,8 +50,10 @@ def monospaced_width(text):
     >>> monospaced_width('example\x80')
     -1
 
-    # The Korean word 'ibnida' can be written with 3 characters or 7 jamo.
-    # Either way, it *looks* the same and takes up 6 character cells.
+    A more complex example: The Korean word 'ibnida' can be written with 3
+    pre-composed characters or 7 jamo. Either way, it *looks* the same and
+    takes up 6 character cells.
+
     >>> monospaced_width('입니다')
     6
     >>> monospaced_width('\u110b\u1175\u11b8\u1102\u1175\u1103\u1161')
