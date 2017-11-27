@@ -159,6 +159,13 @@
         "enabled": true
     },
     {
+        "label": "Handle Croatian single-codepoint digraphs",
+        "original": "izum „bootstrap load“ koji je korišteǌem polisilicijskog sloja proizveo dovoǉno dobre kondenzatore na čipu",
+        "fixed-encoding": "izum „bootstrap load“ koji je korišteǌem polisilicijskog sloja proizveo dovoǉno dobre kondenzatore na čipu",
+        "fixed": "izum \"bootstrap load\" koji je korištenjem polisilicijskog sloja proizveo dovoljno dobre kondenzatore na čipu",
+        "enabled": true
+    },
+    {
         "label": "Negative: 'è' preceded by a non-breaking space is not a small capital Y",
         "original": "Con il corpo e lo spirito ammaccato,\u00a0è come se nel cuore avessi un vetro conficcato.",
         "fixed": "Con il corpo e lo spirito ammaccato,\u00a0è come se nel cuore avessi un vetro conficcato.",
