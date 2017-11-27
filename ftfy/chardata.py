@@ -173,22 +173,39 @@ CONTROL_CHARS = _build_control_char_mapping()
 
 
 # A translate mapping that breaks ligatures made of Latin letters. While
-# ligatures may be important to the representation of other languages, in
-# Latin letters they tend to represent a copy/paste error.
+# ligatures may be important to the representation of other languages, in Latin
+# letters they tend to represent a copy/paste error. It omits ligatures such
+# as æ that are frequently used intentionally.
 #
-# Ligatures may also be separated by NFKC normalization, but that is sometimes
-# more normalization than you want.
+# This list additionally includes some Latin digraphs that represent two
+# characters for legacy encoding reasons, not for typographical reasons.
+#
+# Ligatures and digraphs may also be separated by NFKC normalization, but that
+# is sometimes more normalization than you want.
+
 LIGATURES = {
-    ord('Ĳ'): 'IJ',
+    ord('Ĳ'): 'IJ',   # Dutch ligatures
     ord('ĳ'): 'ij',
-    ord('ﬀ'): 'ff',
+    ord('ŉ'): "ʼn",   # Afrikaans digraph meant to avoid auto-curled quote
+    ord('Ǳ'): 'DZ',   # Serbian/Croatian digraphs for Cyrillic conversion
+    ord('ǲ'): 'Dz',
+    ord('ǳ'): 'dz',
+    ord('Ǆ'): 'DŽ',
+    ord('ǅ'): 'Dž',
+    ord('ǆ'): 'dž',
+    ord('Ǉ'): 'LJ',
+    ord('ǈ'): 'Lj',
+    ord('ǉ'): 'lj',
+    ord('Ǌ'): 'NJ',
+    ord('ǋ'): 'Nj',
+    ord('ǌ'): "nj",
+    ord('ﬀ'): 'ff',   # Latin typographical ligatures
     ord('ﬁ'): 'fi',
     ord('ﬂ'): 'fl',
     ord('ﬃ'): 'ffi',
     ord('ﬄ'): 'ffl',
     ord('ﬅ'): 'ſt',
     ord('ﬆ'): 'st',
-    ord('ŉ'): "ʼn",
 }
 
 
