@@ -1,3 +1,18 @@
+## Version 5.2 (November 27, 2017)
+
+- The command-line tool will not accept the same filename as its input
+  and output. (Previously, this would write a zero-length file.)
+
+- The `uncurl_quotes` fixer, which replaces curly quotes with straight quotes,
+  now also replaces MODIFIER LETTER APOSTROPHE.
+
+- Codepoints that contain two Latin characters crammed together for legacy
+  encoding reasons are replaced by those two separate characters, even in NFC
+  mode. We formerly did this just with ligatures such as `ﬁ` and `Ĳ`, but now
+  this includes the Afrikaans digraph `ŉ` and Serbian/Croatian digraphs such as
+  `ǆ`.
+
+
 ## Version 5.1.1 and 4.4.3 (May 15, 2017)
 
 These releases fix two unrelated problems with the tests, one in each version.
