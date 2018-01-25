@@ -321,9 +321,10 @@
     },
     {
         "label": "UTF-8 / Windows-1252 mixup in Gaelic involving non-breaking spaces",
+        "comment": "Too similar to the Finnish negative example with non-breaking spaces",
         "original": "CÃ\u00a0nan nan GÃ\u00a0idheal",
         "fixed": "Cànan nan Gàidheal",
-        "enabled": true
+        "enabled": false
     },
     {
         "label": "Windows-1252 / MacRoman mixup in Spanish",
@@ -424,5 +425,18 @@
         "fixed-encoding": "“lossy decoding�",
         "fixed": "\"lossy decoding�",
         "enabled": true
+    },
+    {
+        "label": "Synthetic, negative: Romanian word before a non-breaking space",
+        "original": "NICIODATĂ\u00a0",
+        "fixed": "NICIODATĂ\u00a0",
+        "enabled": true
+    },
+    {
+        "label": "Synthetic, false positive: the Sami name of a town in Lapland, in capital letters, followed by a non-breaking space",
+        "comment": "Related testing tells me I should worry about cases like this, though I haven't seen a real example",
+        "original": "SUOVÂKUOŠKÂ\u00a0",
+        "fixed": "SUOVÂKUOŠKÂ\u00a0",
+        "enabled": false
     }
 ]
