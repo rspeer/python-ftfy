@@ -166,7 +166,7 @@
         "enabled": true
     },
     {
-        "label": "A with an accute accent, in isolation",
+        "label": "A with an acute accent, in isolation",
         "original": "NicolÃ¡s",
         "fixed": "Nicolás",
         "enabled": true
