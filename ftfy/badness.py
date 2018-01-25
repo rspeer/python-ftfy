@@ -35,9 +35,6 @@ def _make_weirdness_regex():
     """
     groups = []
 
-    # Match lowercase letters that are followed by non-ASCII uppercase letters
-    groups.append('lA')
-
     # Match diacritical marks, except when they modify a non-cased letter or
     # another mark.
     #
@@ -91,7 +88,7 @@ def _make_weirdness_regex():
         groups.append('{cat1}[{others_range}]'.format(
             cat1=cat1, others_range=others_range
         ))
-    regex = '|'.join('({0})'.format(group) for group in groups)
+    regex = '|'.join(groups)
     return re.compile(regex)
 
 WEIRDNESS_RE = _make_weirdness_regex()
@@ -116,6 +113,28 @@ COMMON_SYMBOL_RE = re.compile(
     ']'
 )
 
+# These are sequences that are common mojibake, resulting from common encodings
+# that are mixed up with UTF-8 on characters from their own character map.
+#
+# This helps to strengthen evidence that text should be fixed in a way that's
+# separate from the character classes above, or to counter COMMON_SYMBOL_RE's
+# fondness for characters such as inverted exclamation marks and multiplication
+# signs in contexts where they really do look like mojibake.
+
+MOJIBAKE_SYMBOL_RE = re.compile(
+    # Mojibake of low-numbered characters from ISO-8859-1 and, in some cases,
+    # ISO-8859-2. This also covers some cases from related encodings such as
+    # Windows-1252 and Windows-1250.
+    '[ÂÃĂ][\x80-\x9f€ƒ†‡ˆ‰Œ˜™œŸ¡¢£¤¥¦§¨ª¬¯°±²³µ¶·¸¹º¼½¾¿ˇ˘˝]|'
+    # ISO-8859-1, ISO-8859-2, or Windows-1252 mojibake of characters U+10000
+    # to U+1FFFF. (The Windows-1250 and Windows-1251 versions might be too
+    # plausible.)
+    '[ðđ][Ÿ\x9f]|'
+    # Windows-1252 or Windows-1250 mojibake of Windows punctuation characters
+    'â€|'
+    # Windows-1251 mojibake of some Windows punctuation characters
+    'вЂ[љћ¦°№™ќ“”]'
+)
 
 def sequence_weirdness(text):
     """
@@ -146,8 +165,11 @@ def sequence_weirdness(text):
     """
     text2 = unicodedata.normalize('NFC', text)
     weirdness = len(WEIRDNESS_RE.findall(chars_to_classes(text2)))
-    punct_discount = len(COMMON_SYMBOL_RE.findall(text2))
-    return weirdness * 2 - punct_discount
+    adjustment = (
+        len(MOJIBAKE_SYMBOL_RE.findall(text2)) * 2 -
+        len(COMMON_SYMBOL_RE.findall(text2))
+    )
+    return weirdness * 2 + adjustment
 
 
 def text_cost(text):
