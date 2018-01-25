@@ -166,6 +166,12 @@
         "enabled": true
     },
     {
+        "label": "A with an acute accent, in isolation",
+        "original": "NicolÃ¡s",
+        "fixed": "Nicolás",
+        "enabled": true
+    },
+    {
         "label": "Negative: 'è' preceded by a non-breaking space is not a small capital Y",
         "original": "Con il corpo e lo spirito ammaccato,\u00a0è come se nel cuore avessi un vetro conficcato.",
         "fixed": "Con il corpo e lo spirito ammaccato,\u00a0è come se nel cuore avessi un vetro conficcato.",
@@ -329,10 +335,16 @@
     },
     {
         "label": "UTF-8 / Windows-1251 mixup in tweet spam",
-        "comment": "The Windows-1251-fixing plan is too conservative to fix this",
         "original": "Blog Traffic Tip 2 вЂ“ Broadcast Email Your Blog",
         "fixed": "Blog Traffic Tip 2 – Broadcast Email Your Blog",
-        "enabled": false
+        "enabled": true
+    },
+    {
+        "label": "UTF-8 / Windows-1251 mixup",
+        "original": "S&P Confirms UkrsotsbankвЂ™s вЂњB-вЂњ Rating",
+        "fixed-encoding": "S&P Confirms Ukrsotsbank’s “B-“ Rating",
+        "fixed": "S&P Confirms Ukrsotsbank's \"B-\" Rating",
+        "enabled": true
     },
     {
         "label": "Negative: Leet line-art",
@@ -419,6 +431,26 @@
         "original": "â€œlossy decodingâ€�",
         "fixed-encoding": "“lossy decoding�",
         "fixed": "\"lossy decoding�",
+        "enabled": true
+    },
+    {
+        "label": "Synthetic, negative: Romanian word before a non-breaking space",
+        "original": "NICIODATĂ\u00a0",
+        "fixed": "NICIODATĂ\u00a0",
+        "enabled": true
+    },
+    {
+        "label": "Synthetic, false positive: the Sami name of a town in Lapland, in capital letters, followed by a non-breaking space",
+        "comment": "Related testing tells me I should worry about cases like this, though I haven't seen a real example",
+        "original": "SUOVÂKUOŠKÂ\u00a0",
+        "fixed": "SUOVÂKUOŠKÂ\u00a0",
+        "enabled": false
+    },
+    {
+        "label": "Synthetic, negative: Camel-cased Serbian that looks like a UTF-8 / Windows-1251 mixup",
+        "comment": "I made this text up, but it seems like it means 'HelloDevil'. Could be a username or something.",
+        "original": "ПоздравЂаво",
+        "fixed": "ПоздравЂаво",
         "enabled": true
     }
 ]
