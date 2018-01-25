@@ -24,7 +24,7 @@ if sys.version_info[0] < 3:
 
 setup(
     name="ftfy",
-    version='5.2.0',
+    version='5.3.0',
     maintainer='Luminoso Technologies, Inc.',
     maintainer_email='info@luminoso.com',
     license="MIT",
