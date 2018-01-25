@@ -132,8 +132,8 @@ MOJIBAKE_SYMBOL_RE = re.compile(
     '[ðđ][Ÿ\x9f]|'
     # Windows-1252 or Windows-1250 mojibake of Windows punctuation characters
     'â€|'
-    # Windows-1251 mojibake of Windows punctuation characters
-    'вЂ'
+    # Windows-1251 mojibake of some Windows punctuation characters
+    'вЂ[љћ¦°№™ќ“”]'
 )
 
 def sequence_weirdness(text):
