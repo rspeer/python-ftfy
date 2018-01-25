@@ -16,6 +16,8 @@ Full documentation: **http://ftfy.readthedocs.org**
   — [@planarrowspace](http://twitter.com/planarrowspace)
 - “A handy piece of magic”
   — [@simonw](http://twitter.com/simonw)
+- “Saved me a large amount of frustrating dev work”
+  — [@iancal](http://twitter.com/iancal)
 - “ftfy did the right thing right away, with no faffing about. Excellent work, solving a very tricky real-world (whole-world!) problem.”
   — Brennan Young
 - “Hat mir die Tage geholfen. Im Übrigen bin ich der Meinung, dass wir keine komplexen Maschinen mit Computern bauen sollten solange wir nicht einmal Umlaute sicher verarbeiten können. :D”
@@ -69,6 +71,10 @@ often shows up as characters that turn into nonsense sequences (called
 
 ftfy uses heuristics to detect and undo this kind of mojibake, with a very
 low rate of false positives.
+
+This part of ftfy now has an unofficial Web implementation by simonw:
+https://ftfy.now.sh/
+
 
 ## Examples
 
