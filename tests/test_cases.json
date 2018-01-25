@@ -166,6 +166,12 @@
         "enabled": true
     },
     {
+        "label": "A with an accute accent, in isolation",
+        "original": "NicolÃ¡s",
+        "fixed": "Nicolás",
+        "enabled": true
+    },
+    {
         "label": "Negative: 'è' preceded by a non-breaking space is not a small capital Y",
         "original": "Con il corpo e lo spirito ammaccato,\u00a0è come se nel cuore avessi un vetro conficcato.",
         "fixed": "Con il corpo e lo spirito ammaccato,\u00a0è come se nel cuore avessi un vetro conficcato.",
@@ -315,10 +321,9 @@
     },
     {
         "label": "UTF-8 / Windows-1252 mixup in Gaelic involving non-breaking spaces",
-        "comment": "Too similar to the Finnish negative example with non-breaking spaces",
         "original": "CÃ\u00a0nan nan GÃ\u00a0idheal",
         "fixed": "Cànan nan Gàidheal",
-        "enabled": false
+        "enabled": true
     },
     {
         "label": "Windows-1252 / MacRoman mixup in Spanish",
@@ -329,10 +334,9 @@
     },
     {
         "label": "UTF-8 / Windows-1251 mixup in tweet spam",
-        "comment": "The Windows-1251-fixing plan is too conservative to fix this",
         "original": "Blog Traffic Tip 2 вЂ“ Broadcast Email Your Blog",
         "fixed": "Blog Traffic Tip 2 – Broadcast Email Your Blog",
-        "enabled": false
+        "enabled": true
     },
     {
         "label": "Negative: Leet line-art",
