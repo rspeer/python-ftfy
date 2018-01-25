@@ -440,10 +440,10 @@
         "enabled": true
     },
     {
-        "label": "Synthetic, false positive: the Sami name of a town in Lapland, in capital letters, followed by a non-breaking space",
-        "comment": "Related testing tells me I should worry about cases like this, though I haven't seen a real example",
-        "original": "SUOVÂKUOŠKÂ\u00a0",
-        "fixed": "SUOVÂKUOŠKÂ\u00a0",
+        "label": "Synthetic, false positive: the title of a manga, in weird capitalized romaji, with a non-breaking space",
+        "comment": "Testing tells me I should worry about cases like this, though I haven't seen a real example. Searching for similar real text yields a lot of examples that actually come out fine.",
+        "original": "MISUTÂ\u00a0AJIKKO",
+        "fixed": "MISUTÂ\u00a0AJIKKO",
         "enabled": false
     },
     {
