@@ -1,3 +1,11 @@
+## Version 5.3 (January 25, 2018)
+
+- A heuristic has been too conservative since version 4.2, causing a regression
+  compared to previous versions: ftfy would fail to fix mojibake of common
+  characters such as `á` when seen in isolation. A new heuristic now makes it
+  possible to fix more of these common cases with less evidence.
+
+
 ## Version 5.2 (November 27, 2017)
 
 - The command-line tool will not accept the same filename as its input
