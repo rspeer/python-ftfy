@@ -122,12 +122,14 @@ COMMON_SYMBOL_RE = re.compile(
 # signs in contexts where they really do look like mojibake.
 
 MOJIBAKE_SYMBOL_RE = re.compile(
-    # Mojibake of low-numbered characters from and ISO-8859-1, ISO-8859-2.
-    # This also covers some cases from related encodings such as Windows-1252
-    # and Windows-1250.
-    '[ÂÃĂ][\x80-\xbf\u0100-\u02ff]|'
-    # ISO-8859-1 or Windows-1252 mojibake of characters U+10000 to U+1FFFF
-    'ðŸ|'
+    # Mojibake of low-numbered characters from ISO-8859-1 and, in some cases,
+    # ISO-8859-2. This also covers some cases from related encodings such as
+    # Windows-1252 and Windows-1250.
+    '[ÂÃĂ][\x80-\xbf]|'
+    # ISO-8859-1, ISO-8859-2, or Windows-1252 mojibake of characters U+10000
+    # to U+1FFFF. (The Windows-1250 and Windows-1251 versions might be too
+    # plausible.)
+    '[ðđ][Ÿ\x9f]|'
     # Windows-1252 or Windows-1250 mojibake of Windows punctuation characters
     'â€|'
     # Windows-1251 mojibake of Windows punctuation characters
