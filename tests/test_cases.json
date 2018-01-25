@@ -340,6 +340,13 @@
         "enabled": true
     },
     {
+        "label": "UTF-8 / Windows-1251 mixup",
+        "original": "S&P Confirms UkrsotsbankвЂ™s вЂњB-вЂњ Rating",
+        "fixed-encoding": "S&P Confirms Ukrsotsbank’s “B-“ Rating",
+        "fixed": "S&P Confirms Ukrsotsbank's \"B-\" Rating",
+        "enabled": true
+    },
+    {
         "label": "Negative: Leet line-art",
         "comment": "Current false positive: it coincidentally all decodes as UTF-8/CP437 mojibake and becomes 'ôaſaſaſaſa'",
         "original": "├┤a┼┐a┼┐a┼┐a┼┐a",
@@ -438,5 +445,12 @@
         "original": "SUOVÂKUOŠKÂ\u00a0",
         "fixed": "SUOVÂKUOŠKÂ\u00a0",
         "enabled": false
+    },
+    {
+        "label": "Synthetic, negative: Camel-cased Serbian that looks like a UTF-8 / Windows-1251 mixup",
+        "comment": "I made this text up, but it seems like it means 'HelloDevil'. Could be a username or something.",
+        "original": "ПоздравЂаво",
+        "fixed": "ПоздравЂаво",
+        "enabled": true
     }
 ]
