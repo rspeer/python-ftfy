@@ -1,3 +1,8 @@
+## Version 5.3.1 (April 24, 2018)
+
+Packaging updates; provides better metadata for the new PyPI.
+
+
 ## Version 5.3 (January 25, 2018)
 
 - A heuristic has been too conservative since version 4.2, causing a regression
