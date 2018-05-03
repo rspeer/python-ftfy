@@ -29,8 +29,8 @@ def test_guess_bytes(string):
 def test_guess_bytes_null():
     bowdlerized_null = b'null\xc0\x80separated'
     result_str, result_encoding = guess_bytes(bowdlerized_null)
-    assert result_str == u'null\x00separated'
-    assert result_encoding == u'utf-8-variants'
+    assert result_str == 'null\x00separated'
+    assert result_encoding == 'utf-8-variants'
 
 
 def test_incomplete_sequences():
