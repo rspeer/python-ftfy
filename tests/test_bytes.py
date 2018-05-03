@@ -1,6 +1,6 @@
 from ftfy import guess_bytes
 from ftfy.bad_codecs.utf8_variants import IncrementalDecoder
-from nose.tools import eq_
+import pytest
 
 
 TEST_ENCODINGS = [
@@ -13,26 +13,24 @@ TEST_STRINGS = [
 ]
 
 
-def check_bytes_decoding(string):
+@pytest.mark.parametrize("string", TEST_STRINGS)
+def test_guess_bytes(string):
     for encoding in TEST_ENCODINGS:
         result_str, result_encoding = guess_bytes(string.encode(encoding))
-        eq_(result_str, string)
-        eq_(result_encoding, encoding)
+        assert result_str == string
+        assert result_encoding == encoding
 
     if '\n' in string:
         old_mac_bytes = string.replace('\n', '\r').encode('macroman')
         result_str, result_encoding = guess_bytes(old_mac_bytes)
-        eq_(result_str, string.replace('\n', '\r'))
+        assert result_str == string.replace('\n', '\r')
 
 
-def test_guess_bytes():
-    for string in TEST_STRINGS:
-        yield check_bytes_decoding, string
-
+def test_guess_bytes_null():
     bowdlerized_null = b'null\xc0\x80separated'
     result_str, result_encoding = guess_bytes(bowdlerized_null)
-    eq_(result_str, u'null\x00separated')
-    eq_(result_encoding, u'utf-8-variants')
+    assert result_str == u'null\x00separated'
+    assert result_encoding == u'utf-8-variants'
 
 
 def test_incomplete_sequences():
@@ -48,5 +46,5 @@ def test_incomplete_sequences():
         decoder = IncrementalDecoder()
         got = decoder.decode(left, final=False)
         got += decoder.decode(right)
-        eq_(got, test_string)
+        assert got == test_string
 

@@ -6,3 +6,5 @@ dist
 build
 _build
 twitterlogs
+.eggs
+.pytest_cache
