@@ -25,41 +25,52 @@ There are also two optional fields:
 """
 from ftfy import fix_text
 from ftfy.fixes import fix_encoding_and_explain, apply_plan
-from nose.tools import eq_
 import json
 import os
+import pytest
 
 
 THIS_DIR = os.path.dirname(__file__)
 TEST_FILENAME = os.path.join(THIS_DIR, 'test_cases.json')
 TEST_DATA = json.load(open(TEST_FILENAME, encoding='utf-8'))
 
+TESTS_THAT_PASS = [test for test in TEST_DATA if test['expect'] == 'pass']
+TESTS_THAT_FAIL = [test for test in TEST_DATA if test['expect'] == 'fail']
 
-def check_example(val):
+
+@pytest.mark.parametrize("test_case", TEST_DATA)
+def test_well_formed_example(test_case):
+    assert test_case['expect'] in ('pass', 'fail')
+
+
+@pytest.mark.parametrize("test_case", TESTS_THAT_PASS)
+def test_json_example(test_case):
     # Run one example from the data file
-    orig = val['original']
-    fixed = val['fixed']
+    orig = test_case['original']
+    fixed = test_case['fixed']
 
     # Make sure that the fix_encoding step outputs a plan that we can
     # successfully run to reproduce its result
     encoding_fix, plan = fix_encoding_and_explain(orig)
-    eq_(apply_plan(orig, plan), encoding_fix)
+    assert apply_plan(orig, plan) == encoding_fix
 
     # Make sure we can decode the text as intended
-    eq_(fix_text(orig), fixed)
-    eq_(encoding_fix, val.get('fixed-encoding', fixed))
+    assert fix_text(orig) == fixed
+    assert encoding_fix == test_case.get('fixed-encoding', fixed)
 
     # Make sure we can decode as intended even with an extra layer of badness
     extra_bad = orig.encode('utf-8').decode('latin-1')
-    eq_(fix_text(extra_bad), fixed)
+    assert fix_text(extra_bad) == fixed
 
 
-def test_cases():
-    # Run all the test cases in `test_cases.json`
-    for test_case in TEST_DATA:
-        if test_case['enabled']:
-            desc = "test_examples_in_json.check_example({!r})".format(
-                test_case['label']
-            )
-            check_example.description = desc
-            yield check_example, test_case
+@pytest.mark.parametrize("test_case", TESTS_THAT_FAIL)
+@pytest.mark.xfail(strict=True)
+def test_failing_json_example(test_case):
+    # Run an example from the data file that we believe will fail, due to
+    # ftfy's heuristic being insufficient
+    orig = test_case['original']
+    fixed = test_case['fixed']
+
+    encoding_fix, plan = fix_encoding_and_explain(orig)
+    assert encoding_fix == test_case.get('fixed-encoding', fixed)
+

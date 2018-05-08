@@ -1,6 +1,6 @@
 import subprocess
 import os
-from nose.tools import eq_, assert_raises
+import pytest
 
 
 # Get the filename of 'halibote.txt', which contains some mojibake about
@@ -27,38 +27,37 @@ def get_command_output(args, stdin=None):
 
 def test_basic():
     output = get_command_output(['ftfy', TEST_FILENAME])
-    eq_(output, CORRECT_OUTPUT)
+    assert output == CORRECT_OUTPUT
 
 
 def test_guess_bytes():
     output = get_command_output(['ftfy', '-g', TEST_FILENAME])
-    eq_(output, CORRECT_OUTPUT)
+    assert output == CORRECT_OUTPUT
 
 
 def test_alternate_encoding():
     # The file isn't really in Windows-1252. But that's a problem ftfy
     # can fix, if it's allowed to be sloppy when reading the file.
     output = get_command_output(['ftfy', '-e', 'sloppy-windows-1252', TEST_FILENAME])
-    eq_(output, CORRECT_OUTPUT)
+    assert output == CORRECT_OUTPUT
 
 
 def test_wrong_encoding():
     # It's more of a problem when the file doesn't actually decode.
-    with assert_raises(subprocess.CalledProcessError) as context:
+    with pytest.raises(subprocess.CalledProcessError) as exception:
         get_command_output(['ftfy', '-e', 'windows-1252', TEST_FILENAME])
-    e = context.exception
-    eq_(e.output.decode('utf-8'), FAILED_OUTPUT)
+    assert exception.value.output.decode('utf-8') == FAILED_OUTPUT
 
 
 def test_same_file():
-    with assert_raises(subprocess.CalledProcessError) as context:
+    with pytest.raises(subprocess.CalledProcessError) as exception:
         get_command_output(['ftfy', TEST_FILENAME, '-o', TEST_FILENAME])
-    e = context.exception
-    assert e.output.decode('utf-8').startswith("ftfy error:\nCan't read and write the same file.")
+    error = exception.value.output.decode('utf-8')
+    assert error.startswith("ftfy error:\nCan't read and write the same file.")
 
 
 def test_stdin():
     with open(TEST_FILENAME, 'rb') as infile:
         output = get_command_output(['ftfy'], stdin=infile)
-        eq_(output, CORRECT_OUTPUT)
+        assert output == CORRECT_OUTPUT
 
