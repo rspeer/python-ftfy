@@ -34,6 +34,8 @@ setup(
     packages=['ftfy', 'ftfy.bad_codecs'],
     package_data={'ftfy': ['char_classes.dat']},
     install_requires=['wcwidth'],
+    setup_requires=['pytest-runner'],
+    tests_require=['pytest'],
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.3",
