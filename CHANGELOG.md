@@ -1,6 +1,14 @@
-## Version 5.3.1 (April 24, 2018)
+## Version 5.4 (June 1, 2018)
 
-Packaging updates; provides better metadata for the new PyPI.
+- ftfy was still too conservative about fixing short mojibake sequences,
+  such as "aoÃ»t" -> "août", when the broken version contained punctuation
+  such as curly or angle quotation marks.
+
+  The new heuristic observes in some cases that, even if quotation marks are
+  expected to appear next to letters, it is strange to have an accented capital
+  A before the quotation mark and more letters after the quotation mark.
+
+- Provides better metadata for the new PyPI.
 
 
 ## Version 5.3 (January 25, 2018)
