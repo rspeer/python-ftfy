@@ -125,7 +125,10 @@ MOJIBAKE_SYMBOL_RE = re.compile(
     # Mojibake of low-numbered characters from ISO-8859-1 and, in some cases,
     # ISO-8859-2. This also covers some cases from related encodings such as
     # Windows-1252 and Windows-1250.
-    '[ÂÃĂ][\x80-\x9f€ƒ†‡ˆ‰Œ˜™œŸ¡¢£¤¥¦§¨ª¬¯°±²³µ¶·¸¹º¼½¾¿ˇ˘˝]|'
+    '[ÂÃĂ][\x80-\x9f€ƒ‚„†‡ˆ‰‹Œ“•˜œŸ¡¢£¤¥¦§¨ª«¬¯°±²³µ¶·¸¹º¼½¾¿ˇ˘˝]|'
+    # Characters we have to be a little more cautious about if they're at
+    # the end of a word, but totally okay to fix in the middle
+    '[ÂÃĂ][›»‘”©™]\w|'
     # ISO-8859-1, ISO-8859-2, or Windows-1252 mojibake of characters U+10000
     # to U+1FFFF. (The Windows-1250 and Windows-1251 versions might be too
     # plausible.)

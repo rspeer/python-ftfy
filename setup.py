@@ -16,6 +16,8 @@ Python 2. Try this:
     pip install ftfy==4.4.3
 """
 
+DESCRIPTION = open('README.md').read()
+
 
 if sys.version_info[0] < 3:
     print(PY2_MESSAGE)
@@ -24,18 +26,21 @@ if sys.version_info[0] < 3:
 
 setup(
     name="ftfy",
-    version='5.3.0',
+    version='5.4.0',
     maintainer='Luminoso Technologies, Inc.',
     maintainer_email='info@luminoso.com',
     license="MIT",
     url='http://github.com/LuminosoInsight/python-ftfy',
     platforms=["any"],
     description="Fixes some problems with Unicode text after the fact",
+    long_description=DESCRIPTION,
+    long_description_content_type='text/markdown',
     packages=['ftfy', 'ftfy.bad_codecs'],
     package_data={'ftfy': ['char_classes.dat']},
     install_requires=['wcwidth'],
     setup_requires=['pytest-runner'],
     tests_require=['pytest'],
+    python_requires='>=3.3',
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.3",
@@ -52,5 +57,8 @@ setup(
         'console_scripts': [
             'ftfy = ftfy.cli:main'
         ]
+    },
+    project_urls={
+        'Documentation': 'http://ftfy.readthedocs.io',
     }
 )
