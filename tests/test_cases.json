@@ -347,6 +347,20 @@
         "expect": "pass"
     },
     {
+        "label": "Dutch example with ë",
+        "comment": "from issue reported by MicroJackson",
+        "original": "ongeÃ«venaard",
+        "fixed-encoding": "ongeëvenaard",
+        "fixed": "ongeëvenaard",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: Indonesian leetspeak",
+        "original": "MÄ£ÄM ÌÑÌ Q £ÄGÌ GÄLÄW ÑÍCH SÖÄ£ ÑÝÄ $ÚÄMÌ Q £ÄGÌ GÄK ÉÑÄK BÄDÄÑ....?????????,                     ......JÄDÍ...",
+        "fixed": "MÄ£ÄM ÌÑÌ Q £ÄGÌ GÄLÄW ÑÍCH SÖÄ£ ÑÝÄ $ÚÄMÌ Q £ÄGÌ GÄK ÉÑÄK BÄDÄÑ....?????????,                     ......JÄDÍ...",
+        "expect": "pass"
+    },
+    {
         "label": "Negative: Leet line-art",
         "comment": "Current false positive: it coincidentally all decodes as UTF-8/CP437 mojibake and becomes 'ôaſaſaſaſa'",
         "original": "├┤a┼┐a┼┐a┼┐a┼┐a",
@@ -434,9 +448,46 @@
         "expect": "pass"
     },
     {
+        "label": "Synthetic: French word for August in windows-1252",
+        "original": "aoÃ»t",
+        "fixed-encoding": "août",
+        "fixed": "août",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: French word for hotel in all-caps windows-1252",
+        "original": "HÃ”TEL",
+        "fixed-encoding": "HÔTEL",
+        "fixed": "HÔTEL",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: Scottish Gaelic word for 'subject' in all-caps windows-1252",
+        "original": "CÃ™IS",
+        "fixed-encoding": "CÙIS",
+        "fixed": "CÙIS",
+        "expect": "pass"
+    },
+    {
         "label": "Synthetic, negative: Romanian word before a non-breaking space",
+        "comment": "The word literally means 'not even once', which might be a good recommendation about fixing Romanian mojibake",
         "original": "NICIODATĂ\u00a0",
         "fixed": "NICIODATĂ\u00a0",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: Be careful around curly apostrophes",
+        "comment": "It shouldn't end up saying 'a lot of Òs'",
+        "original": "There are a lot of Ã’s in mojibake text",
+        "fixed-encoding": "There are a lot of Ã’s in mojibake text",
+        "fixed": "There are a lot of Ã's in mojibake text",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: Romanian word before a trademark sign",
+        "comment": "We would change 'DATÃ™' to 'DATÙ', but getting windows-1250 involved makes it better to leave alone",
+        "original": "NICIODATĂ™",
+        "fixed": "NICIODATĂ™",
         "expect": "pass"
     },
     {
@@ -452,5 +503,12 @@
         "original": "ПоздравЂаво",
         "fixed": "ПоздравЂаво",
         "expect": "pass"
+    },
+    {
+        "label": "Synthetic, false negative: mojibake with trademark sign at the end of a word",
+        "comment": "I recall the correct version of this text from a sign in the movie Amélie. Unfortunately, we can't help her twin AmÃ©lie, who makes mojibaked signs.",
+        "original": "OÃ™ ET QUAND?",
+        "fixed": "OÙ ET QUAND?",
+        "expect": "fail"
     }
 ]
