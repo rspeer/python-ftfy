@@ -1,0 +1,28 @@
+language: python
+sudo: false
+
+cache:
+  apt: true
+  directories:
+  - $HOME/.cache/pip
+  - $HOME/download
+python:
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+before_install:
+  - pip install pip -U
+  - pip install pytest -U
+install:
+  - travis_retry pip install -e .
+script: 
+  - travis_wait pytest
+    
+after_success: 
+  - codecov 
+cache: 
+    apt: true
+    directories:
+        - $HOME/.pip-cache
+
