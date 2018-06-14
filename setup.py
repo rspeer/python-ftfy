@@ -16,7 +16,7 @@ Python 2. Try this:
     pip install ftfy==4.4.3
 """
 
-DESCRIPTION = open('README.md').read()
+DESCRIPTION = open('README.md', encoding='utf-8').read()
 
 
 if sys.version_info[0] < 3:
@@ -26,7 +26,7 @@ if sys.version_info[0] < 3:
 
 setup(
     name="ftfy",
-    version='5.4.0',
+    version='5.4.1',
     maintainer='Luminoso Technologies, Inc.',
     maintainer_email='info@luminoso.com',
     license="MIT",
