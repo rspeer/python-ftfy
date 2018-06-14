@@ -11,7 +11,7 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-  - "3.7"
+  - "3.7-dev"
 before_install:
   - pip install pip -U
   - pip install pytest -U
