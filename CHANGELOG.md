@@ -1,3 +1,12 @@
+## Version 5.4.1 (June 14, 2018)
+
+- Fixed a bug in the `setup.py` metadata.
+
+  This bug was causing ftfy, a package that fixes encoding mismatches, to not
+  install in some environments due to an encoding mismatch. (We were really
+  putting the "meta" in "metadata" here.)
+
+
 ## Version 5.4 (June 1, 2018)
 
 - ftfy was still too conservative about fixing short mojibake sequences,
