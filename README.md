@@ -1,5 +1,6 @@
 # ftfy: fixes text for you
 
+[![Travis](https://img.shields.io/travis/LuminosoInsight/python-ftfy/master.svg?label=Travis%20CI)](https://travis-ci.org/LuminosoInsight/python-ftfy)
 [![PyPI package](https://badge.fury.io/py/ftfy.svg)](http://badge.fury.io/py/ftfy)
 [![Docs](https://readthedocs.org/projects/ftfy/badge/?version=latest)](http://ftfy.readthedocs.org/en/latest/)
 
