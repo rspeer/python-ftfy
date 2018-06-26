@@ -270,6 +270,12 @@
         "expect": "pass"
     },
     {
+        "label": "Negative, synthetic: face with glasses and a raised eyebrow",
+        "original": "( o¬ô )",
+        "fixed": "( o¬ô )",
+        "expect": "pass"
+    },
+    {
         "label": "Negative: triangle and degree sign",
         "comment": "I'm not really sure what it *is* supposed to be, but it's not 'ơ'",
         "original": "∆°",
