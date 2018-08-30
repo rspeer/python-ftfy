@@ -270,6 +270,12 @@
         "expect": "pass"
     },
     {
+        "label": "Negative, synthetic: face with glasses and a raised eyebrow",
+        "original": "( o¬ô )",
+        "fixed": "( o¬ô )",
+        "expect": "pass"
+    },
+    {
         "label": "Negative: triangle and degree sign",
         "comment": "I'm not really sure what it *is* supposed to be, but it's not 'ơ'",
         "original": "∆°",
@@ -361,13 +367,45 @@
         "expect": "pass"
     },
     {
+        "label": "Three layers of UTF-8 / MacRoman mixup in French",
+        "comment": "You're welcome",
+        "original": "Merci de t‚Äö√†√∂¬¨¬©l‚Äö√†√∂¬¨¬©charger le plug-in Flash Player 8",
+        "fixed": "Merci de télécharger le plug-in Flash Player 8",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / MacRoman mixup in French",
+        "original": "Merci de bien vouloir activiter le Javascript dans votre navigateur web afin d'en profiter‚Ä¶",
+        "fixed": "Merci de bien vouloir activiter le Javascript dans votre navigateur web afin d'en profiter…",
+        "expect": "pass"
+    },
+    {
+        "label": "Italian UTF-8 / MacRoman example with ò",
+        "original": "Le Vigne di Zam√≤",
+        "fixed": "Le Vigne di Zamò",
+        "expect": "pass"
+    },
+    {
+        "label": "Italian UTF-8 / MacRoman mojibake that looks like math",
+        "comment": "False negative: Dangerous to fix because of the following example",
+        "original": "Sarai ricontattato dal nostro Esperto al pi√π presto.",
+        "fixed": "Sarai ricontattato dal nostro Esperto al più presto.",
+        "expect": "fail"
+    },
+    {
+        "label": "Negative: math in Unicode",
+        "comment": "This isn't mojibake, it's an actual equation",
+        "original": "(-1/2)! = √π",
+        "fixed": "(-1/2)! = √π",
+        "expect": "pass"
+    },
+    {
         "label": "Negative: Leet line-art",
         "comment": "Current false positive: it coincidentally all decodes as UTF-8/CP437 mojibake and becomes 'ôaſaſaſaſa'",
         "original": "├┤a┼┐a┼┐a┼┐a┼┐a",
         "fixed": "├┤a┼┐a┼┐a┼┐a┼┐a",
         "expect": "fail"
     },
-
     {
         "label": "Synthetic, negative: Brontë's name does not end with a Korean syllable",
         "comment": "The original example of why ftfy needs heuristics",
