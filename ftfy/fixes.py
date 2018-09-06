@@ -9,7 +9,8 @@ import warnings
 from ftfy.chardata import (possible_encoding, CHARMAP_ENCODINGS,
                            CONTROL_CHARS, LIGATURES, WIDTH_MAP,
                            PARTIAL_UTF8_PUNCT_RE, ALTERED_UTF8_RE,
-                           LOSSY_UTF8_RE, SINGLE_QUOTE_RE, DOUBLE_QUOTE_RE)
+                           LOSSY_UTF8_RE, SINGLE_QUOTE_RE, DOUBLE_QUOTE_RE,
+                           C1_CONTROL_RE)
 from ftfy.badness import text_cost
 from html import entities
 
@@ -633,7 +634,7 @@ def replace_lossy_sequences(byts):
     not be used, and this function will not be run, so your weird control
     character will be left alone but wacky fixes like this won't be possible.
 
-    This is used as a step within `fix_encoding`.
+    This is used as a transcoder within `fix_encoding`.
     """
     return LOSSY_UTF8_RE.sub('\ufffd'.encode('utf-8'), byts)
 
@@ -644,16 +645,23 @@ def fix_partial_utf8_punct_in_1252(text):
     UTF-8 and decoded in Latin-1 or Windows-1252, even when this fix can't be
     consistently applied.
 
-    For this function, we assume the text has been decoded in Windows-1252.
-    If it was decoded in Latin-1, we'll call this right after it goes through
-    the Latin-1-to-Windows-1252 fixer.
+    One form of inconsistency we need to deal with is that some character might
+    be from the Latin-1 C1 control character set, while others are from the
+    set of characters that take their place in Windows-1252. So we first replace
+    those characters, then apply a fix that only works on Windows-1252 characters.
 
-    This is used as a step within `fix_encoding`.
+    This is used as a transcoder within `fix_encoding`.
     """
-    def replacement(match):
+    def latin1_to_w1252(match):
+        "The function to apply when this regex matches."
+        return match.group(0).encode('latin-1').decode('sloppy-windows-1252')
+
+    def w1252_to_utf8(match):
         "The function to apply when this regex matches."
         return match.group(0).encode('sloppy-windows-1252').decode('utf-8')
-    return PARTIAL_UTF8_PUNCT_RE.sub(replacement, text)
+    
+    text = C1_CONTROL_RE.sub(latin1_to_w1252, text)
+    return PARTIAL_UTF8_PUNCT_RE.sub(w1252_to_utf8, text)
 
 
 TRANSCODERS = {
