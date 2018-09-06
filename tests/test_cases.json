@@ -153,10 +153,16 @@
     },
     {
         "label": "Inconsistent UTF-8 / Latin-1 mojibake",
-        "comment": "Oh like it was never political before",
+        "original": "Ecuadorâ\u0080\u0099s â\u0080\u0098purely political decision on Assangeâ\u0080\u0099 is likely result of â\u0080\u0098US pressureâ\u0080\u0099\u0085",
+        "fixed-encoding": "Ecuador’s ‘purely political decision on Assange’ is likely result of ‘US pressure’…",
+        "fixed": "Ecuador's 'purely political decision on Assange' is likely result of 'US pressure'…",
+        "expect": "pass"
+    },
+    {
+        "label": "Inconsistent UTF-8 / Latin-1 mojibake with an ellipsis from the Windows-1252 character set",
         "original": "Ecuadorâ\u0080\u0099s â\u0080\u0098purely political decision on Assangeâ\u0080\u0099 is likely result of â\u0080\u0098US pressureâ\u0080\u0099…",
-        "fixed-encoding": "Ecuador’s ‘purely political decision on Assange’ is likely result of ‘US pressure’",
-        "fixed": "Ecuador's 'purely political decision on Assange' is likely result of 'US pressure'",
+        "fixed-encoding": "Ecuador’s ‘purely political decision on Assange’ is likely result of ‘US pressure’…",
+        "fixed": "Ecuador's 'purely political decision on Assange' is likely result of 'US pressure'…",
         "expect": "pass"
     },
     {
