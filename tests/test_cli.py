@@ -53,7 +53,8 @@ def test_same_file():
     with pytest.raises(subprocess.CalledProcessError) as exception:
         get_command_output(['ftfy', TEST_FILENAME, '-o', TEST_FILENAME])
     error = exception.value.output.decode('utf-8')
-    assert error.startswith("ftfy error:\nCan't read and write the same file.")
+    assert error.startswith("ftfy error:")
+    assert "Can't read and write the same file" in error
 
 
 def test_stdin():
