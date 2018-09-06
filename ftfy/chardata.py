@@ -60,11 +60,10 @@ def _build_utf8_punct_regex():
     These are recognizable by the distinctive 'â€' ('\xe2\x80') sequence they
     all begin with when decoded as Windows-1252.
     """
-    # We're making a regex that has all the literal bytes from 0x80 to 0xbf in
-    # a range. "Couldn't this have just said [\x80-\xbf]?", you might ask.
-    # However, when we decode the regex as Windows-1252, the resulting
-    # characters won't even be remotely contiguous.
-    obvious_utf8 = ('â€['
+    # We need to recognize the Latin-1 decodings of bytes 0x80 to 0xbf, which
+    # are a contiguous range, as well as the Windows-1252 decodings, which are
+    # not contiguous at all.
+    obvious_utf8 = ('â[€\x80][\x80-\xbf'
                     + bytes(range(0x80, 0xc0)).decode('sloppy-windows-1252')
                     + ']')
     return re.compile(obvious_utf8)
@@ -119,6 +118,10 @@ LOSSY_UTF8_RE = re.compile(
 # These regexes match various Unicode variations on single and double quotes.
 SINGLE_QUOTE_RE = re.compile('[\u02bc\u2018-\u201b]')
 DOUBLE_QUOTE_RE = re.compile('[\u201c-\u201f]')
+
+# This regex matches C1 control characters, which occupy some of the positions
+# in the Latin-1 character map that Windows assigns to other characters instead.
+C1_CONTROL_RE = re.compile(r'[\x80-\x9f]')
 
 
 def possible_encoding(text, encoding):
