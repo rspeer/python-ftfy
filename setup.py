@@ -26,7 +26,7 @@ if sys.version_info[0] < 3:
 
 setup(
     name="ftfy",
-    version='5.4.1',
+    version='5.5.0',
     maintainer='Luminoso Technologies, Inc.',
     maintainer_email='info@luminoso.com',
     license="MIT",
@@ -38,7 +38,6 @@ setup(
     packages=['ftfy', 'ftfy.bad_codecs'],
     package_data={'ftfy': ['char_classes.dat']},
     install_requires=['wcwidth'],
-    setup_requires=['pytest-runner'],
     tests_require=['pytest'],
     python_requires='>=3.3',
     classifiers=[
