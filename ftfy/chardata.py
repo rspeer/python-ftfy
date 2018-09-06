@@ -61,10 +61,11 @@ def _build_utf8_punct_regex():
     all begin with when decoded as Windows-1252.
     """
     # We need to recognize the Latin-1 decodings of bytes 0x80 to 0xbf, which
-    # are a contiguous range, as well as the Windows-1252 decodings, which are
-    # not contiguous at all.
+    # are a contiguous range, as well as the different Windows-1252 decodings
+    # of 0x80 to 0x9f, which are not contiguous at all. (Latin-1 and
+    # Windows-1252 agree on bytes 0xa0 and up.)
     obvious_utf8 = ('â[€\x80][\x80-\xbf'
-                    + bytes(range(0x80, 0xc0)).decode('sloppy-windows-1252')
+                    + bytes(range(0x80, 0xa0)).decode('sloppy-windows-1252')
                     + ']')
     return re.compile(obvious_utf8)
 PARTIAL_UTF8_PUNCT_RE = _build_utf8_punct_regex()
