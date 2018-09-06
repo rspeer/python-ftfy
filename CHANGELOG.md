@@ -1,3 +1,21 @@
+## Version 5.5 (September 6, 2018)
+
+- Recent versions have emphasized making a reasonable attempt to fix short,
+  common mojibake sequences, such as `Ã»`. In this version, we've expanded the
+  heuristics to recognize these sequences in MacRoman as well as Windows-125x
+  encodings.
+
+- A related rule for fixing isolated Windows-1252/UTF-8 mixups, even when they
+  were inconsistent with the rest of the string, claimed to work on Latin-1/UTF-8
+  mixups as well, but in practice it didn't. We've made the rule more robust.
+
+- Fixed a failure when testing the CLI on Windows.
+
+- Removed the `pytest-runner` invocation from setup.py, as it created complex
+  dependencies that would stop setup.py from working in some environments.
+  The `pytest` command still works fine. `pytest-runner` is just too clever.
+
+
 ## Version 5.4.1 (June 14, 2018)
 
 - Fixed a bug in the `setup.py` metadata.
@@ -18,6 +36,8 @@
   A before the quotation mark and more letters after the quotation mark.
 
 - Provides better metadata for the new PyPI.
+
+- Switched from nosetests to pytest.
 
 
 ## Version 5.3 (January 25, 2018)
