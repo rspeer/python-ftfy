@@ -32,3 +32,11 @@ def test_unicode_9():
     # in the string.
     assert sequence_weirdness("B\U00090000G") == 2
 
+
+def test_unicode_10():
+    # This string is the word "thalīṃ" in the Zanabazar Square Script,
+    # a script added in Unicode 10. These characters are recognized as being
+    # assigned by Python 3.7, and therefore ftfy should recognize them on
+    # all versions for consistency.
+    thalim = "\U00011A1A\U00011A2C\U00011A01\U00011A38"
+    assert sequence_weirdness(thalim) == 0

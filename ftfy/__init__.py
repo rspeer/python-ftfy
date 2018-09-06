@@ -10,7 +10,7 @@ import ftfy.bad_codecs
 from ftfy import fixes
 from ftfy.formatting import display_ljust
 
-__version__ = '5.4.1'
+__version__ = '5.5.0'
 
 
 # See the docstring for ftfy.bad_codecs to see what we're doing here.
