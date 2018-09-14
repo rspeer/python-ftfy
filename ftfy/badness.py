@@ -141,7 +141,7 @@ MOJIBAKE_SYMBOL_RE = re.compile(
     # Also left out eye-like letters, including accented o's, for when ¬ is
     # the nose of a kaomoji.
     '[¬√][ÄÅÇÉÑÖÜáàâäãåçéèêëíìîïñúùûü†¢£§¶ß®©™≠ÆØ¥ªæø≤≥]|'
-    '\w√[±∂]\w|'
+    r'\w√[±∂]\w|'
     # ISO-8859-1, ISO-8859-2, or Windows-1252 mojibake of characters U+10000
     # to U+1FFFF. (The Windows-1250 and Windows-1251 versions might be too
     # plausible.)
