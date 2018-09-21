@@ -301,8 +301,8 @@ Variants of UTF-8
 
 *ftfy.chardata* and *ftfy.build_data*: trivia about characters
 --------------------------------------------------------------
-These files load information about the character properties in Unicode 9.0.
-Yes, even if your version of Python doesn't support Unicode 9.0. This ensures
+These files load information about the character properties in Unicode 11.0.
+Yes, even if your version of Python doesn't support Unicode 11.0. This ensures
 that ftfy's behavior is consistent across versions.
 
 .. automodule:: ftfy.chardata
