@@ -40,3 +40,22 @@ def test_unicode_10():
     # all versions for consistency.
     thalim = "\U00011A1A\U00011A2C\U00011A01\U00011A38"
     assert sequence_weirdness(thalim) == 0
+
+
+def test_unicode_11():
+    # Unicode 11 has implemented the mtavruli form of the Georgian script.
+    # They are analogous to capital letters in that they can be used to
+    # emphasize text or write a headline.
+    #
+    # Python will convert to that form when running .upper() on Georgian text,
+    # starting in version 3.7.0. We want to recognize the result as reasonable
+    # text on all versions.
+    #
+    # This text is the mtavruli form of "ქართული ენა", meaning "Georgian
+    # language".
+
+    georgian_mtavruli_text = 'ᲥᲐᲠᲗᲣᲚᲘ ᲔᲜᲐ'
+    assert sequence_weirdness(georgian_mtavruli_text) == 0
+
+    mojibake = georgian_mtavruli_text.encode('utf-8').decode('sloppy-windows-1252')
+    assert fix_encoding(mojibake) == georgian_mtavruli_text
