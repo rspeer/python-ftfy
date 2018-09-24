@@ -27,7 +27,7 @@ DESCRIPTION = open('README.md', encoding='utf-8').read()
 
 setup(
     name="ftfy",
-    version='5.5.0',
+    version='5.5.1',
     maintainer='Luminoso Technologies, Inc.',
     maintainer_email='info@luminoso.com',
     license="MIT",
