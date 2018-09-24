@@ -128,7 +128,7 @@ MOJIBAKE_SYMBOL_RE = re.compile(
     '[ÂÃĂ][\x80-\x9f€ƒ‚„†‡ˆ‰‹Œ“•˜œŸ¡¢£¤¥¦§¨ª«¬¯°±²³µ¶·¸¹º¼½¾¿ˇ˘˝]|'
     # Characters we have to be a little more cautious about if they're at
     # the end of a word, but totally okay to fix in the middle
-    '[ÂÃĂ][›»‘”©™]\w|'
+    r'[ÂÃĂ][›»‘”©™]\w|'
     # Similar mojibake of low-numbered characters in MacRoman. Leaving out
     # most mathy characters because of false positives, but cautiously catching
     # "√±" (mojibake for "ñ") and "√∂" (mojibake for "ö") in the middle of a
@@ -141,7 +141,7 @@ MOJIBAKE_SYMBOL_RE = re.compile(
     # Also left out eye-like letters, including accented o's, for when ¬ is
     # the nose of a kaomoji.
     '[¬√][ÄÅÇÉÑÖÜáàâäãåçéèêëíìîïñúùûü†¢£§¶ß®©™≠ÆØ¥ªæø≤≥]|'
-    '\w√[±∂]\w|'
+    r'\w√[±∂]\w|'
     # ISO-8859-1, ISO-8859-2, or Windows-1252 mojibake of characters U+10000
     # to U+1FFFF. (The Windows-1250 and Windows-1251 versions might be too
     # plausible.)
