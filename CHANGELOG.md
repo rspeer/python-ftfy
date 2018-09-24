@@ -1,3 +1,12 @@
+## Version 5.5.1 (September 14, 2018)
+
+- Added Python 3.7 support.
+
+- Updated the data file of Unicode character categories to Unicode 11, as used
+  in Python 3.7.0. (No matter what version of Python you're on, ftfy uses the
+  same data.)
+
+
 ## Version 5.5 (September 6, 2018)
 
 - Recent versions have emphasized making a reasonable attempt to fix short,
