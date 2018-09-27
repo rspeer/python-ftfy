@@ -185,6 +185,7 @@ def fix_text(text,
 
     return ''.join(out)
 
+
 # Some alternate names for the main functions
 ftfy = fix_text
 fix_encoding = fixes.fix_encoding
