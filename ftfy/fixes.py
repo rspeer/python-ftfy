@@ -659,7 +659,7 @@ def fix_partial_utf8_punct_in_1252(text):
     def w1252_to_utf8(match):
         "The function to apply when this regex matches."
         return match.group(0).encode('sloppy-windows-1252').decode('utf-8')
-    
+
     text = C1_CONTROL_RE.sub(latin1_to_w1252, text)
     return PARTIAL_UTF8_PUNCT_RE.sub(w1252_to_utf8, text)
 
