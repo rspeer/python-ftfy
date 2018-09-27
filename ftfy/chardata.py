@@ -47,6 +47,8 @@ def _build_regexes():
         regex = '^[\x00-\x19\x1b-\x7f{0}]*$'.format(charlist)
         encoding_regexes[encoding] = re.compile(regex)
     return encoding_regexes
+
+
 ENCODING_REGEXES = _build_regexes()
 
 
@@ -68,6 +70,8 @@ def _build_utf8_punct_regex():
                     + bytes(range(0x80, 0xa0)).decode('sloppy-windows-1252')
                     + ']')
     return re.compile(obvious_utf8)
+
+
 PARTIAL_UTF8_PUNCT_RE = _build_utf8_punct_regex()
 
 
@@ -173,6 +177,8 @@ def _build_control_char_mapping():
         control_chars[i] = None
 
     return control_chars
+
+
 CONTROL_CHARS = _build_control_char_mapping()
 
 
@@ -228,4 +234,6 @@ def _build_width_map():
         if alternate != char:
             width_map[i] = alternate
     return width_map
+
+
 WIDTH_MAP = _build_width_map()
