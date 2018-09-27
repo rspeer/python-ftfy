@@ -136,7 +136,7 @@ You can also clone this Git repository and install it with
 
 ## Who maintains ftfy?
 
-I'm Rob Speer (rob@luminoso.com).  I develop this tool as part of my
+I'm Robyn Speer (rspeer@luminoso.com). I develop this tool as part of my
 text-understanding company, [Luminoso](http://luminoso.com), where it has
 proven essential.
 
