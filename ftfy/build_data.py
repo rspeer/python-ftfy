@@ -125,5 +125,6 @@ def make_char_data_file(do_it_anyway=False):
     out.write(zlib.compress(''.join(cclasses).encode('ascii')))
     out.close()
 
+
 if __name__ == '__main__':
     make_char_data_file()
