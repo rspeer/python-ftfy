@@ -91,6 +91,7 @@ def _make_weirdness_regex():
     regex = '|'.join(groups)
     return re.compile(regex)
 
+
 WEIRDNESS_RE = _make_weirdness_regex()
 
 # These characters appear in mojibake but also appear commonly on their own.
@@ -151,6 +152,7 @@ MOJIBAKE_SYMBOL_RE = re.compile(
     # Windows-1251 mojibake of some Windows punctuation characters
     'вЂ[љћ¦°№™ќ“”]'
 )
+
 
 def sequence_weirdness(text):
     """

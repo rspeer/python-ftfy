@@ -38,6 +38,7 @@ SAME_FILE_ERROR_TEXT = """ftfy error:
 Can't read and write the same file. Please output to a new file instead.
 """
 
+
 def main():
     """
     Run ftfy as a command-line utility.
