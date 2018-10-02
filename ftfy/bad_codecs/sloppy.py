@@ -149,6 +149,7 @@ def make_sloppy_codec(encoding):
         streamwriter=StreamWriter,
     )
 
+
 # Define a codec for each incomplete encoding. The resulting CODECS dictionary
 # can be used by the main module of ftfy.bad_codecs.
 CODECS = {}
