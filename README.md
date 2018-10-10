@@ -1,36 +1,36 @@
 # ftfy: fixes text for you
 
 [![Travis](https://img.shields.io/travis/LuminosoInsight/python-ftfy/master.svg?label=Travis%20CI)](https://travis-ci.org/LuminosoInsight/python-ftfy)
-[![PyPI package](https://badge.fury.io/py/ftfy.svg)](http://badge.fury.io/py/ftfy)
-[![Docs](https://readthedocs.org/projects/ftfy/badge/?version=latest)](http://ftfy.readthedocs.org/en/latest/)
+[![PyPI package](https://badge.fury.io/py/ftfy.svg)](https://badge.fury.io/py/ftfy)
+[![Docs](https://readthedocs.org/projects/ftfy/badge/?version=latest)](https://ftfy.readthedocs.org/en/latest/)
 
 ```python
 >>> print(fix_encoding("(à¸‡'âŒ£')à¸‡"))
 (ง'⌣')ง
 ```
 
-Full documentation: **http://ftfy.readthedocs.org**
+Full documentation: **https://ftfy.readthedocs.org**
 
 ## Testimonials
 
 - “My life is livable again!”
-  — [@planarrowspace](http://twitter.com/planarrowspace)
+  — [@planarrowspace](https://twitter.com/planarrowspace)
 - “A handy piece of magic”
-  — [@simonw](http://twitter.com/simonw)
+  — [@simonw](https://twitter.com/simonw)
 - “Saved me a large amount of frustrating dev work”
-  — [@iancal](http://twitter.com/iancal)
+  — [@iancal](https://twitter.com/iancal)
 - “ftfy did the right thing right away, with no faffing about. Excellent work, solving a very tricky real-world (whole-world!) problem.”
   — Brennan Young
 - “Hat mir die Tage geholfen. Im Übrigen bin ich der Meinung, dass wir keine komplexen Maschinen mit Computern bauen sollten solange wir nicht einmal Umlaute sicher verarbeiten können. :D”
-  — [Bruno Ranieri](http://yrrsinn.de/2012/09/17/gelesen-kw37/)
+  — [Bruno Ranieri](https://yrrsinn.de/2012/09/17/gelesen-kw37/)
 - “I have no idea when I’m gonna need this, but I’m definitely bookmarking it.”
-  — [/u/ocrow](http://reddit.com/u/ocrow)
+  — [/u/ocrow](https://reddit.com/u/ocrow)
 - “9.2/10”
   — [pylint](https://bitbucket.org/logilab/pylint/)
 
 ## Developed at Luminoso
 
-[Luminoso](http://www.luminoso.com) makes groundbreaking software for text
+[Luminoso](https://www.luminoso.com) makes groundbreaking software for text
 analytics that really understands what words mean, in many languages. Our
 software is used by enterprise customers such as Sony, Intel, Mars, and Scotts,
 and it's built on Python and open-source technologies.
@@ -39,7 +39,7 @@ We use ftfy every day at Luminoso, because the first step in understanding text
 is making sure it has the correct characters in it!
 
 Luminoso is growing fast and hiring. If you're interested in joining us, take a
-look at [our careers page](http://www.luminoso.com/career.html).
+look at [our careers page](https://luminoso.com/about/work-here).
 
 ## What it does
 
@@ -83,7 +83,7 @@ https://ftfy.now.sh/
 taste of the things it can do. `fix_encoding` is the more specific function
 that only fixes mojibake.
 
-Please read [the documentation](http://ftfy.readthedocs.org) for more
+Please read [the documentation](https://ftfy.readthedocs.org) for more
 information on what ftfy does, and how to configure it for your needs.
 
 
@@ -137,7 +137,7 @@ You can also clone this Git repository and install it with
 ## Who maintains ftfy?
 
 I'm Robyn Speer (rspeer@luminoso.com). I develop this tool as part of my
-text-understanding company, [Luminoso](http://luminoso.com), where it has
+text-understanding company, [Luminoso](https://luminoso.com), where it has
 proven essential.
 
 Luminoso provides ftfy as free, open source software under the extremely
