@@ -16,6 +16,8 @@ from ftfy.chardata import (
     CHARMAP_ENCODINGS,
     CONTROL_CHARS,
     DOUBLE_QUOTE_RE,
+    HTML_UPPERCASE_ENTITIES,
+    HTML_UPPERCASE_ENTITY_RE,
     LIGATURES,
     LOSSY_UTF8_RE,
     PARTIAL_UTF8_PUNCT_RE,
@@ -61,54 +63,54 @@ def fix_encoding(text):
     `fix_encoding` decodes text that looks like it was decoded incorrectly. It
     leaves alone text that doesn't.
 
-        >>> print(fix_encoding('Ãºnico'))
-        único
+        >>> fix_encoding('Ãºnico')
+        'único'
 
-        >>> print(fix_encoding('This text is fine already :þ'))
-        This text is fine already :þ
+        >>> fix_encoding('This text is fine already :þ')
+        'This text is fine already :þ'
 
     Because these characters often come from Microsoft products, we allow
     for the possibility that we get not just Unicode characters 128-255, but
     also Windows's conflicting idea of what characters 128-160 are.
 
-        >>> print(fix_encoding('This â€” should be an em dash'))
-        This — should be an em dash
+        >>> fix_encoding('This â€” should be an em dash')
+        'This — should be an em dash'
 
     We might have to deal with both Windows characters and raw control
     characters at the same time, especially when dealing with characters like
     0x81 that have no mapping in Windows. This is a string that Python's
     standard `.encode` and `.decode` methods cannot correct.
 
-        >>> print(fix_encoding('This text is sad .â\x81”.'))
-        This text is sad .⁔.
+        >>> fix_encoding('This text is sad .â\x81”.')
+        'This text is sad .⁔.'
 
     However, it has safeguards against fixing sequences of letters and
     punctuation that can occur in valid text. In the following example,
     the last three characters are not replaced with a Korean character,
     even though they could be.
 
-        >>> print(fix_encoding('not such a fan of Charlotte Brontë…”'))
-        not such a fan of Charlotte Brontë…”
+        >>> fix_encoding('not such a fan of Charlotte Brontë…”')
+        'not such a fan of Charlotte Brontë…”'
 
     This function can now recover some complex manglings of text, such as when
     UTF-8 mojibake has been normalized in a way that replaces U+A0 with a
     space:
 
-        >>> print(fix_encoding('The more you know ðŸŒ '))
-        The more you know 🌠
+        >>> fix_encoding('The more you know ðŸŒ ')
+        'The more you know 🌠'
 
     Cases of genuine ambiguity can sometimes be addressed by finding other
     characters that are not double-encoded, and expecting the encoding to
     be consistent:
 
-        >>> print(fix_encoding('AHÅ™, the new sofa from IKEA®'))
-        AHÅ™, the new sofa from IKEA®
+        >>> fix_encoding('AHÅ™, the new sofa from IKEA®')
+        'AHÅ™, the new sofa from IKEA®'
 
     Finally, we handle the case where the text is in a single-byte encoding
     that was intended as Windows-1252 all along but read as Latin-1:
 
-        >>> print(fix_encoding('This text was never UTF-8 at all\x85'))
-        This text was never UTF-8 at all…
+        >>> fix_encoding('This text was never UTF-8 at all\x85')
+        'This text was never UTF-8 at all…'
 
     The best version of the text is found using
     :func:`ftfy.badness.text_cost`.
@@ -297,51 +299,52 @@ def apply_plan(text, plan):
     return obj
 
 
-HTML_ENTITY_RE = re.compile(r"&#?\w{0,8};")
-
-
 def _unescape_fixup(match):
     """
     Replace one matched HTML entity with the character it represents,
     if possible.
     """
     text = match.group(0)
-    if text[:2] == "&#":
-        # character reference
-        try:
-            if text[:3] == "&#x":
-                codept = int(text[3:-1], 16)
-            else:
-                codept = int(text[2:-1])
-            if 0x80 <= codept < 0xa0:
-                # Decode this range of characters as Windows-1252, as Web
-                # browsers do in practice.
-                return bytes([codept]).decode('sloppy-windows-1252')
-            else:
-                return chr(codept)
-        except ValueError:
-            return text
+    if text in HTML_UPPERCASE_ENTITIES:
+        return HTML_UPPERCASE_ENTITIES[text]
     else:
-        # This is a named entity; if it's a known HTML5 entity, replace
-        # it with the appropriate character.
-        try:
-            return entities.html5[text[1:]]
-        except KeyError:
-            return text
+        return text
 
 
 def unescape_html(text):
     """
-    Decode all three types of HTML entities/character references.
+    Decode HTML entities and character references, including if they've been
+    case-folded.
 
-    Code by Fredrik Lundh of effbot.org. Robyn Speer made a slight change
-    to it for efficiency: it won't match entities longer than 8 characters,
-    because there are no valid entities like that.
+    By now, the process of decoding HTML escapes is _mostly_ taken care of by
+    `html.unescape` in the standard library. But if you can mess up whether
+    text was meant to be decoded as HTML, you can also mess up how that
+    interacts with, say, case-folding.
 
-        >>> print(unescape_html('&lt;tag&gt;'))
-        <tag>
+    If a database contains the name 'P&EACUTE;REZ', we can read that and intuit
+    that it was supposed to say 'PÉREZ'. But HTML entities are case-sensitive,
+    often in ways that change which character it is, so the standard library
+    won't even decode '&EACUTE;'.
+
+    There are cases where case-folded entities would be ambiguous in complicated
+    ways. But we can avoid the complicated cases if we limit ourselves to decoding
+    uppercased entities with codepoints below U+300, and decoding those as the
+    uppercased versions.
+
+        >>> unescape_html('&lt;tag&gt;')
+        '<tag>'
+
+        >>> unescape_html('P&EACUTE;REZ')
+        'PÉREZ'
+
+        >>> unescape_html('BUNDESSTRA&SZLIG;E')
+        'BUNDESSTRASSE'
+
+        >>> unescape_html('&ntilde; &Ntilde; &NTILDE; &nTILDE;')
+        'ñ Ñ Ñ &nTILDE;'
     """
-    return HTML_ENTITY_RE.sub(_unescape_fixup, text)
+    text2 = html.unescape(text)
+    return HTML_UPPERCASE_ENTITY_RE.sub(_unescape_fixup, text2)
 
 
 ANSI_RE = re.compile('\033\\[((?:\\d|;)*)([a-zA-Z])')
