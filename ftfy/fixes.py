@@ -7,7 +7,6 @@ import codecs
 import html
 import re
 import warnings
-from html import entities
 
 from ftfy.badness import text_cost
 from ftfy.chardata import (
