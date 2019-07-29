@@ -86,9 +86,9 @@ def _make_weirdness_regex():
     exclusive_categories = 'MmN13'
     for cat1 in exclusive_categories:
         others_range = ''.join(c for c in exclusive_categories if c != cat1)
-        groups.append('{cat1}[{others_range}]'.format(
-            cat1=cat1, others_range=others_range
-        ))
+        groups.append(
+            '{cat1}[{others_range}]'.format(cat1=cat1, others_range=others_range)
+        )
     regex = '|'.join(groups)
     return re.compile(regex)
 
@@ -184,9 +184,8 @@ def sequence_weirdness(text):
     """
     text2 = unicodedata.normalize('NFC', text)
     weirdness = len(WEIRDNESS_RE.findall(chars_to_classes(text2)))
-    adjustment = (
-        len(MOJIBAKE_SYMBOL_RE.findall(text2)) * 2 -
-        len(COMMON_SYMBOL_RE.findall(text2))
+    adjustment = len(MOJIBAKE_SYMBOL_RE.findall(text2)) * 2 - len(
+        COMMON_SYMBOL_RE.findall(text2)
     )
     return weirdness * 2 + adjustment
 
