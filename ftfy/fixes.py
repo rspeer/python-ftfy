@@ -11,10 +11,17 @@ from html import entities
 
 from ftfy.badness import text_cost
 from ftfy.chardata import (
-    ALTERED_UTF8_RE, C1_CONTROL_RE, CHARMAP_ENCODINGS, CONTROL_CHARS,
+    ALTERED_UTF8_RE,
+    C1_CONTROL_RE,
+    CHARMAP_ENCODINGS,
+    CONTROL_CHARS,
     DOUBLE_QUOTE_RE,
-    LIGATURES, LOSSY_UTF8_RE, PARTIAL_UTF8_PUNCT_RE, SINGLE_QUOTE_RE,
-    WIDTH_MAP, possible_encoding
+    LIGATURES,
+    LOSSY_UTF8_RE,
+    PARTIAL_UTF8_PUNCT_RE,
+    SINGLE_QUOTE_RE,
+    WIDTH_MAP,
+    possible_encoding,
 )
 
 BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
@@ -114,8 +121,7 @@ def fix_text_encoding(text):
     """
     A deprecated name for :func:`ftfy.fixes.fix_encoding`.
     """
-    warnings.warn('fix_text_encoding is now known as fix_encoding',
-                  DeprecationWarning)
+    warnings.warn('fix_text_encoding is now known as fix_encoding', DeprecationWarning)
     return fix_encoding(text)
 
 
@@ -242,8 +248,7 @@ def fix_one_step_and_explain(text):
                 fixed = encoded.decode('windows-1252')
                 steps = []
                 if fixed != text:
-                    steps = [('encode', 'latin-1', 0),
-                             ('decode', 'windows-1252', 1)]
+                    steps = [('encode', 'latin-1', 0), ('decode', 'windows-1252', 1)]
                 return fixed, steps
             except UnicodeDecodeError:
                 # This text contained characters that don't even make sense
@@ -447,9 +452,13 @@ def fix_line_breaks(text):
         >>> eprint(fix_line_breaks("What is this \x85 I don't even"))
         What is this \n I don't even
     """
-    return text.replace('\r\n', '\n').replace('\r', '\n')\
-               .replace('\u2028', '\n').replace('\u2029', '\n')\
-               .replace('\u0085', '\n')
+    return (
+        text.replace('\r\n', '\n')
+        .replace('\r', '\n')
+        .replace('\u2028', '\n')
+        .replace('\u2029', '\n')
+        .replace('\u0085', '\n')
+    )
 
 
 SURROGATE_RE = re.compile('[\ud800-\udfff]')
@@ -534,14 +543,17 @@ def remove_bom(text):
 
 
 # Define a regex to match valid escape sequences in Python string literals.
-ESCAPE_SEQUENCE_RE = re.compile(r'''
+ESCAPE_SEQUENCE_RE = re.compile(
+    r'''
     ( \\U........      # 8-digit hex escapes
     | \\u....          # 4-digit hex escapes
     | \\x..            # 2-digit hex escapes
     | \\[0-7]{1,3}     # Octal escapes
     | \\N\{[^}]+\}     # Unicode characters by name
     | \\[\\'"abfnrtv]  # Single-character escapes
-    )''', re.UNICODE | re.VERBOSE)
+    )''',
+    re.UNICODE | re.VERBOSE,
+)
 
 
 def decode_escapes(text):
@@ -574,6 +586,7 @@ def decode_escapes(text):
     because escaped text is not necessarily a mistake, and there is no way
     to distinguish text that's supposed to be escaped from text that isn't.
     """
+
     def decode_match(match):
         "Given a regex match, decode the escape sequence it contains."
         return codecs.decode(match.group(0), 'unicode-escape')
@@ -595,6 +608,7 @@ def restore_byte_a0(byts):
 
     This is used as a step within `fix_encoding`.
     """
+
     def replacement(match):
         "The function to apply when this regex matches."
         return match.group(0).replace(b'\x20', b'\xa0')
@@ -654,6 +668,7 @@ def fix_partial_utf8_punct_in_1252(text):
 
     This is used as a transcoder within `fix_encoding`.
     """
+
     def latin1_to_w1252(match):
         "The function to apply when this regex matches."
         return match.group(0).encode('latin-1').decode('sloppy-windows-1252')
@@ -669,5 +684,5 @@ def fix_partial_utf8_punct_in_1252(text):
 TRANSCODERS = {
     'restore_byte_a0': restore_byte_a0,
     'replace_lossy_sequences': replace_lossy_sequences,
-    'fix_partial_utf8_punct_in_1252': fix_partial_utf8_punct_in_1252
+    'fix_partial_utf8_punct_in_1252': fix_partial_utf8_punct_in_1252,
 }
