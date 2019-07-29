@@ -5,6 +5,7 @@ more reasonable.
 
 import re
 import unicodedata
+
 from ftfy.chardata import chars_to_classes
 
 # The following regex uses the mapping of character classes to ASCII
