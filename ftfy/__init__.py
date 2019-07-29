@@ -18,20 +18,22 @@ __version__ = '5.5.1'
 ftfy.bad_codecs.ok()
 
 
-def fix_text(text,
-             *,
-             fix_entities='auto',
-             remove_terminal_escapes=True,
-             fix_encoding=True,
-             fix_latin_ligatures=True,
-             fix_character_width=True,
-             uncurl_quotes=True,
-             fix_line_breaks=True,
-             fix_surrogates=True,
-             remove_control_chars=True,
-             remove_bom=True,
-             normalization='NFC',
-             max_decode_length=10**6):
+def fix_text(
+    text,
+    *,
+    fix_entities='auto',
+    remove_terminal_escapes=True,
+    fix_encoding=True,
+    fix_latin_ligatures=True,
+    fix_character_width=True,
+    uncurl_quotes=True,
+    fix_line_breaks=True,
+    fix_surrogates=True,
+    remove_control_chars=True,
+    remove_bom=True,
+    normalization='NFC',
+    max_decode_length=10 ** 6
+):
     r"""
     Given Unicode text as input, fix inconsistencies and glitches in it,
     such as mojibake.
@@ -179,7 +181,7 @@ def fix_text(text,
                 fix_surrogates=fix_surrogates,
                 remove_control_chars=remove_control_chars,
                 remove_bom=remove_bom,
-                normalization=normalization
+                normalization=normalization,
             )
         )
         pos = textbreak
@@ -193,20 +195,22 @@ fix_encoding = fixes.fix_encoding
 fix_text_encoding = fixes.fix_text_encoding  # deprecated
 
 
-def fix_file(input_file,
-             encoding=None,
-             *,
-             fix_entities='auto',
-             remove_terminal_escapes=True,
-             fix_encoding=True,
-             fix_latin_ligatures=True,
-             fix_character_width=True,
-             uncurl_quotes=True,
-             fix_line_breaks=True,
-             fix_surrogates=True,
-             remove_control_chars=True,
-             remove_bom=True,
-             normalization='NFC'):
+def fix_file(
+    input_file,
+    encoding=None,
+    *,
+    fix_entities='auto',
+    remove_terminal_escapes=True,
+    fix_encoding=True,
+    fix_latin_ligatures=True,
+    fix_character_width=True,
+    uncurl_quotes=True,
+    fix_line_breaks=True,
+    fix_surrogates=True,
+    remove_control_chars=True,
+    remove_bom=True,
+    normalization='NFC'
+):
     """
     Fix text that is found in a file.
 
@@ -238,23 +242,25 @@ def fix_file(input_file,
             fix_surrogates=fix_surrogates,
             remove_control_chars=remove_control_chars,
             remove_bom=remove_bom,
-            normalization=normalization
+            normalization=normalization,
         )
 
 
-def fix_text_segment(text,
-                     *,
-                     fix_entities='auto',
-                     remove_terminal_escapes=True,
-                     fix_encoding=True,
-                     fix_latin_ligatures=True,
-                     fix_character_width=True,
-                     uncurl_quotes=True,
-                     fix_line_breaks=True,
-                     fix_surrogates=True,
-                     remove_control_chars=True,
-                     remove_bom=True,
-                     normalization='NFC'):
+def fix_text_segment(
+    text,
+    *,
+    fix_entities='auto',
+    remove_terminal_escapes=True,
+    fix_encoding=True,
+    fix_latin_ligatures=True,
+    fix_character_width=True,
+    uncurl_quotes=True,
+    fix_line_breaks=True,
+    fix_surrogates=True,
+    remove_control_chars=True,
+    remove_bom=True,
+    normalization='NFC'
+):
     """
     Apply fixes to text in a single chunk. This could be a line of text
     within a larger run of `fix_text`, or it could be a larger amount
@@ -404,9 +410,11 @@ def explain_unicode(text):
             display = char
         else:
             display = char.encode('unicode-escape').decode('ascii')
-        print('U+{code:04X}  {display} [{category}] {name}'.format(
-            display=display_ljust(display, 7),
-            code=ord(char),
-            category=unicodedata.category(char),
-            name=unicodedata.name(char, '<unknown>')
-        ))
+        print(
+            'U+{code:04X}  {display} [{category}] {name}'.format(
+                display=display_ljust(display, 7),
+                code=ord(char),
+                category=unicodedata.category(char),
+                name=unicodedata.name(char, '<unknown>'),
+            )
+        )
