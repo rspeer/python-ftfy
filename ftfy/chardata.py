@@ -54,6 +54,21 @@ def _build_regexes():
 ENCODING_REGEXES = _build_regexes()
 
 
+def _build_html_uppercase_entities():
+    uppercase_entities = {}
+    for name, codept in html.entities.name2codepoint.items():
+        if codept < 0x300:
+            name_upper = name.upper()
+            entity_upper = '&' + name_upper + ';'
+            if name_upper != name and html.unescape(entity_upper) == entity_upper:
+                uppercase_entities[entity_upper] = chr(codept).upper()
+    return uppercase_entities
+
+
+HTML_UPPERCASE_ENTITY_RE = re.compile(r"&[A-Z]{3,6};")
+HTML_UPPERCASE_ENTITIES = _build_html_uppercase_entities()
+
+
 def _build_utf8_punct_regex():
     """
     Recognize UTF-8 mojibake that's so blatant that we can fix it even when the
