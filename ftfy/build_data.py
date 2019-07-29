@@ -11,8 +11,8 @@ get consistent results from running ftfy on different versions of Python.
 
 The file will be written to the current directory.
 """
-import unicodedata
 import sys
+import unicodedata
 import zlib
 
 # L = Latin capital letter

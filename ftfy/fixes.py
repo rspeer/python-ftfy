@@ -3,17 +3,19 @@ This module contains the individual fixes that the main fix_text function
 can perform.
 """
 
-import re
 import codecs
+import html
+import re
 import warnings
-from ftfy.chardata import (possible_encoding, CHARMAP_ENCODINGS,
-                           CONTROL_CHARS, LIGATURES, WIDTH_MAP,
-                           PARTIAL_UTF8_PUNCT_RE, ALTERED_UTF8_RE,
-                           LOSSY_UTF8_RE, SINGLE_QUOTE_RE, DOUBLE_QUOTE_RE,
-                           C1_CONTROL_RE)
-from ftfy.badness import text_cost
 from html import entities
 
+from ftfy.badness import text_cost
+from ftfy.chardata import (
+    ALTERED_UTF8_RE, C1_CONTROL_RE, CHARMAP_ENCODINGS, CONTROL_CHARS,
+    DOUBLE_QUOTE_RE,
+    LIGATURES, LOSSY_UTF8_RE, PARTIAL_UTF8_PUNCT_RE, SINGLE_QUOTE_RE,
+    WIDTH_MAP, possible_encoding
+)
 
 BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
 
