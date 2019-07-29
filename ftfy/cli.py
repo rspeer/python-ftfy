@@ -48,24 +48,49 @@ def main():
     parser = argparse.ArgumentParser(
         description="ftfy (fixes text for you), version %s" % __version__
     )
-    parser.add_argument('filename', default='-', nargs='?',
-                        help='The file whose Unicode is to be fixed. Defaults '
-                             'to -, meaning standard input.')
-    parser.add_argument('-o', '--output', type=str, default='-',
-                        help='The file to output to. Defaults to -, meaning '
-                             'standard output.')
-    parser.add_argument('-g', '--guess', action='store_true',
-                        help="Ask ftfy to guess the encoding of your input. "
-                             "This is risky. Overrides -e.")
-    parser.add_argument('-e', '--encoding', type=str, default='utf-8',
-                        help='The encoding of the input. Defaults to UTF-8.')
-    parser.add_argument('-n', '--normalization', type=str, default='NFC',
-                        help='The normalization of Unicode to apply. '
-                             'Defaults to NFC. Can be "none".')
-    parser.add_argument('--preserve-entities', action='store_true',
-                        help="Leave HTML entities as they are. The default "
-                             "is to decode them, as long as no HTML tags "
-                             "have appeared in the file.")
+    parser.add_argument(
+        'filename',
+        default='-',
+        nargs='?',
+        help='The file whose Unicode is to be fixed. Defaults '
+        'to -, meaning standard input.',
+    )
+    parser.add_argument(
+        '-o',
+        '--output',
+        type=str,
+        default='-',
+        help='The file to output to. Defaults to -, meaning ' 'standard output.',
+    )
+    parser.add_argument(
+        '-g',
+        '--guess',
+        action='store_true',
+        help="Ask ftfy to guess the encoding of your input. "
+        "This is risky. Overrides -e.",
+    )
+    parser.add_argument(
+        '-e',
+        '--encoding',
+        type=str,
+        default='utf-8',
+        help='The encoding of the input. Defaults to UTF-8.',
+    )
+    parser.add_argument(
+        '-n',
+        '--normalization',
+        type=str,
+        default='NFC',
+        help='The normalization of Unicode to apply. '
+        'Defaults to NFC. Can be "none".',
+    )
+    parser.add_argument(
+        '--preserve-entities',
+        action='store_true',
+        help="Leave HTML entities as they are. The default "
+        "is to decode them, as long as no HTML tags "
+        "have appeared in the file.",
+    )
 
     args = parser.parse_args()
 
@@ -98,9 +123,12 @@ def main():
         fix_entities = 'auto'
 
     try:
-        for line in fix_file(file, encoding=encoding,
-                             fix_entities=fix_entities,
-                             normalization=normalization):
+        for line in fix_file(
+            file,
+            encoding=encoding,
+            fix_entities=fix_entities,
+            normalization=normalization,
+        ):
             try:
                 outfile.write(line)
             except UnicodeEncodeError:

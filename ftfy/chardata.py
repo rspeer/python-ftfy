@@ -68,9 +68,11 @@ def _build_utf8_punct_regex():
     # are a contiguous range, as well as the different Windows-1252 decodings
     # of 0x80 to 0x9f, which are not contiguous at all. (Latin-1 and
     # Windows-1252 agree on bytes 0xa0 and up.)
-    obvious_utf8 = ('â[€\x80][\x80-\xbf'
-                    + bytes(range(0x80, 0xa0)).decode('sloppy-windows-1252')
-                    + ']')
+    obvious_utf8 = (
+        'â[€\x80][\x80-\xbf'
+        + bytes(range(0x80, 0xa0)).decode('sloppy-windows-1252')
+        + ']'
+    )
     return re.compile(obvious_utf8)
 
 
@@ -98,12 +100,14 @@ PARTIAL_UTF8_PUNCT_RE = _build_utf8_punct_regex()
 # We should consider checking for b'\x85' being converted to ... in the future.
 # I've seen it once, but the text still wasn't recoverable.
 
-ALTERED_UTF8_RE = re.compile(b'[\xc2\xc3\xc5\xce\xd0][ ]'
-                             b'|[\xe0-\xef][ ][\x80-\xbf]'
-                             b'|[\xe0-\xef][\x80-\xbf][ ]'
-                             b'|[\xf0-\xf4][ ][\x80-\xbf][\x80-\xbf]'
-                             b'|[\xf0-\xf4][\x80-\xbf][ ][\x80-\xbf]'
-                             b'|[\xf0-\xf4][\x80-\xbf][\x80-\xbf][ ]')
+ALTERED_UTF8_RE = re.compile(
+    b'[\xc2\xc3\xc5\xce\xd0][ ]'
+    b'|[\xe0-\xef][ ][\x80-\xbf]'
+    b'|[\xe0-\xef][\x80-\xbf][ ]'
+    b'|[\xf0-\xf4][ ][\x80-\xbf][\x80-\xbf]'
+    b'|[\xf0-\xf4][\x80-\xbf][ ][\x80-\xbf]'
+    b'|[\xf0-\xf4][\x80-\xbf][\x80-\xbf][ ]'
+)
 
 # This expression matches UTF-8 and CESU-8 sequences where some of the
 # continuation bytes have been lost. The byte 0x1a (sometimes written as ^Z) is
@@ -166,15 +170,15 @@ def _build_control_char_mapping():
     control_chars = {}
 
     for i in itertools.chain(
-            range(0x00, 0x09),
-            [0x0b],
-            range(0x0e, 0x20),
-            [0x7f],
-            range(0x206a, 0x2070),
-            [0xfeff],
-            range(0xfff9, 0xfffd),
-            range(0x1d173, 0x1d17b),
-            range(0xe0000, 0xe0080)
+        range(0x00, 0x09),
+        [0x0b],
+        range(0x0e, 0x20),
+        [0x7f],
+        range(0x206a, 0x2070),
+        [0xfeff],
+        range(0xfff9, 0xfffd),
+        range(0x1d173, 0x1d17b),
+        range(0xe0000, 0xe0080),
     ):
         control_chars[i] = None
 
@@ -196,10 +200,10 @@ CONTROL_CHARS = _build_control_char_mapping()
 # is sometimes more normalization than you want.
 
 LIGATURES = {
-    ord('Ĳ'): 'IJ',   # Dutch ligatures
+    ord('Ĳ'): 'IJ',  # Dutch ligatures
     ord('ĳ'): 'ij',
-    ord('ŉ'): "ʼn",   # Afrikaans digraph meant to avoid auto-curled quote
-    ord('Ǳ'): 'DZ',   # Serbian/Croatian digraphs for Cyrillic conversion
+    ord('ŉ'): "ʼn",  # Afrikaans digraph meant to avoid auto-curled quote
+    ord('Ǳ'): 'DZ',  # Serbian/Croatian digraphs for Cyrillic conversion
     ord('ǲ'): 'Dz',
     ord('ǳ'): 'dz',
     ord('Ǆ'): 'DŽ',
@@ -211,7 +215,7 @@ LIGATURES = {
     ord('Ǌ'): 'NJ',
     ord('ǋ'): 'Nj',
     ord('ǌ'): "nj",
-    ord('ﬀ'): 'ff',   # Latin typographical ligatures
+    ord('ﬀ'): 'ff',  # Latin typographical ligatures
     ord('ﬁ'): 'fi',
     ord('ﬂ'): 'fl',
     ord('ﬃ'): 'ffi',
