@@ -1,10 +1,10 @@
 """
 A command-line utility for fixing text found in a file.
 """
-import sys
 import os
-from ftfy import fix_file, __version__
+import sys
 
+from ftfy import __version__, fix_file
 
 ENCODE_ERROR_TEXT_UNIX = """ftfy error:
 Unfortunately, this output stream does not support Unicode.

@@ -6,7 +6,8 @@ We used to have our own implementation here, but now we mostly rely on
 the 'wcwidth' library.
 """
 from unicodedata import normalize
-from wcwidth import wcwidth, wcswidth
+
+from wcwidth import wcswidth, wcwidth
 
 
 def character_width(char):

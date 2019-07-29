@@ -3,10 +3,12 @@ This gives other modules access to the gritty details about characters and the
 encodings that use them.
 """
 
-import re
-import zlib
-import unicodedata
+import html
 import itertools
+import re
+import unicodedata
+import zlib
+
 from pkg_resources import resource_string
 
 # These are the encodings we will try to fix in ftfy, in the

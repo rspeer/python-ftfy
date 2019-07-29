@@ -6,6 +6,7 @@ for more information.
 """
 
 import unicodedata
+
 import ftfy.bad_codecs
 from ftfy import fixes
 from ftfy.formatting import display_ljust
