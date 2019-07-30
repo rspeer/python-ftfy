@@ -1,3 +1,13 @@
+## Version 5.6 (July 30, 2019)
+
+- Make use of `html.unescape` for more robust unescaping, now that it's
+  available in all current versions of Python 3.
+
+- On top of what `html.unescape` supports, add the ability to convert HTML
+  escapes of common Latin capital letters that are (nonstandardly) written
+  in all caps, such as `&NTILDE;` for `Ñ`.
+
+
 ## Version 5.5.1 (September 14, 2018)
 
 - Added Python 3.7 support.
