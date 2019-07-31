@@ -54,35 +54,29 @@ def _build_regexes():
 ENCODING_REGEXES = _build_regexes()
 
 
-def _build_html_uppercase_entities():
-    uppercase_entities = {}
+def _build_html_entities():
+    entities = dict(html.entities.html5)
+    entities = {}
+    # Create a dictionary based on the built-in HTML5 entity dictionary.
+    # Add a limited set of HTML entities that we'll also decode if they've
+    # been case-folded to uppercase, such as decoding &NTILDE; as "Ñ".
     for name, char in html.entities.html5.items():
-        # Restrict the set of characters we can attempt to decode if their
-        # name has been uppercased. If we tried to handle all entity names,
-        # the results would be ambiguous and the dictionary would be large.
-        # The limitations here produce a set of 186 characters.
-        if (
-            name == name.lower()
-            and name.endswith(';')
-            and len(name) <= 7
-            and len(char) == 1
-        ):
-            codept = ord(char)
-            # Include common Latin letters, Latin-1 symbols, plus some of
-            # the extra symbols from Windows-1252
-            if codept < 0x300 or char in '€‚„…‘“”•–—™':
+        if name.endswith(';'):
+            entities['&' + name] = char
+
+            # Restrict the set of characters we can attempt to decode if their
+            # name has been uppercased. If we tried to handle all entity names,
+            # the results would be ambiguous.
+            if name == name.lower():
                 name_upper = name.upper()
                 entity_upper = '&' + name_upper
                 if html.unescape(entity_upper) == entity_upper:
-                    uppercase_entities[entity_upper] = char.upper()
-    return uppercase_entities
+                    entities[entity_upper] = char.upper()
+    return entities
 
 
-# HTML5 entities have names with 2 to 24 characters. The ones we care about
-# have names no longer than 6 characters. Limiting this range makes the regex
-# more efficient.
-HTML_UPPERCASE_ENTITY_RE = re.compile(r"&[A-Z]{2,6};")
-HTML_UPPERCASE_ENTITIES = _build_html_uppercase_entities()
+HTML_ENTITY_RE = re.compile(r"&#?[0-9A-Za-z]{1,24};")
+HTML_ENTITIES = _build_html_entities()
 
 
 def _build_utf8_punct_regex():
