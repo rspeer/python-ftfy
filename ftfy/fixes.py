@@ -310,12 +310,11 @@ def _unescape_fixup(match):
         unescaped = html.unescape(text)
 
         # If html.unescape only decoded part of the string, that's not what
-        # we want. We're expecting the &# sequence to decode as a single
-        # character.
-        if len(unescaped) == 1:
-            return unescaped
-        else:
+        # we want. The semicolon should be consumed.
+        if ';' in unescaped:
             return text
+        else:
+            return unescaped
     else:
         return text
 
