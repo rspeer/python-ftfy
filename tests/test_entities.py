@@ -27,6 +27,8 @@ def test_entities():
     assert unescape_html('not an entity &#20x6;') == 'not an entity &#20x6;'
     assert unescape_html('JEDNOCZE&SACUTE;NIE') == 'JEDNOCZEŚNIE'
     assert unescape_html('V&SCARON;ICHNI') == 'VŠICHNI'
+    assert unescape_html('&#xffff;') == ''
+    assert unescape_html('&#xffffffff;') == '\ufffd'
     assert (
         fix_text_segment('this is just informal english &not html') ==
         'this is just informal english &not html'
