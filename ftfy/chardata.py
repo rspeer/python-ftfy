@@ -56,16 +56,32 @@ ENCODING_REGEXES = _build_regexes()
 
 def _build_html_uppercase_entities():
     uppercase_entities = {}
-    for name, codept in html.entities.name2codepoint.items():
-        if codept < 0x300:
-            name_upper = name.upper()
-            entity_upper = '&' + name_upper + ';'
-            if name_upper != name and html.unescape(entity_upper) == entity_upper:
-                uppercase_entities[entity_upper] = chr(codept).upper()
+    for name, char in html.entities.html5.items():
+        # Restrict the set of characters we can attempt to decode if their
+        # name has been uppercased. If we tried to handle all entity names,
+        # the results would be ambiguous and the dictionary would be large.
+        # The limitations here produce a set of 186 characters.
+        if (
+            name == name.lower()
+            and name.endswith(';')
+            and len(name) <= 7
+            and len(char) == 1
+        ):
+            codept = ord(char)
+            # Include common Latin letters, Latin-1 symbols, plus some of
+            # the extra symbols from Windows-1252
+            if codept < 0x300 or char in '€‚„…‘“”•–—™':
+                name_upper = name.upper()
+                entity_upper = '&' + name_upper
+                if html.unescape(entity_upper) == entity_upper:
+                    uppercase_entities[entity_upper] = char.upper()
     return uppercase_entities
 
 
-HTML_UPPERCASE_ENTITY_RE = re.compile(r"&[A-Z]{3,6};")
+# HTML5 entities have names with 2 to 24 characters. The ones we care about
+# have names no longer than 6 characters. Limiting this range makes the regex
+# more efficient.
+HTML_UPPERCASE_ENTITY_RE = re.compile(r"&[A-Z]{2,6};")
 HTML_UPPERCASE_ENTITIES = _build_html_uppercase_entities()
 
 
