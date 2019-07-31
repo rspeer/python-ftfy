@@ -15,8 +15,8 @@ from ftfy.chardata import (
     CHARMAP_ENCODINGS,
     CONTROL_CHARS,
     DOUBLE_QUOTE_RE,
-    HTML_UPPERCASE_ENTITIES,
-    HTML_UPPERCASE_ENTITY_RE,
+    HTML_ENTITIES,
+    HTML_ENTITY_RE,
     LIGATURES,
     LOSSY_UTF8_RE,
     PARTIAL_UTF8_PUNCT_RE,
@@ -304,34 +304,57 @@ def _unescape_fixup(match):
     if possible.
     """
     text = match.group(0)
-    if text in HTML_UPPERCASE_ENTITIES:
-        return HTML_UPPERCASE_ENTITIES[text]
+    if text in HTML_ENTITIES:
+        return HTML_ENTITIES[text]
+    elif text.startswith('&#'):
+        unescaped = html.unescape(text)
+
+        # If html.unescape only decoded part of the string, that's not what
+        # we want. We're expecting the &# sequence to decode as a single
+        # character.
+        if len(unescaped) == 1:
+            return unescaped
+        else:
+            return text
     else:
         return text
 
 
 def unescape_html(text):
     """
-    Decode HTML entities and character references, including if they've been
-    case-folded.
+    Decode HTML entities and character references, including some nonstandard
+    ones written in all-caps.
 
-    By now, the process of decoding HTML escapes is _mostly_ taken care of by
-    `html.unescape` in the standard library. But if you can mess up whether
-    text was meant to be decoded as HTML, you can also mess up how that
-    interacts with, say, case-folding.
+    Python has a built-in called `html.unescape` that can decode HTML escapes,
+    including a bunch of messy edge cases such as decoding escapes without
+    semicolons such as "&amp".
 
+    If you know you've got HTML-escaped text, applying `html.unescape` is the
+    right way to convert it to plain text. But in ambiguous situations, that
+    would create false positives. For example, the informally written text
+    "this&not that" should not automatically be decoded as "this¬ that".
+
+    In this function, we decode the escape sequences that appear in the
+    `html.entities.html5` dictionary, as long as they are the unambiguous ones
+    that end in semicolons.
+
+    We also decode all-caps versions of Latin letters and common symbols.
     If a database contains the name 'P&EACUTE;REZ', we can read that and intuit
-    that it was supposed to say 'PÉREZ'. But HTML entities are case-sensitive,
-    often in ways that change which character it is, so the standard library
-    won't even decode '&EACUTE;'.
-
-    There are cases where case-folded entities would be ambiguous in complicated
-    ways. But we can avoid the complicated cases if we limit ourselves to decoding
-    uppercased entities with codepoints below U+300, and decoding those as the
-    uppercased versions.
+    that it was supposed to say 'PÉREZ'. This is limited to a smaller set of
+    entities, because there are many instances where entity names are
+    case-sensitive in complicated ways.
 
         >>> unescape_html('&lt;tag&gt;')
         '<tag>'
+
+        >>> unescape_html('&Jscr;ohn &HilbertSpace;ancock')
+        '𝒥ohn ℋancock'
+
+        >>> unescape_html('&checkmark;')
+        '✓'
+
+        >>> unescape_html('P&eacute;rez')
+        'Pérez'
 
         >>> unescape_html('P&EACUTE;REZ')
         'PÉREZ'
@@ -342,8 +365,7 @@ def unescape_html(text):
         >>> unescape_html('&ntilde; &Ntilde; &NTILDE; &nTILDE;')
         'ñ Ñ Ñ &nTILDE;'
     """
-    text2 = html.unescape(text)
-    return HTML_UPPERCASE_ENTITY_RE.sub(_unescape_fixup, text2)
+    return HTML_ENTITY_RE.sub(_unescape_fixup, text)
 
 
 ANSI_RE = re.compile('\033\\[((?:\\d|;)*)([a-zA-Z])')
