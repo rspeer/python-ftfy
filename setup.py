@@ -27,7 +27,7 @@ DESCRIPTION = open('README.md', encoding='utf-8').read()
 
 setup(
     name="ftfy",
-    version='5.5.1',
+    version='5.6',
     maintainer='Luminoso Technologies, Inc.',
     maintainer_email='info@luminoso.com',
     license="MIT",
@@ -40,14 +40,14 @@ setup(
     package_data={'ftfy': ['char_classes.dat']},
     install_requires=['wcwidth'],
     tests_require=['pytest'],
-    python_requires='>=3.3',
+    python_requires='>=3.4',
     classifiers=[
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.3",
         "Programming Language :: Python :: 3.4",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries :: Python Modules",
