@@ -54,6 +54,31 @@ def _build_regexes():
 ENCODING_REGEXES = _build_regexes()
 
 
+def _build_html_entities():
+    entities = dict(html.entities.html5)
+    entities = {}
+    # Create a dictionary based on the built-in HTML5 entity dictionary.
+    # Add a limited set of HTML entities that we'll also decode if they've
+    # been case-folded to uppercase, such as decoding &NTILDE; as "Ñ".
+    for name, char in html.entities.html5.items():
+        if name.endswith(';'):
+            entities['&' + name] = char
+
+            # Restrict the set of characters we can attempt to decode if their
+            # name has been uppercased. If we tried to handle all entity names,
+            # the results would be ambiguous.
+            if name == name.lower():
+                name_upper = name.upper()
+                entity_upper = '&' + name_upper
+                if html.unescape(entity_upper) == entity_upper:
+                    entities[entity_upper] = char.upper()
+    return entities
+
+
+HTML_ENTITY_RE = re.compile(r"&#?[0-9A-Za-z]{1,24};")
+HTML_ENTITIES = _build_html_entities()
+
+
 def _build_utf8_punct_regex():
     """
     Recognize UTF-8 mojibake that's so blatant that we can fix it even when the
