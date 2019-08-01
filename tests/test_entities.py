@@ -21,5 +21,15 @@ def test_entities():
     assert fix_text_segment('ellipsis&#133;', normalization='NFKC') == 'ellipsis...'
     assert fix_text_segment('ellipsis&#x85;', normalization='NFKC') == 'ellipsis...'
     assert fix_text_segment('broken&#x81;') == 'broken\x81'
+    assert fix_text_segment('&amp;amp;amp;') == '&'
     assert unescape_html('euro &#x80;') == 'euro €'
+    assert unescape_html('EURO &EURO;') == 'EURO €'
     assert unescape_html('not an entity &#20x6;') == 'not an entity &#20x6;'
+    assert unescape_html('JEDNOCZE&SACUTE;NIE') == 'JEDNOCZEŚNIE'
+    assert unescape_html('V&SCARON;ICHNI') == 'VŠICHNI'
+    assert unescape_html('&#xffff;') == ''
+    assert unescape_html('&#xffffffff;') == '\ufffd'
+    assert (
+        fix_text_segment('this is just informal english &not html') ==
+        'this is just informal english &not html'
+    )
