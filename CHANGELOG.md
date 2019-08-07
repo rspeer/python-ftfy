@@ -1,9 +1,18 @@
-## Version 5.6 (July 30, 2019)
+## Version 5.6 (August 7, 2019)
 
-- Make use of `html.unescape` for more robust unescaping, now that it's
-  available in all current versions of Python 3.
+- The `unescape_html` function now supports all the HTML5 entities that appear
+  in `html.entities.html5`, including those with long names such as
+  `&DiacriticalDoubleAcute;`.
 
-- On top of what `html.unescape` supports, add the ability to convert HTML
+- Unescaping of numeric HTML entities now uses the standard library's
+  `html.unescape`, making edge cases consistent.
+
+  (The reason we don't run `html.unescape` on all text is that it's not always
+  appropriate to apply, and can lead to false positive fixes. The text
+  "This&NotThat" should not have "&Not" replaced by a symbol, as
+  `html.unescape` would do.)
+
+- On top of Python's support for HTML5 entities, ftfy will also convert HTML
   escapes of common Latin capital letters that are (nonstandardly) written
   in all caps, such as `&NTILDE;` for `Ñ`.
 
