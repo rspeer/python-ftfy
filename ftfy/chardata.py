@@ -55,7 +55,6 @@ ENCODING_REGEXES = _build_regexes()
 
 
 def _build_html_entities():
-    entities = dict(html.entities.html5)
     entities = {}
     # Create a dictionary based on the built-in HTML5 entity dictionary.
     # Add a limited set of HTML entities that we'll also decode if they've
