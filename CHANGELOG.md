@@ -1,3 +1,10 @@
+## Version 5.6.1 (February 3, 2020)
+
+- Updated the data file of Unicode character categories to Unicode 12.1, as
+  used in Python 3.8. (No matter what version of Python you're on, ftfy uses
+  the same data.)
+
+
 ## Version 5.6 (August 7, 2019)
 
 - The `unescape_html` function now supports all the HTML5 entities that appear
