@@ -5,7 +5,7 @@ This never needs to run in normal usage. It needs to be run if the character
 classes we care about change, or if a new version of Python supports a new
 Unicode standard and we want it to affect our string decoding.
 
-The file that we generate is based on Unicode 11.0, as supported by Python 3.7.
+The file that we generate is based on Unicode 12.1, as supported by Python 3.8.
 You can certainly use it in earlier versions. This simply makes sure that we
 get consistent results from running ftfy on different versions of Python.
 
@@ -39,15 +39,15 @@ def make_char_data_file(do_it_anyway=False):
     Build the compressed data file 'char_classes.dat' and write it to the
     current directory.
 
-    If you run this, run it in Python 3.7.0 or later. It will run in earlier
-    versions, but you won't get the Unicode 11 standard, leading to inconsistent
-    behavior. Pre-releases of Python 3.7 won't work (Unicode 11 wasn't out yet).
+    If you run this, run it in Python 3.8 or later. It will run in earlier
+    versions, but you won't get the Unicode 12 standard, leading to
+    inconsistent behavior.
 
     To protect against this, running this in the wrong version of Python will
     raise an error unless you pass `do_it_anyway=True`.
     """
-    if sys.hexversion < 0x030700f0 and not do_it_anyway:
-        raise RuntimeError("This function should be run in Python 3.7.0 or later.")
+    if sys.version_info < (3, 8) and not do_it_anyway:
+        raise RuntimeError("This function should be run in Python 3.8 or later.")
 
     cclasses = [None] * 0x110000
     for codepoint in range(0x0, 0x110000):
