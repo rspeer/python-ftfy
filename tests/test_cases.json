@@ -94,6 +94,12 @@
         "expect": "pass"
     },
     {
+        "label": "UTF-8 / Windows-1252 mixup in French",
+        "original": "HÃ´tel de Police",
+        "fixed": "Hôtel de Police",
+        "expect": "pass"
+    },
+    {
         "label": "UTF-8 / Windows-1250 mixup in French",
         "original": "LiĂ¨ge Avenue de l'HĂ´pital",
         "fixed": "Liège Avenue de l'Hôpital",
