@@ -4,14 +4,8 @@ import sys
 # Python 3 standard library, let's make sure we're not on Python 2 and provide
 # a helpful message if we are.
 
-PY2_MESSAGE = """
-Sorry, this version of ftfy is no longer written for Python 2.
+PY2_MESSAGE = "Python 2 is no longer supported. Please upgrade."
 
-The older version of ftfy, version 4.4, is still available and can run on
-Python 2. Try this:
-
-    pip install ftfy==4.4.3
-"""
 
 if sys.version_info[0] < 3:
     print(PY2_MESSAGE)
@@ -27,7 +21,7 @@ DESCRIPTION = open('README.md', encoding='utf-8').read()
 
 setup(
     name="ftfy",
-    version='5.6',
+    version='5.6.1',
     maintainer='Luminoso Technologies, Inc.',
     maintainer_email='info@luminoso.com',
     license="MIT",
