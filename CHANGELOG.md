@@ -4,6 +4,8 @@
   used in Python 3.8. (No matter what version of Python you're on, ftfy uses
   the same data.)
 
+- Corrected an omission where short sequences involving the ACUTE ACCENT
+  character were not being fixed.
 
 ## Version 5.6 (August 7, 2019)
 
