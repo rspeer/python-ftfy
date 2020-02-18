@@ -1,4 +1,4 @@
-## Version 5.6.1 (February 3, 2020)
+## Version 5.7 (February 18, 2020)
 
 - Updated the data file of Unicode character categories to Unicode 12.1, as
   used in Python 3.8. (No matter what version of Python you're on, ftfy uses
