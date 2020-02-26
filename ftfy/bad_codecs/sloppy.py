@@ -16,7 +16,7 @@ the common Web browsers -- will pick some Unicode characters for them to map
 to, and the characters they pick are the Unicode characters with the same
 numbers: U+0081 and U+008D. This is the same as what Latin-1 does, and the
 resulting characters tend to fall into a range of Unicode that's set aside for
-obselete Latin-1 control characters anyway.
+obsolete Latin-1 control characters anyway.
 
 These sloppy codecs let Python do the same thing, thus interoperating with
 other software that works this way. It defines a sloppy version of many
