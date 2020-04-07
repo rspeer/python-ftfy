@@ -11,6 +11,7 @@ get consistent results from running ftfy on different versions of Python.
 
 The file will be written to the current directory.
 """
+import base64
 import sys
 import unicodedata
 import zlib
@@ -119,9 +120,17 @@ def make_char_data_file(do_it_anyway=False):
     for char in "^~`´˝＾｀":
         cclasses[ord(char)] = 'o'
 
-    out = open('char_classes.dat', 'wb')
-    out.write(zlib.compress(''.join(cclasses).encode('ascii')))
-    out.close()
+    char_classes_bytes = ''.join(cclasses).encode('ascii')
+    encoded = base64.b64encode(zlib.compress(char_classes_bytes))
+
+    script = f"""
+import base64
+import zlib
+_compressed = {encoded!r}
+CHAR_CLASS_STRING = zlib.decompress(base64.b64decode(_compressed))
+"""
+    with open('char_classes.py', 'w', encoding='utf-8') as out:
+        print(script, file=out)
 
 
 if __name__ == '__main__':
