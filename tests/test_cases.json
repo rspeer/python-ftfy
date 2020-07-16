@@ -420,6 +420,43 @@
         "expect": "fail"
     },
     {
+        "label": "Hebrew UTF-8 / Windows-1252 mojibake",
+        "comment": "reported by SuperIRabbit as issue #158",
+        "original": "×‘×”×•×“×¢×”",
+        "fixed": "בהודעה",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: Hebrew UTF-8 / Windows-1250 mojibake",
+        "original": "×‘×”×•×“×˘×”",
+        "fixed": "בהודעה",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: Hebrew UTF-8 / MacRoman mojibake",
+        "original": "◊ë◊î◊ï◊ì◊¢◊î",
+        "fixed": "בהודעה",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: Arabic UTF-8 / Windows-1252 mojibake",
+        "original": "Ø±Ø³Ø§Ù„Ø©",
+        "fixed": "رسالة",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: Arabic UTF-8 / Windows-1250 mojibake",
+        "original": "Ř±ŘłŘ§Ů„Ř©",
+        "fixed": "رسالة",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: Arabic UTF-8 / MacRoman mojibake",
+        "original": "ÿ±ÿ≥ÿßŸÑÿ©",
+        "fixed": "رسالة",
+        "expect": "pass"
+    },
+    {
         "label": "Negative: math in Unicode",
         "comment": "This isn't mojibake, it's an actual equation",
         "original": "(-1/2)! = √π",
