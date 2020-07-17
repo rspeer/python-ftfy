@@ -167,7 +167,7 @@ MOJIBAKE_SYMBOL_RE = re.compile(
     # the multiplication sign. In the list of following characters, we exclude
     # currency symbols and numbers, which might actually be intended to be
     # multiplied.
-    r'×[\x80-\x9fƒ‚„†‡ˆ‰‹Œ“•˜œŸ¡¦§¨ª«¬¯°²³µ¶·¸¿ˇ˘˝›»‘”´©™]|'
+    '×[\x80-\x9fƒ‚„†‡ˆ‰‹Œ“•˜œŸ¡¦§¨ª«¬¯°²³µ¶·¸¿ˇ˘˝›»‘”´©™]|'
     
     # Similar mojibake of low-numbered characters in MacRoman. Leaving out
     # most mathy characters because of false positives, but cautiously catching
