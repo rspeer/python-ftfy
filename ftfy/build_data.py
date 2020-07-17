@@ -129,7 +129,7 @@ def make_char_data_file(do_it_anyway=False):
 import base64
 import zlib
 _compressed = {encoded!r}
-CHAR_CLASS_STRING = zlib.decompress(base64.b64decode(_compressed))
+CHAR_CLASS_STRING = zlib.decompress(base64.b64decode(_compressed)).decode('ascii')
 """
     with open('char_classes.py', 'w', encoding='utf-8') as out:
         print(script, file=out)
