@@ -48,7 +48,7 @@ copyright = u'2018, Robyn Speer'
 # built documents.
 #
 # The short X.Y version.
-version = '5.7'
+version = '5.8'
 # The full version, including alpha/beta/rc tags.
 release = '5.7'
 
