@@ -9,7 +9,7 @@ import re
 import unicodedata
 import zlib
 
-from pkg_resources import resource_string
+from .char_classes import CHAR_CLASS_STRING
 
 # These are the encodings we will try to fix in ftfy, in the
 # order that they should be tried.
@@ -168,11 +168,6 @@ def possible_encoding(text, encoding):
     sloppily.
     """
     return bool(ENCODING_REGEXES[encoding].match(text))
-
-
-CHAR_CLASS_STRING = zlib.decompress(
-    resource_string(__name__, 'char_classes.dat')
-).decode('ascii')
 
 
 def chars_to_classes(string):
