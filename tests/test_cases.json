@@ -439,6 +439,13 @@
         "expect": "pass"
     },
     {
+        "label": "Synthetic: Hebrew UTF-8 / Latin-1 mojibake",
+        "comment": "This example uses low-numbered codepoints to spell 'ABBA' in Hebrew, so that it falls into the range where Latin-1 is different from Windows-1252. As a bonus, this example looks right even if your RTL text rendering isn't working.",
+        "original": "×\u0090×\u0091×\u0091×\u0090",
+        "fixed": "אבבא",
+        "expect": "pass"
+    },
+    {
         "label": "Synthetic: Arabic UTF-8 / Windows-1252 mojibake",
         "original": "Ø±Ø³Ø§Ù„Ø©",
         "fixed": "رسالة",
