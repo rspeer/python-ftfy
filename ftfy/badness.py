@@ -127,11 +127,6 @@ COMMON_SYMBOL_RE = re.compile(
 # signs in contexts where they really do look like mojibake.
 
 MOJIBAKE_SYMBOL_RE = re.compile(
-    # If the first character is in [ÂÃĂ], this covers mojibake of low-numbered
-    # characters from ISO-8859-1 and, in some cases, ISO-8859-2. This also
-    # covers some cases from related encodings such as Windows-1252 and
-    # Windows-1250.
-    # 
     # The codepoints of decoded characters these correspond to are as follows:
     #
     #   Initial char.   Codepoints  What's in this range
@@ -154,20 +149,24 @@ MOJIBAKE_SYMBOL_RE = re.compile(
     # maps to Armenian and some more Cyrillic letters -- because those could be
     # the 'eyes' of kaomoji faces.
     #
-    # The set of possible second characters covers symbols that are unlikely to
-    # have a real meaning when following one of these capital letters, and appear
-    # as the second character in Latin-1, Windows-1250, or Windows-1252 mojibake.
+    # The set of possible second characters covers most of the possible symbols
+    # that would be the second byte of UTF-8 mojibake. It is limited to the
+    # ones that are unlikely to have a real meaning when following one of these
+    # capital letters, and appear as the second character in Latin-1,
+    # Windows-1250, or Windows-1252 mojibake.
     '[ÂÃÎÏÐÑØÙĂĎĐŃŘŮ][\x80-\x9f€ƒ‚„†‡ˆ‰‹Œ“•˜œŸ¡¢£¤¥¦§¨ª«¬¯°±²³µ¶·¸¹º¼½¾¿ˇ˘˝]|'
     
-    # Characters we have to be a little more cautious about if they're at
-    # the end of a word, but totally okay to fix in the middle
+    # Character sequences we have to be a little more cautious about if they're
+    # at the end of a word, but are totally okay to fix in the middle
     r'[ÂÃÎÏÐÑØÙĂĎĐŃŘŮ][›»‘”´©™]\w|'
 
     # Most Hebrew letters get mojibaked to two-character sequences that start with
     # the multiplication sign. In the list of following characters, we exclude
     # currency symbols and numbers, which might actually be intended to be
-    # multiplied.
-    '×[\x80-\x9fƒ‚„†‡ˆ‰‹Œ“•˜œŸ¡¦§¨ª«¬¯°²³µ¶·¸¿ˇ˘˝›»‘”´©™]|'
+    # multiplied. We also exclude characters like ¶ which, although they don't
+    # make sense after a multiplication sign, wouldn't decode to an existing
+    # Hebrew letter if they were mojibake.
+    '×[\x80-\x9fƒ‚„†‡ˆ‰‹Œ“•˜œŸ¡¦§¨ª«¬¯°²³ˇ˘›‘”´©™]|'
     
     # Similar mojibake of low-numbered characters in MacRoman. Leaving out
     # most mathy characters because of false positives, but cautiously catching
