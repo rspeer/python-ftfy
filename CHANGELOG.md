@@ -1,3 +1,11 @@
+## Version 5.8 (July 17, 2020)
+
+- Improved detection of UTF-8 mojibake of Greek, Cyrillic, Hebrew, and Arabic
+  scripts.
+
+- Fixed the undeclared dependency on setuptools by removing the use of
+  `pkg_resources`.
+
 ## Version 5.7 (February 18, 2020)
 
 - Updated the data file of Unicode character categories to Unicode 12.1, as
