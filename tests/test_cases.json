@@ -337,19 +337,24 @@
         "fixed": "NESTLÉ® requiere contratar personal para diferentes areas a nivel nacional e internacional",
         "expect": "pass"
     },
-
     {
-        "label": "Punctuation pile-up should actually be musical notes",
-        "comment": "Unfortunately, the difference doesn't look convincing to ftfy",
-        "original": "Engkau masih yg terindah, indah di dalam hatikuâ™«~",
-        "fixed": "Engkau masih yg terindah, indah di dalam hatiku♫~",
-        "expect": "fail"
+        "label": "French example containing non-breaking spaces",
+        "original": "ART TRIP Ã\u00a0 l'office de tourisme",
+        "fixed": "ART TRIP à l'office de tourisme",
+        "expect": "pass"
     },
     {
         "label": "UTF-8 / Windows-1252 mixup in Gaelic involving non-breaking spaces",
         "comment": "Too similar to the Finnish negative example with non-breaking spaces",
         "original": "CÃ\u00a0nan nan GÃ\u00a0idheal",
         "fixed": "Cànan nan Gàidheal",
+        "expect": "pass"
+    },
+    {
+        "label": "Punctuation pile-up should actually be musical notes",
+        "comment": "Unfortunately, the difference doesn't look convincing to ftfy",
+        "original": "Engkau masih yg terindah, indah di dalam hatikuâ™«~",
+        "fixed": "Engkau masih yg terindah, indah di dalam hatiku♫~",
         "expect": "fail"
     },
     {
@@ -364,6 +369,13 @@
         "comment": "Requires something like encoding detection",
         "original": "Habitantes de Coatl\u0087n conf\u0092an en proyecto de edil electo independiente",
         "fixed": "Habitantes de Coatlán confían en proyecto de edil electo independiente",
+        "expect": "fail"
+    },
+    {
+        "label": "A mix of two encodings and two languages",
+        "comment": "Requires handling of individual anomalous characters",
+        "original": "Ã€ tous mes frÃ¨res et soeurs dans la syriennetÃ© comme dans l’humanitÃ©, sans discrimination aucune, je vous souhaite bonne fÃªte Ø¹ÙŠØ¯ Ø³Ø¹ÙŠØ¯.Que la paix, la libertÃ©, l’Ã©galitÃ©, la fraternitÃ© et la dignitÃ© soient avec vous.Pardonnez ce ton un peu ecclÃ©siastique.",
+        "fixed": "À tous mes frères et soeurs dans la syrienneté comme dans l'humanité, sans discrimination aucune, je vous souhaite bonne fête عيد سعيد.Que la paix, la liberté, l'égalité, la fraternité et la dignité soient avec vous.Pardonnez ce ton un peu ecclésiastique.",
         "expect": "fail"
     },
     {
