@@ -344,7 +344,7 @@
         "expect": "pass"
     },
     {
-        "label": "à remains its own word, even if spaces after it get coalesced into one",
+        "label": "'à' remains its own word, even if spaces after it get coalesced into one",
         "original": "Ã perturber la rÃ©flexion des thÃ©ologiens jusqu'Ã nos jours",
         "fixed": "à perturber la réflexion des théologiens jusqu'à nos jours",
         "expect": "pass"
@@ -353,6 +353,18 @@
         "label": "The Portuguese word 'às' does not become 'à s' due to the French fix",
         "original": "com especial atenÃ§Ã£o Ã s crianÃ§as",
         "fixed": "com especial atenção às crianças",
+        "expect": "pass"
+    },
+    {
+        "label": "This is why we require a space after the 's' in 'às'",
+        "original": "TroisiÃ¨me Ã©dition pour ce festival qui persiste et signe Ã s'Ã©loigner des grands axes pour prendre les contre-allÃ©es en 16 concerts dans 7 villes de 2 pays voisins.",
+        "fixed": "Troisième édition pour ce festival qui persiste et signe à s'éloigner des grands axes pour prendre les contre-allées en 16 concerts dans 7 villes de 2 pays voisins.",
+        "expect": "pass"
+    },
+    {
+        "label": "'Ã quele' is the Portuguese word 'àquele', not 'à quele'",
+        "original": "eliminado o antÃ­geno e mantidos os nÃ­veis de anticorpos, surgem as condiÃ§Ãµes necessÃ¡rias ao estabelecimento do granuloma, semelhante Ã quele observado nas lesÃµes por imunocomplexo em excesso de anticorpos",
+        "fixed": "eliminado o antígeno e mantidos os níveis de anticorpos, surgem as condições necessárias ao estabelecimento do granuloma, semelhante àquele observado nas lesões por imunocomplexo em excesso de anticorpos",
         "expect": "pass"
     },
     {
