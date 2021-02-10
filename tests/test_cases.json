@@ -120,6 +120,14 @@
         "expect": "pass"
     },
     {
+        "label": "UTF-8 / Windows-1252 mixup in mixed French and Arabic",
+        "comment": "'fixed-encoding' is still mojibaked. The thing that makes this test case work is that the full ftfy pipeline can uncurl the quotes, then fix the mojibake",
+        "original": "Ã€ tous mes frÃ¨res et soeurs dans la syriennetÃ© comme dans l’humanitÃ©, sans discrimination aucune, je vous souhaite bonne fÃªte Ø¹ÙŠØ¯ Ø³Ø¹ÙŠØ¯.Que la paix, la libertÃ©, l’Ã©galitÃ©, la fraternitÃ© et la dignitÃ© soient avec vous.Pardonnez ce ton un peu ecclÃ©siastique.",
+        "fixed-encoding": "Ã€ tous mes frÃ¨res et soeurs dans la syriennetÃ© comme dans l’humanitÃ©, sans discrimination aucune, je vous souhaite bonne fÃªte Ø¹ÙŠØ¯ Ø³Ø¹ÙŠØ¯.Que la paix, la libertÃ©, l’Ã©galitÃ©, la fraternitÃ© et la dignitÃ© soient avec vous.Pardonnez ce ton un peu ecclÃ©siastique.",
+        "fixed": "À tous mes frères et soeurs dans la syrienneté comme dans l'humanité, sans discrimination aucune, je vous souhaite bonne fête عيد سعيد.Que la paix, la liberté, l'égalité, la fraternité et la dignité soient avec vous.Pardonnez ce ton un peu ecclésiastique.",
+        "expect": "pass"
+    },
+    {
         "label": "UTF-8 / sloppy Windows-1250 mixup in Romanian",
         "original": "vedere Ă®nceĹŁoĹźatÄ\u0083",
         "fixed": "vedere înceţoşată",
@@ -417,13 +425,6 @@
         "comment": "Requires something like encoding detection",
         "original": "Habitantes de Coatl\u0087n conf\u0092an en proyecto de edil electo independiente",
         "fixed": "Habitantes de Coatlán confían en proyecto de edil electo independiente",
-        "expect": "fail"
-    },
-    {
-        "label": "A mix of two encodings and two languages",
-        "comment": "Requires handling of individual anomalous characters",
-        "original": "Ã€ tous mes frÃ¨res et soeurs dans la syriennetÃ© comme dans l’humanitÃ©, sans discrimination aucune, je vous souhaite bonne fÃªte Ø¹ÙŠØ¯ Ø³Ø¹ÙŠØ¯.Que la paix, la libertÃ©, l’Ã©galitÃ©, la fraternitÃ© et la dignitÃ© soient avec vous.Pardonnez ce ton un peu ecclÃ©siastique.",
-        "fixed": "À tous mes frères et soeurs dans la syrienneté comme dans l'humanité, sans discrimination aucune, je vous souhaite bonne fête عيد سعيد.Que la paix, la liberté, l'égalité, la fraternité et la dignité soient avec vous.Pardonnez ce ton un peu ecclésiastique.",
         "expect": "fail"
     },
     {
