@@ -21,9 +21,9 @@ DESCRIPTION = open('README.md', encoding='utf-8').read()
 
 setup(
     name="ftfy",
-    version='5.8',
-    maintainer='Luminoso Technologies, Inc.',
-    maintainer_email='info@luminoso.com',
+    version='5.9',
+    maintainer='Robyn Speer',
+    maintainer_email='rspeer@luminoso.com',
     license="MIT",
     url='http://github.com/LuminosoInsight/python-ftfy',
     platforms=["any"],
@@ -36,10 +36,10 @@ setup(
     python_requires='>=3.5',
     classifiers=[
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries :: Python Modules",
