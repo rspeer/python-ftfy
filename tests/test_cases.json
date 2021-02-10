@@ -344,6 +344,24 @@
         "expect": "pass"
     },
     {
+        "label": "Synthetic: we can recognize Ã in some cases when it's the only mojibake",
+        "original": "voilÃ  le travail",
+        "fixed": "voilà le travail",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: we can recognize Ã at the end of a word when it absorbs a following space",
+        "original": "voilÃ le travail",
+        "fixed": "voilà le travail",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: We don't fix Ã in all contexts",
+        "original": "C O N C L U S Ã O",
+        "fixed": "C O N C L U S Ã O",
+        "expect": "pass"
+    },
+    {
         "label": "'à' remains its own word, even if spaces after it get coalesced into one",
         "original": "Ã perturber la rÃ©flexion des thÃ©ologiens jusqu'Ã nos jours",
         "fixed": "à perturber la réflexion des théologiens jusqu'à nos jours",
