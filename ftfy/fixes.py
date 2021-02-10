@@ -636,10 +636,10 @@ def decode_escapes(text):
 # Other instances in Portuguese, such as "àfrica", seem to be typos (intended
 # to be "África" with the accent in the other direction).
 #
-# Unfortunately, Catalan has many words beginning with "à" that will end up
-# with a space inserted in them in this case. We can't do the right thing with
-# all of them. The cost is that the mojibake text "Ã udio" will be interpreted
-# as "à udio", not the Catalan word "àudio".
+# Unfortunately, "à" is a common letter in Catalan, and mojibake of words that
+# contain it will end up with inserted spaces. We can't do the right thing with
+# every word. The cost is that the mojibake text "fÃ cil" will be interpreted as
+# "fà cil", not "fàcil".
 A_GRAVE_WORD_RE = re.compile(b'\xc3 (?! |quele|quela|quilo|s )')
 
 def restore_byte_a0(byts):
