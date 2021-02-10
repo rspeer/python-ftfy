@@ -344,6 +344,24 @@
         "expect": "pass"
     },
     {
+        "label": "à remains its own word, even if spaces after it get coalesced into one",
+        "original": "Ã perturber la rÃ©flexion des thÃ©ologiens jusqu'Ã nos jours",
+        "fixed": "à perturber la réflexion des théologiens jusqu'à nos jours",
+        "expect": "pass"
+    },
+    {
+        "label": "The Portuguese word 'às' does not become 'à s' due to the French fix",
+        "original": "com especial atenÃ§Ã£o Ã s crianÃ§as",
+        "fixed": "com especial atenção às crianças",
+        "expect": "pass"
+    },
+    {
+        "label": "A complex, lossy pile-up of mojibake in Portuguese",
+        "original": "â € ðŸ“�Â Regulamento: â € âš ï¸� As pessoas que marcarem nos comentÃ¡rios perfis empresariais e/ou de marcas, personalidades ou fake serÃ£o desclassificadas. âš ï¸� Podem participar pessoas residentes em Petrolina/PE ou Juazeiro/BA, desde que se comprometam a retirar o prÃªmio em nosso endereÃ§o. FuncionÃ¡rios estÃ£o vetados. âš ï¸� SerÃ£o vÃ¡lidos os comentÃ¡rios postados atÃ© 16h, do dia 31/03/2018. E o resultado serÃ¡ divulgado atÃ© Ã s 19h do mesmo dia em uma nova publicaÃ§Ã£o em nosso instagram. â € Boa sorte!!!Â ðŸ˜€ðŸ�°",
+        "fixed": "⠀ �\u00a0Regulamento: ⠀ ⚠� As pessoas que marcarem nos comentários perfis empresariais e/ou de marcas, personalidades ou fake serão desclassificadas. ⚠� Podem participar pessoas residentes em Petrolina/PE ou Juazeiro/BA, desde que se comprometam a retirar o prêmio em nosso endereço. Funcionários estão vetados. ⚠� Serão válidos os comentários postados até 16h, do dia 31/03/2018. E o resultado será divulgado até às 19h do mesmo dia em uma nova publicação em nosso instagram. ⠀ Boa sorte!!!\u00a0😀�",
+        "expect": "pass"
+    },
+    {
         "label": "UTF-8 / Windows-1252 mixup in Gaelic involving non-breaking spaces",
         "comment": "Too similar to the Finnish negative example with non-breaking spaces",
         "original": "CÃ\u00a0nan nan GÃ\u00a0idheal",
