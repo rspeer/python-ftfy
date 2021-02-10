@@ -388,6 +388,13 @@
         "expect": "pass"
     },
     {
+        "label": "We can fix 'à' in windows-1251 sometimes as well",
+        "original": "La rГ©gion de Dnepropetrovsk se trouve Г lвЂ™ouest de lвЂ™Ukraine",
+        "fixed-encoding": "La région de Dnepropetrovsk se trouve à l’ouest de l’Ukraine",
+        "fixed": "La région de Dnepropetrovsk se trouve à l'ouest de l'Ukraine",
+        "expect": "pass"
+    },
+    {
         "label": "'Ã quele' is the Portuguese word 'àquele', not 'à quele'",
         "original": "eliminado o antÃ­geno e mantidos os nÃ­veis de anticorpos, surgem as condiÃ§Ãµes necessÃ¡rias ao estabelecimento do granuloma, semelhante Ã quele observado nas lesÃµes por imunocomplexo em excesso de anticorpos",
         "fixed": "eliminado o antígeno e mantidos os níveis de anticorpos, surgem as condições necessárias ao estabelecimento do granuloma, semelhante àquele observado nas lesões por imunocomplexo em excesso de anticorpos",
@@ -425,6 +432,12 @@
         "comment": "Requires something like encoding detection",
         "original": "Habitantes de Coatl\u0087n conf\u0092an en proyecto de edil electo independiente",
         "fixed": "Habitantes de Coatlán confían en proyecto de edil electo independiente",
+        "expect": "fail"
+    },
+    {
+        "label": "An example with 'à' in windows-1251 where we need our heuristic to be bolder",
+        "original": "faites attention Г bien vous renseigner avant sur le mГ©dicament",
+        "fixed": "faites attention à bien vous renseigner avant sur le médicament",
         "expect": "fail"
     },
     {
