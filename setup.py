@@ -33,7 +33,7 @@ setup(
     packages=['ftfy', 'ftfy.bad_codecs'],
     install_requires=['wcwidth'],
     tests_require=['pytest'],
-    python_requires='>=3.6',
+    python_requires='>=3.5',
     classifiers=[
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
