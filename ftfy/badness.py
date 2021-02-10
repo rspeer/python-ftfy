@@ -156,6 +156,14 @@ MOJIBAKE_SYMBOL_RE = re.compile(
     # Windows-1250, or Windows-1252 mojibake.
     '[ÂÃÎÏÐÑØÙĂĎĐŃŘŮ][\x80-\x9f€ƒ‚„†‡ˆ‰‹Œ“•˜œŸ¡¢£¤¥¦§¨ª«¬¯°±²³µ¶·¸¹º¼½¾¿ˇ˘˝]|'
     
+    # The unlucky mojibake of 'à', which we decode even though it comes from the
+    # slightly ambiguous sequence of Ã and a non-breaking space. Fortunately,
+    # no language appears to have words that end with Ã.
+    #
+    # We also recognize it with a normal space, given the context of a preceding
+    # ASCII lowercase letter, possibly with a space in between
+    'Ã\xa0|[a-z] ?Ã |'
+    
     # Character sequences we have to be a little more cautious about if they're
     # at the end of a word, but are totally okay to fix in the middle
     r'[ÂÃÎÏÐÑØÙĂĎĐŃŘŮ][›»‘”´©™]\w|'
