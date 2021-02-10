@@ -47,8 +47,8 @@ def make_char_data_file(do_it_anyway=False):
     To protect against this, running this in the wrong version of Python will
     raise an error unless you pass `do_it_anyway=True`.
     """
-    if sys.version_info < (3, 8) and not do_it_anyway:
-        raise RuntimeError("This function should be run in Python 3.8 or later.")
+    if sys.version_info < (3, 9) and not do_it_anyway:
+        raise RuntimeError("This function should be run in Python 3.9 or later.")
 
     cclasses = [None] * 0x110000
     for codepoint in range(0x0, 0x110000):
