@@ -617,6 +617,31 @@ def decode_escapes(text):
     return ESCAPE_SEQUENCE_RE.sub(decode_match, text)
 
 
+# This regex implements an exception to restore_byte_a0, so we can decode the
+# very common mojibake of (for example) "Ã la mode" as "à la mode", not "àla
+# mode".
+#
+# If byte C3 appears with a word break before it and a single space after it --
+# most commonly this shows up as " Ã " appearing as an entire word -- we'll
+# insert \xa0 while keeping the space. Without this change, we would decode "à"
+# as the start of the next word, such as "àla". It's almost always intended to
+# be a separate word, as in "à la", but when mojibake turns this into "Ã\xa0
+# la", the two kinds of spaces get coalesced into "Ã la".
+#
+# We make exceptions for the Portuguese words "às", "àquele", "àquela",
+# "àquilo" and their plurals -- these are contractions of, for example, "a
+# aquele" and are very common. Note that the final letter is important to
+# distinguish this case from French "à quel point".
+#
+# Other instances in Portuguese, such as "àfrica", seem to be typos (intended
+# to be "África" with the accent in the other direction).
+#
+# Unfortunately, Catalan has many words beginning with "à" that will end up
+# with a space inserted in them in this case. We can't do the right thing with
+# all of them. The cost is that the mojibake text "Ã udio" will be interpreted
+# as "à udio", not the Catalan word "àudio".
+A_GRAVE_WORD_RE = re.compile(b'(?<!\\w)\xc3 (?! |quele|quela|quilo|s )')
+
 def restore_byte_a0(byts):
     """
     Some mojibake has been additionally altered by a process that said "hmm,
@@ -631,6 +656,7 @@ def restore_byte_a0(byts):
 
     This is used as a step within `fix_encoding`.
     """
+    byts = A_GRAVE_WORD_RE.sub(b'\xc3\xa0 ', byts)
 
     def replacement(match):
         "The function to apply when this regex matches."
@@ -677,7 +703,7 @@ def replace_lossy_sequences(byts):
     """
     return LOSSY_UTF8_RE.sub('\ufffd'.encode('utf-8'), byts)
 
-
+    
 def fix_partial_utf8_punct_in_1252(text):
     """
     Fix particular characters that seem to be found in the wild encoded in
