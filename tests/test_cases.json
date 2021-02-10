@@ -120,6 +120,14 @@
         "expect": "pass"
     },
     {
+        "label": "UTF-8 / Windows-1252 mixup in mixed French and Arabic",
+        "comment": "'fixed-encoding' is still mojibaked. The thing that makes this test case work is that the full ftfy pipeline can uncurl the quotes, then fix the mojibake",
+        "original": "Ã€ tous mes frÃ¨res et soeurs dans la syriennetÃ© comme dans l’humanitÃ©, sans discrimination aucune, je vous souhaite bonne fÃªte Ø¹ÙŠØ¯ Ø³Ø¹ÙŠØ¯.Que la paix, la libertÃ©, l’Ã©galitÃ©, la fraternitÃ© et la dignitÃ© soient avec vous.Pardonnez ce ton un peu ecclÃ©siastique.",
+        "fixed-encoding": "Ã€ tous mes frÃ¨res et soeurs dans la syriennetÃ© comme dans l’humanitÃ©, sans discrimination aucune, je vous souhaite bonne fÃªte Ø¹ÙŠØ¯ Ø³Ø¹ÙŠØ¯.Que la paix, la libertÃ©, l’Ã©galitÃ©, la fraternitÃ© et la dignitÃ© soient avec vous.Pardonnez ce ton un peu ecclÃ©siastique.",
+        "fixed": "À tous mes frères et soeurs dans la syrienneté comme dans l'humanité, sans discrimination aucune, je vous souhaite bonne fête عيد سعيد.Que la paix, la liberté, l'égalité, la fraternité et la dignité soient avec vous.Pardonnez ce ton un peu ecclésiastique.",
+        "expect": "pass"
+    },
+    {
         "label": "UTF-8 / sloppy Windows-1250 mixup in Romanian",
         "original": "vedere Ă®nceĹŁoĹźatÄ\u0083",
         "fixed": "vedere înceţoşată",
@@ -337,19 +345,79 @@
         "fixed": "NESTLÉ® requiere contratar personal para diferentes areas a nivel nacional e internacional",
         "expect": "pass"
     },
-
     {
-        "label": "Punctuation pile-up should actually be musical notes",
-        "comment": "Unfortunately, the difference doesn't look convincing to ftfy",
-        "original": "Engkau masih yg terindah, indah di dalam hatikuâ™«~",
-        "fixed": "Engkau masih yg terindah, indah di dalam hatiku♫~",
-        "expect": "fail"
+        "label": "French example containing non-breaking spaces",
+        "original": "ART TRIP Ã\u00a0 l'office de tourisme",
+        "fixed": "ART TRIP à l'office de tourisme",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: we can recognize Ã in some cases when it's the only mojibake",
+        "original": "voilÃ  le travail",
+        "fixed": "voilà le travail",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: we can recognize Ã at the end of a word when it absorbs a following space",
+        "original": "voilÃ le travail",
+        "fixed": "voilà le travail",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: We don't fix Ã in all contexts",
+        "original": "C O N C L U S Ã O",
+        "fixed": "C O N C L U S Ã O",
+        "expect": "pass"
+    },
+    {
+        "label": "'à' remains its own word, even if spaces after it get coalesced into one",
+        "original": "Ã perturber la rÃ©flexion des thÃ©ologiens jusqu'Ã nos jours",
+        "fixed": "à perturber la réflexion des théologiens jusqu'à nos jours",
+        "expect": "pass"
+    },
+    {
+        "label": "The Portuguese word 'às' does not become 'à s' due to the French fix",
+        "original": "com especial atenÃ§Ã£o Ã s crianÃ§as",
+        "fixed": "com especial atenção às crianças",
+        "expect": "pass"
+    },
+    {
+        "label": "This is why we require a space after the 's' in 'às'",
+        "original": "TroisiÃ¨me Ã©dition pour ce festival qui persiste et signe Ã s'Ã©loigner des grands axes pour prendre les contre-allÃ©es en 16 concerts dans 7 villes de 2 pays voisins.",
+        "fixed": "Troisième édition pour ce festival qui persiste et signe à s'éloigner des grands axes pour prendre les contre-allées en 16 concerts dans 7 villes de 2 pays voisins.",
+        "expect": "pass"
+    },
+    {
+        "label": "We can fix 'à' in windows-1251 sometimes as well",
+        "original": "La rГ©gion de Dnepropetrovsk se trouve Г lвЂ™ouest de lвЂ™Ukraine",
+        "fixed-encoding": "La région de Dnepropetrovsk se trouve à l’ouest de l’Ukraine",
+        "fixed": "La région de Dnepropetrovsk se trouve à l'ouest de l'Ukraine",
+        "expect": "pass"
+    },
+    {
+        "label": "'Ã quele' is the Portuguese word 'àquele', not 'à quele'",
+        "original": "eliminado o antÃ­geno e mantidos os nÃ­veis de anticorpos, surgem as condiÃ§Ãµes necessÃ¡rias ao estabelecimento do granuloma, semelhante Ã quele observado nas lesÃµes por imunocomplexo em excesso de anticorpos",
+        "fixed": "eliminado o antígeno e mantidos os níveis de anticorpos, surgem as condições necessárias ao estabelecimento do granuloma, semelhante àquele observado nas lesões por imunocomplexo em excesso de anticorpos",
+        "expect": "pass"
+    },
+    {
+        "label": "A complex, lossy pile-up of mojibake in Portuguese",
+        "original": "â € ðŸ“�Â Regulamento: â € âš ï¸� As pessoas que marcarem nos comentÃ¡rios perfis empresariais e/ou de marcas, personalidades ou fake serÃ£o desclassificadas. âš ï¸� Podem participar pessoas residentes em Petrolina/PE ou Juazeiro/BA, desde que se comprometam a retirar o prÃªmio em nosso endereÃ§o. FuncionÃ¡rios estÃ£o vetados. âš ï¸� SerÃ£o vÃ¡lidos os comentÃ¡rios postados atÃ© 16h, do dia 31/03/2018. E o resultado serÃ¡ divulgado atÃ© Ã s 19h do mesmo dia em uma nova publicaÃ§Ã£o em nosso instagram. â € Boa sorte!!!Â ðŸ˜€ðŸ�°",
+        "fixed": "⠀ �\u00a0Regulamento: ⠀ ⚠� As pessoas que marcarem nos comentários perfis empresariais e/ou de marcas, personalidades ou fake serão desclassificadas. ⚠� Podem participar pessoas residentes em Petrolina/PE ou Juazeiro/BA, desde que se comprometam a retirar o prêmio em nosso endereço. Funcionários estão vetados. ⚠� Serão válidos os comentários postados até 16h, do dia 31/03/2018. E o resultado será divulgado até às 19h do mesmo dia em uma nova publicação em nosso instagram. ⠀ Boa sorte!!!\u00a0😀�",
+        "expect": "pass"
     },
     {
         "label": "UTF-8 / Windows-1252 mixup in Gaelic involving non-breaking spaces",
         "comment": "Too similar to the Finnish negative example with non-breaking spaces",
         "original": "CÃ\u00a0nan nan GÃ\u00a0idheal",
         "fixed": "Cànan nan Gàidheal",
+        "expect": "pass"
+    },
+    {
+        "label": "Punctuation pile-up should actually be musical notes",
+        "comment": "Unfortunately, the difference doesn't look convincing to ftfy",
+        "original": "Engkau masih yg terindah, indah di dalam hatikuâ™«~",
+        "fixed": "Engkau masih yg terindah, indah di dalam hatiku♫~",
         "expect": "fail"
     },
     {
@@ -364,6 +432,12 @@
         "comment": "Requires something like encoding detection",
         "original": "Habitantes de Coatl\u0087n conf\u0092an en proyecto de edil electo independiente",
         "fixed": "Habitantes de Coatlán confían en proyecto de edil electo independiente",
+        "expect": "fail"
+    },
+    {
+        "label": "An example with 'à' in windows-1251 where we need our heuristic to be bolder",
+        "original": "faites attention Г bien vous renseigner avant sur le mГ©dicament",
+        "fixed": "faites attention à bien vous renseigner avant sur le médicament",
         "expect": "fail"
     },
     {

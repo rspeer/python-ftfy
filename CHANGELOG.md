@@ -1,3 +1,22 @@
+## Version 5.9 (February 10, 2021)
+
+This version is brought to you by the letter à and the number 0xC3.
+
+- Tweaked the heuristic to decode, for example, "Ã&nbsp;" as the letter "à"
+  more often.
+
+- This combines with the non-breaking-space fixer to decode "Ã " as "à" as
+  well. However, in many cases, the text " Ã " was intended to be " à ",
+  preserving the space -- the underlying mojibake had two spaces after it, but
+  the Web coalesced them into one. We detect this case based on common French
+  and Portuguese words, and preserve the space when it appears intended.
+
+Thanks to @zehavoc for bringing to my attention how common this case is.
+
+- Updated the data file of Unicode character categories to Unicode 13, as
+  used in Python 3.9. (No matter what version of Python you're on, ftfy uses
+  the same data.)
+
 ## Version 5.8 (July 17, 2020)
 
 - Improved detection of UTF-8 mojibake of Greek, Cyrillic, Hebrew, and Arabic
