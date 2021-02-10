@@ -8,3 +8,5 @@ _build
 twitterlogs
 .eggs
 .pytest_cache
+.tox
+specimens
