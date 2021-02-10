@@ -204,7 +204,7 @@ def fix_one_step_and_explain(text):
                 # except they have b' ' where b'\xa0' would belong.
                 if ALTERED_UTF8_RE.search(encoded_bytes):
                     encoded_bytes = restore_byte_a0(encoded_bytes)
-                    cost = encoded_bytes.count(0xa0) * 2
+                    cost = encoded_bytes.count(0xa0)
                     transcode_steps.append(('transcode', 'restore_byte_a0', cost))
 
                 # Check for the byte 0x1a, which indicates where one of our
@@ -621,12 +621,12 @@ def decode_escapes(text):
 # very common mojibake of (for example) "Ã la mode" as "à la mode", not "àla
 # mode".
 #
-# If byte C3 appears with a word break before it and a single space after it --
-# most commonly this shows up as " Ã " appearing as an entire word -- we'll
-# insert \xa0 while keeping the space. Without this change, we would decode "à"
-# as the start of the next word, such as "àla". It's almost always intended to
-# be a separate word, as in "à la", but when mojibake turns this into "Ã\xa0
-# la", the two kinds of spaces get coalesced into "Ã la".
+# If byte C3 appears with a single space after it -- most commonly this shows
+# up as " Ã " appearing as an entire word -- we'll insert \xa0 while keeping
+# the space. Without this change, we would decode "à" as the start of the next
+# word, such as "àla". It's almost always intended to be a separate word, as in
+# "à la", but when mojibake turns this into "Ã\xa0 la", the two kinds of spaces
+# get coalesced into "Ã la".
 #
 # We make exceptions for the Portuguese words "às", "àquele", "àquela",
 # "àquilo" and their plurals -- these are contractions of, for example, "a
@@ -640,7 +640,7 @@ def decode_escapes(text):
 # with a space inserted in them in this case. We can't do the right thing with
 # all of them. The cost is that the mojibake text "Ã udio" will be interpreted
 # as "à udio", not the Catalan word "àudio".
-A_GRAVE_WORD_RE = re.compile(b'(?<!\\w)\xc3 (?! |quele|quela|quilo|s )')
+A_GRAVE_WORD_RE = re.compile(b'\xc3 (?! |quele|quela|quilo|s )')
 
 def restore_byte_a0(byts):
     """
