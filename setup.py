@@ -22,8 +22,8 @@ DESCRIPTION = open('README.md', encoding='utf-8').read()
 setup(
     name="ftfy",
     version='5.9',
-    maintainer='Luminoso Technologies, Inc.',
-    maintainer_email='info@luminoso.com',
+    maintainer='Robyn Speer',
+    maintainer_email='rspeer@luminoso.com',
     license="MIT",
     url='http://github.com/LuminosoInsight/python-ftfy',
     platforms=["any"],
