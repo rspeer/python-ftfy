@@ -29,9 +29,10 @@ MOJIBAKE_CATEGORIES = {
         '\N{HORIZONTAL ELLIPSIS}'
         '\N{RIGHT SINGLE QUOTATION MARK}'
     ),
+    # the C1 control character range, which have no uses outside of mojibake anymore
+    'c1': _char_range(0x80, 0x9f),
     # Characters that are nearly 100% used in mojibake
     'bad': (
-        _char_range(0x80, 0x9f) +
         '\N{BROKEN BAR}'
         '\N{CURRENCY SIGN}'
         '\N{DIAERESIS}'
@@ -225,7 +226,7 @@ MOJIBAKE_CATEGORIES = {
 }
 
 BADNESS_RE = re.compile("""
-    [\x80-\x9f]
+    [{c1}]
     |
     [{bad}{lower_accented}{upper_accented}{box}{start_punctuation}{end_punctuation}{currency}{numeric}] [{bad}]
     |
@@ -254,8 +255,8 @@ BADNESS_RE = re.compile("""
     [{lower_accented}{upper_accented}] [{end_punctuation}] \\w
     |
 
-    # The ligature œ outside of Latin-looking words
-    [^\\sA-Za-z][Œœ]
+    # The ligature œ outside of English-looking words
+    [Œœ][^a-z]
     |
 
     # Windows-1252 2-character mojibake that isn't covered by the cases above
@@ -283,7 +284,7 @@ BADNESS_RE = re.compile("""
     |
 
     # Windows-1251 mojibake of Latin-1 characters and/or the Cyrillic alphabet
-    [ВГРС][\x80-\x9f‚ѓ„†‡€‰‹‘“”•™›¤¦§©«¬®°±µ¶№»][ВГРС]
+    [ВГРС][{c1}{bad}{start_punctuation}{end_punctuation}{currency}°µ][ВГРС]
     |
 
     # Windows-1252 encodings of 'à'
@@ -297,7 +298,7 @@ BADNESS_RE = re.compile("""
     |
     
     # Windows-1253 mojibake of Latin-1 characters and/or the Greek alphabet
-    [ΒΓΞΟ][\x80-\x96€‚ƒ„†‡‰‹‘“”•™›΅£¤¥¦§¨©ª«¬®―°±²³΄µ¶»½][ΒΓΞΟ]
+    [ΒΓΞΟ][{c1}{bad}{start_punctuation}{end_punctuation}{currency}°][ΒΓΞΟ]
 
     # TODO: add longer sequences that detect Windows-1251 and Windows-1253
     # two-character mojibake in groups, because the two characters alone
