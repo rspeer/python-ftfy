@@ -415,10 +415,9 @@
     },
     {
         "label": "Punctuation pile-up should actually be musical notes",
-        "comment": "Unfortunately, the difference doesn't look convincing to ftfy",
         "original": "Engkau masih yg terindah, indah di dalam hatikuâ™«~",
         "fixed": "Engkau masih yg terindah, indah di dalam hatiku♫~",
-        "expect": "fail"
+        "expect": "pass"
     },
     {
         "label": "Latin-1 / MacRoman mixup in Spanish",
@@ -546,10 +545,10 @@
     },
     {
         "label": "Negative: Leet line-art",
-        "comment": "Current false positive: it coincidentally all decodes as UTF-8/CP437 mojibake and becomes 'ôaſaſaſaſa'",
+        "comment": "The heuristic before v6 loved to 'fix' this and decode it as 'ôaſaſaſaſa'",
         "original": "├┤a┼┐a┼┐a┼┐a┼┐a",
         "fixed": "├┤a┼┐a┼┐a┼┐a┼┐a",
-        "expect": "fail"
+        "expect": "pass"
     },
     {
         "label": "Synthetic, negative: Brontë's name does not end with a Korean syllable",
@@ -688,10 +687,10 @@
         "expect": "pass"
     },
     {
-        "label": "Synthetic, false negative: mojibake with trademark sign at the end of a word",
+        "label": "Synthetic: mojibake with trademark sign at the end of a word",
         "comment": "I recall the correct version of this text from a sign in the movie Amélie. Unfortunately, we can't help her twin AmÃ©lie, who makes mojibaked signs.",
         "original": "OÃ™ ET QUAND?",
         "fixed": "OÙ ET QUAND?",
-        "expect": "fail"
+        "expect": "pass"
     }
 ]

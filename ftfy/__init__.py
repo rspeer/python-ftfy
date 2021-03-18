@@ -192,7 +192,6 @@ def fix_text(
 # Some alternate names for the main functions
 ftfy = fix_text
 fix_encoding = fixes.fix_encoding
-fix_text_encoding = fixes.fix_text_encoding  # deprecated
 
 
 def fix_file(
