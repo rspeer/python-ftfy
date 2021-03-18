@@ -8,7 +8,7 @@ import html
 import re
 import warnings
 
-from ftfy.badness import text_cost
+from ftfy.badness import badness, is_bad
 from ftfy.chardata import (
     ALTERED_UTF8_RE,
     C1_CONTROL_RE,
@@ -118,27 +118,6 @@ def fix_encoding(text):
     return text
 
 
-def fix_text_encoding(text):
-    """
-    A deprecated name for :func:`ftfy.fixes.fix_encoding`.
-    """
-    warnings.warn('fix_text_encoding is now known as fix_encoding', DeprecationWarning)
-    return fix_encoding(text)
-
-
-# When we support discovering mojibake in more encodings, we run the risk
-# of more false positives. We can mitigate false positives by assigning an
-# additional cost to using encodings that are rarer than Windows-1252, so
-# that these encodings will only be used if they fix multiple problems.
-ENCODING_COSTS = {
-    'macroman': 2,
-    'iso-8859-2': 2,
-    'sloppy-windows-1250': 2,
-    'sloppy-windows-1251': 3,
-    'cp437': 3,
-}
-
-
 def fix_encoding_and_explain(text):
     """
     Re-decodes text that has been decoded incorrectly, and also return a
@@ -147,24 +126,16 @@ def fix_encoding_and_explain(text):
     The resulting plan could be used with :func:`ftfy.fixes.apply_plan`
     to fix additional strings that are broken in the same way.
     """
-    best_version = text
-    best_cost = text_cost(text)
-    best_plan = []
+    if isinstance(text, bytes):
+        raise UnicodeError(BYTES_ERROR_TEXT)
+
     plan_so_far = []
     while True:
         prevtext = text
         text, plan = fix_one_step_and_explain(text)
         plan_so_far.extend(plan)
-        cost = text_cost(text)
-        for _, _, step_cost in plan_so_far:
-            cost += step_cost
-
-        if cost < best_cost:
-            best_cost = cost
-            best_version = text
-            best_plan = list(plan_so_far)
         if text == prevtext:
-            return best_version, best_plan
+            return text, plan_so_far
 
 
 def fix_one_step_and_explain(text):
@@ -173,12 +144,11 @@ def fix_one_step_and_explain(text):
 
     Returns the decoded text, plus a "plan" for how to reproduce what it did.
     """
-    if isinstance(text, bytes):
-        raise UnicodeError(BYTES_ERROR_TEXT)
     if len(text) == 0:
         return text, []
 
-    # The first plan is to return ASCII text unchanged.
+    # The first plan is to return ASCII text unchanged, as well as text
+    # that doesn't look like it contains mojibake
     if possible_encoding(text, 'ascii'):
         return text, []
 
@@ -192,41 +162,42 @@ def fix_one_step_and_explain(text):
     # are usually the correct thing to do, so try them next.
     for encoding in CHARMAP_ENCODINGS:
         if possible_encoding(text, encoding):
-            encoded_bytes = text.encode(encoding)
-            encode_step = ('encode', encoding, ENCODING_COSTS.get(encoding, 0))
-            transcode_steps = []
+            possible_1byte_encodings.append(encoding)
+            if is_bad(text):
+                encoded_bytes = text.encode(encoding)
+                encode_step = ('encode', encoding)
+                transcode_steps = []
 
-            # Now, find out if it's UTF-8 (or close enough). Otherwise,
-            # remember the encoding for later.
-            try:
-                decoding = 'utf-8'
-                # Check encoded_bytes for sequences that would be UTF-8,
-                # except they have b' ' where b'\xa0' would belong.
-                if ALTERED_UTF8_RE.search(encoded_bytes):
-                    encoded_bytes = restore_byte_a0(encoded_bytes)
-                    cost = encoded_bytes.count(0xa0)
-                    transcode_steps.append(('transcode', 'restore_byte_a0', cost))
+                # Now, find out if it's UTF-8 (or close enough). Otherwise,
+                # remember the encoding for later.
+                try:
+                    decoding = 'utf-8'
+                    # Check encoded_bytes for sequences that would be UTF-8,
+                    # except they have b' ' where b'\xa0' would belong.
+                    if ALTERED_UTF8_RE.search(encoded_bytes):
+                        encoded_bytes = restore_byte_a0(encoded_bytes)
+                        transcode_steps.append(('transcode', 'restore_byte_a0'))
 
-                # Check for the byte 0x1a, which indicates where one of our
-                # 'sloppy' codecs found a replacement character.
-                if encoding.startswith('sloppy') and 0x1a in encoded_bytes:
-                    encoded_bytes = replace_lossy_sequences(encoded_bytes)
-                    transcode_steps.append(('transcode', 'replace_lossy_sequences', 0))
+                    # Check for the byte 0x1a, which indicates where one of our
+                    # 'sloppy' codecs found a replacement character.
+                    if encoding.startswith('sloppy') and 0x1a in encoded_bytes:
+                        encoded_bytes = replace_lossy_sequences(encoded_bytes)
+                        transcode_steps.append(('transcode', 'replace_lossy_sequences'))
 
-                if 0xed in encoded_bytes or 0xc0 in encoded_bytes:
-                    decoding = 'utf-8-variants'
+                    if 0xed in encoded_bytes or 0xc0 in encoded_bytes:
+                        decoding = 'utf-8-variants'
 
-                decode_step = ('decode', decoding, 0)
-                steps = [encode_step] + transcode_steps + [decode_step]
-                fixed = encoded_bytes.decode(decoding)
-                return fixed, steps
+                    decode_step = ('decode', decoding)
+                    steps = [encode_step] + transcode_steps + [decode_step]
+                    fixed = encoded_bytes.decode(decoding)
+                    return fixed, steps
 
-            except UnicodeDecodeError:
-                possible_1byte_encodings.append(encoding)
+                except UnicodeDecodeError:
+                    pass
 
     # Look for a-hat-euro sequences that remain, and fix them in isolation.
     if PARTIAL_UTF8_PUNCT_RE.search(text):
-        steps = [('transcode', 'fix_partial_utf8_punct_in_1252', 1)]
+        steps = [('transcode', 'fix_partial_utf8_punct_in_1252')]
         fixed = fix_partial_utf8_punct_in_1252(text)
         return fixed, steps
 
@@ -249,7 +220,7 @@ def fix_one_step_and_explain(text):
                 fixed = encoded.decode('windows-1252')
                 steps = []
                 if fixed != text:
-                    steps = [('encode', 'latin-1', 0), ('decode', 'windows-1252', 1)]
+                    steps = [('encode', 'latin-1'), ('decode', 'windows-1252')]
                 return fixed, steps
             except UnicodeDecodeError:
                 # This text contained characters that don't even make sense
@@ -271,18 +242,15 @@ def apply_plan(text, plan):
     """
     Apply a plan for fixing the encoding of text.
 
-    The plan is a list of tuples of the form (operation, encoding, cost):
+    The plan is a list of tuples of the form (operation, encoding):
 
     - `operation` is 'encode' if it turns a string into bytes, 'decode' if it
       turns bytes into a string, and 'transcode' if it keeps the type the same.
     - `encoding` is the name of the encoding to use, such as 'utf-8' or
       'latin-1', or the function name in the case of 'transcode'.
-    - The `cost` does not affect how the plan itself works. It's used by other
-      users of plans, namely `fix_encoding_and_explain`, which has to decide
-      *which* plan to use.
     """
     obj = text
-    for operation, encoding, _ in plan:
+    for operation, encoding in plan:
         if operation == 'encode':
             obj = obj.encode(encoding)
         elif operation == 'decode':

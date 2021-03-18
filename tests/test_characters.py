@@ -2,27 +2,10 @@ from ftfy.fixes import (
     fix_encoding, fix_encoding_and_explain, apply_plan, possible_encoding,
     remove_control_chars, fix_surrogates
 )
-from ftfy.badness import sequence_weirdness
+from ftfy.badness import badness
 import unicodedata
 import sys
 from ftfy.char_classes import CHAR_CLASS_STRING
-
-
-# Most single-character strings which have been misencoded should be restored.
-def test_bmp_characters():
-    for index in range(0xa0, 0xfffd):
-        char = chr(index)
-        # Exclude code points that are not assigned
-        if unicodedata.category(char) not in ('Co', 'Cn', 'Cs', 'Mc', 'Mn', 'Sk'):
-            garble = char.encode('utf-8').decode('latin-1')
-            # Exclude characters whose re-encoding is protected by the
-            # 'sequence_weirdness' metric
-            if sequence_weirdness(garble) >= 0:
-                garble2 = char.encode('utf-8').decode('latin-1').encode('utf-8').decode('latin-1')
-                for garb in (garble, garble2):
-                    fixed, plan = fix_encoding_and_explain(garb)
-                    assert fixed == char
-                    assert apply_plan(garb, plan) == char
 
 
 def test_possible_encoding():
@@ -47,13 +30,13 @@ def test_control_chars():
 def test_emoji_variation_selector():
     # The hearts here are explicitly marked as emoji using the variation
     # selector U+FE0F. This is not weird.
-    assert sequence_weirdness('❤\ufe0f' * 10) == 0
+    assert badness('❤\ufe0f' * 10) == 0
 
 
 def test_emoji_skintone_selector():
     # Dear heuristic, you can't call skin-tone selectors weird anymore.
     # We welcome Santa Clauses of all colors.
-    assert sequence_weirdness('🎅🏿🎅🏽🎅🏼🎅🏻') == 0
+    assert badness('🎅🏿🎅🏽🎅🏼🎅🏻') == 0
 
 
 def test_surrogates():
