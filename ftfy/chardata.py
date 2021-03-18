@@ -53,16 +53,6 @@ def _build_regexes():
 ENCODING_REGEXES = _build_regexes()
 
 
-def chars_to_classes(string):
-    """
-    Convert each Unicode character to a letter indicating which of many
-    classes it's in.
-
-    See build_data.py for where this data comes from and what it means.
-    """
-    return string.translate(CHAR_CLASS_STRING)
-
-
 def _build_html_entities():
     entities = {}
     # Create a dictionary based on the built-in HTML5 entity dictionary.
