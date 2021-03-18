@@ -149,7 +149,7 @@ def fix_one_step_and_explain(text):
 
     # The first plan is to return ASCII text unchanged, as well as text
     # that doesn't look like it contains mojibake
-    if possible_encoding(text, 'ascii'):
+    if possible_encoding(text, 'ascii') or not is_bad(text):
         return text, []
 
     # As we go through the next step, remember the possible encodings
@@ -163,37 +163,36 @@ def fix_one_step_and_explain(text):
     for encoding in CHARMAP_ENCODINGS:
         if possible_encoding(text, encoding):
             possible_1byte_encodings.append(encoding)
-            if is_bad(text):
-                encoded_bytes = text.encode(encoding)
-                encode_step = ('encode', encoding)
-                transcode_steps = []
+            encoded_bytes = text.encode(encoding)
+            encode_step = ('encode', encoding)
+            transcode_steps = []
 
-                # Now, find out if it's UTF-8 (or close enough). Otherwise,
-                # remember the encoding for later.
-                try:
-                    decoding = 'utf-8'
-                    # Check encoded_bytes for sequences that would be UTF-8,
-                    # except they have b' ' where b'\xa0' would belong.
-                    if ALTERED_UTF8_RE.search(encoded_bytes):
-                        encoded_bytes = restore_byte_a0(encoded_bytes)
-                        transcode_steps.append(('transcode', 'restore_byte_a0'))
+            # Now, find out if it's UTF-8 (or close enough). Otherwise,
+            # remember the encoding for later.
+            try:
+                decoding = 'utf-8'
+                # Check encoded_bytes for sequences that would be UTF-8,
+                # except they have b' ' where b'\xa0' would belong.
+                if ALTERED_UTF8_RE.search(encoded_bytes):
+                    encoded_bytes = restore_byte_a0(encoded_bytes)
+                    transcode_steps.append(('transcode', 'restore_byte_a0'))
 
-                    # Check for the byte 0x1a, which indicates where one of our
-                    # 'sloppy' codecs found a replacement character.
-                    if encoding.startswith('sloppy') and 0x1a in encoded_bytes:
-                        encoded_bytes = replace_lossy_sequences(encoded_bytes)
-                        transcode_steps.append(('transcode', 'replace_lossy_sequences'))
+                # Check for the byte 0x1a, which indicates where one of our
+                # 'sloppy' codecs found a replacement character.
+                if encoding.startswith('sloppy') and 0x1a in encoded_bytes:
+                    encoded_bytes = replace_lossy_sequences(encoded_bytes)
+                    transcode_steps.append(('transcode', 'replace_lossy_sequences'))
 
-                    if 0xed in encoded_bytes or 0xc0 in encoded_bytes:
-                        decoding = 'utf-8-variants'
+                if 0xed in encoded_bytes or 0xc0 in encoded_bytes:
+                    decoding = 'utf-8-variants'
 
-                    decode_step = ('decode', decoding)
-                    steps = [encode_step] + transcode_steps + [decode_step]
-                    fixed = encoded_bytes.decode(decoding)
-                    return fixed, steps
+                decode_step = ('decode', decoding)
+                steps = [encode_step] + transcode_steps + [decode_step]
+                fixed = encoded_bytes.decode(decoding)
+                return fixed, steps
 
-                except UnicodeDecodeError:
-                    pass
+            except UnicodeDecodeError:
+                pass
 
     # Look for a-hat-euro sequences that remain, and fix them in isolation.
     if PARTIAL_UTF8_PUNCT_RE.search(text):
