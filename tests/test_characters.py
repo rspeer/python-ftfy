@@ -5,7 +5,6 @@ from ftfy.fixes import (
 from ftfy.badness import badness
 import unicodedata
 import sys
-from ftfy.char_classes import CHAR_CLASS_STRING
 
 
 def test_possible_encoding():
@@ -43,6 +42,3 @@ def test_surrogates():
     assert fix_surrogates('\udbff\udfff') == '\U0010ffff'
     assert fix_surrogates('\ud800\udc00') == '\U00010000'
 
-
-def test_char_class_type():
-    assert isinstance(CHAR_CLASS_STRING, str)
