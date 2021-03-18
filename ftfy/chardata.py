@@ -9,7 +9,6 @@ import re
 import unicodedata
 import zlib
 
-from .char_classes import CHAR_CLASS_STRING
 
 # These are the encodings we will try to fix in ftfy, in the
 # order that they should be tried.
@@ -52,6 +51,16 @@ def _build_regexes():
 
 
 ENCODING_REGEXES = _build_regexes()
+
+
+def chars_to_classes(string):
+    """
+    Convert each Unicode character to a letter indicating which of many
+    classes it's in.
+
+    See build_data.py for where this data comes from and what it means.
+    """
+    return string.translate(CHAR_CLASS_STRING)
 
 
 def _build_html_entities():
@@ -168,16 +177,6 @@ def possible_encoding(text, encoding):
     sloppily.
     """
     return bool(ENCODING_REGEXES[encoding].match(text))
-
-
-def chars_to_classes(string):
-    """
-    Convert each Unicode character to a letter indicating which of many
-    classes it's in.
-
-    See build_data.py for where this data comes from and what it means.
-    """
-    return string.translate(CHAR_CLASS_STRING)
 
 
 def _build_control_char_mapping():
