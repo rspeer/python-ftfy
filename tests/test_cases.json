@@ -1,5 +1,117 @@
 [
     {
+        "label": "Messy language names: Czech",
+        "comment": "This and several following examples came from the same language selector",
+        "original": "ÄŒeÅ¡tina",
+        "fixed": "Čeština",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Gaelic",
+        "comment": "note that if U+A0 is replaced by a space, it comes out slightly incorrectly as 'Gà idhlig'",
+        "original": "GÃ\u00a0idhlig",
+        "fixed": "Gàidhlig",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Lithuanian",
+        "original": "LietuviÅ³",
+        "fixed": "Lietuvių",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Slovak",
+        "original": "SlovenÄ�ina",
+        "fixed": "Sloven�ina",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Vietnamese",
+        "original": "Tiáº¿ng Viá»‡t",
+        "fixed": "Tiếng Việt",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Greek",
+        "original": "Î•Î»Î»Î·Î½Î¹ÎºÎ¬",
+        "fixed": "Ελληνικά",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Bulgarian",
+        "original": "Ð±ÑŠÐ»Ð³Ð°Ñ€Ñ�ÐºÐ¸ ÐµÐ·Ð¸Ðº",
+        "fixed": "българ�ки език",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Russian",
+        "original": "Ð ÑƒÑ�Ñ�ÐºÐ¸Ð¹",
+        "fixed": "Ру��кий",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Serbian [Cyrillic]",
+        "original": "CÑ€Ð¿Ñ�ÐºÐ¸ [Ñ›Ð¸Ñ€Ð¸Ð»Ð¸Ñ†Ð¾Ð¼]",
+        "fixed": "Cрп�ки [ћирилицом]",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Hebrew",
+        "original": "×¢×‘×¨×™×ª",
+        "fixed": "עברית",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Russian",
+        "original": "Ð ÑƒÑ�Ñ�ÐºÐ¸Ð¹",
+        "fixed": "Ру��кий",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Hindi",
+        "comment": "My terminal has difficulty rendering the mostly-fixed text",
+        "original": "à¤¹à¤¿à¤¨à¥�à¤¦à¥€",
+        "fixed": "\u0939\u093f\u0928\ufffd\u0926\u0940",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Tamil",
+        "comment": "My terminal has difficulty rendering the mostly-fixed text",
+        "original": "à®¤à®®à®¿à®´à¯�",
+        "fixed": "\u0ba4\u0bae\u0bbf\u0bb4\ufffd",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Thai",
+        "original": "à¸ à¸²à¸©à¸²à¹„à¸—à¸¢",
+        "fixed": "ภาษาไทย",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Simplified Chinese",
+        "original": "ç®€ä½“ä¸\u00adæ–‡",
+        "fixed": "简体中文",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Traditional Chinese",
+        "original": "æ\u00ad£é«”ä¸\u00adæ–‡",
+        "fixed": "正體中文",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Japanese",
+        "original": "æ—¥æœ¬èªž",
+        "fixed": "日本語",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Korean",
+        "original": "í•œêµ\u00adì–´",
+        "fixed": "한국어",
+        "expect": "pass"
+    },
+    {
         "label": "Low-codepoint emoji",
         "original": "He's Justinâ\u009d¤",
         "fixed": "He's Justin❤",
@@ -103,6 +215,12 @@
         "label": "UTF-8 / Windows-1250 mixup in French",
         "original": "LiĂ¨ge Avenue de l'HĂ´pital",
         "fixed": "Liège Avenue de l'Hôpital",
+        "expect": "pass"
+    },
+    {
+        "label": "lossy UTF-8 / Windows-1250 mixup in Spanish",
+        "original": "Europa, Asia, Ă�frica, Norte, AmĂ©rica Central y del Sur, Australia y OceanĂ­a",
+        "fixed": "Europa, Asia, �frica, Norte, América Central y del Sur, Australia y Oceanía",
         "expect": "pass"
     },
     {
@@ -408,7 +526,6 @@
     },
     {
         "label": "UTF-8 / Windows-1252 mixup in Gaelic involving non-breaking spaces",
-        "comment": "Too similar to the Finnish negative example with non-breaking spaces",
         "original": "CÃ\u00a0nan nan GÃ\u00a0idheal",
         "fixed": "Cànan nan Gàidheal",
         "expect": "pass"
@@ -425,6 +542,12 @@
         "comment": "Requires something like encoding detection",
         "original": "Deja dos heridos hundimiento de barco tur\u0092stico en Acapulco.",
         "fixed": "Deja dos heridos hundimiento de barco turístico en Acapulco.",
+        "expect": "fail"
+    },
+    {
+        "label": "subtle UTF-8 / codepage 437 mixup in Spanish",
+        "original": "┬┐que diferencia hay?",
+        "fixed": "¿que diferencia hay?",
         "expect": "fail"
     },
     {
