@@ -20,10 +20,17 @@ def test_byte_order_mark():
 def test_control_chars():
     text = (
         "\ufeffSometimes, \ufffcbad ideas \x7f\ufffalike these characters\ufffb "
-        "\u206aget standardized\U000E0065\U000E006E.\r\n"
+        "\u206aget standardized.\r\n"
     )
     fixed = "Sometimes, bad ideas like these characters get standardized.\r\n"
     assert remove_control_chars(text) == fixed
+
+
+def test_welsh_flag():
+    # ftfy used to remove "tag characters", but they have been repurposed in the
+    # "Flag of England", "Flag of Scotland", and "Flag of Wales" emoji sequences.
+    text = "This flag has a dragon on it 🏴󠁧󠁢󠁷󠁬󠁳󠁿"
+    assert remove_control_chars(text) == text
 
 
 def test_surrogates():
