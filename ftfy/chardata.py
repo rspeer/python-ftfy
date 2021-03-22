@@ -14,13 +14,18 @@ import zlib
 # order that they should be tried.
 CHARMAP_ENCODINGS = [
     'latin-1',
-    'sloppy-windows-1252',
     'sloppy-windows-1250',
-    'iso-8859-2',
     'sloppy-windows-1251',
+    'sloppy-windows-1252',
+    'sloppy-windows-1253',
+    'sloppy-windows-1254',
+    'iso-8859-2',
     'macroman',
     'cp437',
 ]
+
+SINGLE_QUOTE_RE = re.compile('[\u02bc\u2018-\u201b]')
+DOUBLE_QUOTE_RE = re.compile('[\u201c-\u201f]')
 
 
 def _build_regexes():
@@ -77,87 +82,6 @@ HTML_ENTITY_RE = re.compile(r"&#?[0-9A-Za-z]{1,24};")
 HTML_ENTITIES = _build_html_entities()
 
 
-def _build_utf8_punct_regex():
-    """
-    Recognize UTF-8 mojibake that's so blatant that we can fix it even when the
-    rest of the string doesn't decode as UTF-8 -- namely, UTF-8 sequences for
-    the 'General Punctuation' characters U+2000 to U+2040, re-encoded in
-    Windows-1252.
-
-    These are recognizable by the distinctive 'â€' ('\xe2\x80') sequence they
-    all begin with when decoded as Windows-1252.
-    """
-    # We need to recognize the Latin-1 decodings of bytes 0x80 to 0xbf, which
-    # are a contiguous range, as well as the different Windows-1252 decodings
-    # of 0x80 to 0x9f, which are not contiguous at all. (Latin-1 and
-    # Windows-1252 agree on bytes 0xa0 and up.)
-    obvious_utf8 = (
-        'â[€\x80][\x80-\xbf'
-        + bytes(range(0x80, 0xa0)).decode('sloppy-windows-1252')
-        + ']'
-    )
-    return re.compile(obvious_utf8)
-
-
-PARTIAL_UTF8_PUNCT_RE = _build_utf8_punct_regex()
-
-
-# Recognize UTF-8 sequences that would be valid if it weren't for a b'\xa0'
-# that some Windows-1252 program converted to a plain space.
-#
-# The smaller values are included on a case-by-case basis, because we don't want
-# to decode likely input sequences to unlikely characters. These are the ones
-# that *do* form likely characters before 0xa0:
-#
-#   0xc2 -> U+A0 NO-BREAK SPACE
-#   0xc3 -> U+E0 LATIN SMALL LETTER A WITH GRAVE
-#   0xc5 -> U+160 LATIN CAPITAL LETTER S WITH CARON
-#   0xce -> U+3A0 GREEK CAPITAL LETTER PI
-#   0xd0 -> U+420 CYRILLIC CAPITAL LETTER ER
-#
-# These still need to come with a cost, so that they only get converted when
-# there's evidence that it fixes other things. Any of these could represent
-# characters that legitimately appear surrounded by spaces, particularly U+C5
-# (Å), which is a word in multiple languages!
-#
-# We should consider checking for b'\x85' being converted to ... in the future.
-# I've seen it once, but the text still wasn't recoverable.
-
-ALTERED_UTF8_RE = re.compile(
-    b'[\xc2\xc3\xc5\xce\xd0][ ]'
-    b'|[\xe0-\xef][ ][\x80-\xbf]'
-    b'|[\xe0-\xef][\x80-\xbf][ ]'
-    b'|[\xf0-\xf4][ ][\x80-\xbf][\x80-\xbf]'
-    b'|[\xf0-\xf4][\x80-\xbf][ ][\x80-\xbf]'
-    b'|[\xf0-\xf4][\x80-\xbf][\x80-\xbf][ ]'
-)
-
-# This expression matches UTF-8 and CESU-8 sequences where some of the
-# continuation bytes have been lost. The byte 0x1a (sometimes written as ^Z) is
-# used within ftfy to represent a byte that produced the replacement character
-# \ufffd. We don't know which byte it was, but we can at least decode the UTF-8
-# sequence as \ufffd instead of failing to re-decode it at all.
-LOSSY_UTF8_RE = re.compile(
-    b'[\xc2-\xdf][\x1a]'
-    b'|\xed[\xa0-\xaf][\x1a]\xed[\xb0-\xbf][\x1a\x80-\xbf]'
-    b'|\xed[\xa0-\xaf][\x1a\x80-\xbf]\xed[\xb0-\xbf][\x1a]'
-    b'|[\xe0-\xef][\x1a][\x1a\x80-\xbf]'
-    b'|[\xe0-\xef][\x1a\x80-\xbf][\x1a]'
-    b'|[\xf0-\xf4][\x1a][\x1a\x80-\xbf][\x1a\x80-\xbf]'
-    b'|[\xf0-\xf4][\x1a\x80-\xbf][\x1a][\x1a\x80-\xbf]'
-    b'|[\xf0-\xf4][\x1a\x80-\xbf][\x1a\x80-\xbf][\x1a]'
-    b'|\x1a'
-)
-
-# These regexes match various Unicode variations on single and double quotes.
-SINGLE_QUOTE_RE = re.compile('[\u02bc\u2018-\u201b]')
-DOUBLE_QUOTE_RE = re.compile('[\u201c-\u201f]')
-
-# This regex matches C1 control characters, which occupy some of the positions
-# in the Latin-1 character map that Windows assigns to other characters instead.
-C1_CONTROL_RE = re.compile(r'[\x80-\x9f]')
-
-
 def possible_encoding(text, encoding):
     """
     Given text and a single-byte encoding, check whether that text could have
@@ -194,6 +118,54 @@ def _build_control_char_mapping():
 
 
 CONTROL_CHARS = _build_control_char_mapping()
+
+
+# Recognize UTF-8 sequences that would be valid if it weren't for a b'\xa0'
+# that some Windows-1252 program converted to a plain space.
+#
+# The smaller values are included on a case-by-case basis, because we don't want
+# to decode likely input sequences to unlikely characters. These are the ones
+# that *do* form likely characters before 0xa0:
+#
+#   0xc2 -> U+A0 NO-BREAK SPACE
+#   0xc3 -> U+E0 LATIN SMALL LETTER A WITH GRAVE
+#   0xc5 -> U+160 LATIN CAPITAL LETTER S WITH CARON
+#   0xce -> U+3A0 GREEK CAPITAL LETTER PI
+#   0xd0 -> U+420 CYRILLIC CAPITAL LETTER ER
+#
+# This is meant to be applied to encodings of text that tests true for `is_bad`.
+# Any of these could represent characters that legitimately appear surrounded by
+# spaces, particularly U+C5 (Å), which is a word in multiple languages!
+#
+# We should consider checking for b'\x85' being converted to ... in the future.
+# I've seen it once, but the text still wasn't recoverable.
+
+ALTERED_UTF8_RE = re.compile(
+    b'[\xc2\xc3\xc5\xce\xd0][ ]'
+    b'|[\xe0-\xef][ ][\x80-\xbf]'
+    b'|[\xe0-\xef][\x80-\xbf][ ]'
+    b'|[\xf0-\xf4][ ][\x80-\xbf][\x80-\xbf]'
+    b'|[\xf0-\xf4][\x80-\xbf][ ][\x80-\xbf]'
+    b'|[\xf0-\xf4][\x80-\xbf][\x80-\xbf][ ]'
+)
+
+
+# This expression matches UTF-8 and CESU-8 sequences where some of the                                                 
+# continuation bytes have been lost. The byte 0x1a (sometimes written as ^Z) is                                        
+# used within ftfy to represent a byte that produced the replacement character
+# \ufffd. We don't know which byte it was, but we can at least decode the UTF-8                                  
+# sequence as \ufffd instead of failing to re-decode it at all.                                                        
+LOSSY_UTF8_RE = re.compile(                                                                                            
+    b'[\xc2-\xdf][\x1a]'                                                                                         
+    b'|\xed[\xa0-\xaf][\x1a]\xed[\xb0-\xbf][\x1a\x80-\xbf]'                                                            
+    b'|\xed[\xa0-\xaf][\x1a\x80-\xbf]\xed[\xb0-\xbf][\x1a]'                                                            
+    b'|[\xe0-\xef][\x1a][\x1a\x80-\xbf]'                                                                               
+    b'|[\xe0-\xef][\x1a\x80-\xbf][\x1a]'                                                       
+    b'|[\xf0-\xf4][\x1a][\x1a\x80-\xbf][\x1a\x80-\xbf]'                                                          
+    b'|[\xf0-\xf4][\x1a\x80-\xbf][\x1a][\x1a\x80-\xbf]'                                                                
+    b'|[\xf0-\xf4][\x1a\x80-\xbf][\x1a\x80-\xbf][\x1a]'                                                                
+    b'|\x1a'
+)
 
 
 # A translate mapping that breaks ligatures made of Latin letters. While

@@ -225,6 +225,44 @@ MOJIBAKE_CATEGORIES = {
     ),
 }
 
+
+# Character classes that help us pinpoint embedded mojibake. These can
+# include common characters, because we'll also check them for 'badness'.
+UTF8_CLUES = {
+    # Letters that decode to 0xC2 - 0xDF in a Latin-1-like encoding
+    'utf8_first_of_2': (
+        'ÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßĂĆČĎĐĘĚĞİĹŃŇŐŘŞŢŮŰ'
+        'ΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩΪΫάέήίВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
+    ),
+    # Letters that decode to 0xE0 - 0xEF in a Latin-1-like encoding
+    'utf8_first_of_3': (
+        'àáâãäåæçèéêëìíîïăćčďęěĺŕΰαβγδεζηθικλμνξοабвгдежзийклмноп'
+    ),
+    # Letters that decode to 0xF0 in a Latin-1-like encoding
+    # (we don't care about codepoints whose UTF-8 starts with higher
+    # than F0, because they're unused)
+    'utf8_first_of_4': (
+        'ðđğπр'
+    ),
+    # Letters that decode to 0x80 - 0xBF in a Latin-1-like encoding
+    'utf8_continuation': (
+        '\x80-\xbf'
+        'ĄąĽľŁłŒœŚśŞşŠšŤťŸŹźŻżŽžƒˆˇ˘˛˜˝΄΅'
+        'ΆΈΉΊΌΎΏЁЂЃЄЅІЇЈЉЊЋЌЎЏёђѓєѕіїјљњћќўџҐґ'
+        '–—―‘’‚“”„†‡•…‰‹›€№™'
+        ' '
+    ),
+}
+
+UTF8_DETECTOR_RE = re.compile("""
+    [{utf8_first_of_2}] [{utf8_continuation}]
+    |
+    [{utf8_first_of_3}] [{utf8_continuation}]{{2}}
+    |
+    [{utf8_first_of_4}] [{utf8_continuation}]{{3}}
+""".format(**UTF8_CLUES), re.VERBOSE)
+
+
 BADNESS_RE = re.compile("""
     [{c1}]
     |
