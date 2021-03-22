@@ -6,11 +6,10 @@ can perform.
 import codecs
 import html
 import re
-import warnings
 
-from ftfy.badness import badness, is_bad, UTF8_DETECTOR_RE
 from ftfy.chardata import (
     ALTERED_UTF8_RE,
+    C1_CONTROL_RE,
     CHARMAP_ENCODINGS,
     CONTROL_CHARS,
     DOUBLE_QUOTE_RE,
@@ -19,7 +18,10 @@ from ftfy.chardata import (
     LIGATURES,
     LOSSY_UTF8_RE,
     SINGLE_QUOTE_RE,
+    UTF8_DETECTOR_RE,
     WIDTH_MAP,
+    badness,
+    is_bad,
     possible_encoding,
 )
 
@@ -210,22 +212,21 @@ def fix_one_step_and_explain(text):
         else:
             # Otherwise, it means we have characters that are in Latin-1 but
             # not in Windows-1252. Those are C1 control characters. Nobody
-            # wants those. Assume they were meant to be Windows-1252. Don't
-            # use the sloppy codec, because bad Windows-1252 characters are
-            # a bad sign.
-            encoded = text.encode('latin-1')
+            # wants those. Assume they were meant to be Windows-1252.
             try:
-                fixed = encoded.decode('windows-1252')
-                steps = []
+                fixed = text.encode('latin-1').decode('windows-1252')
                 if fixed != text:
                     steps = [('encode', 'latin-1'), ('decode', 'windows-1252')]
-                return fixed, steps
+                    return fixed, steps
             except UnicodeDecodeError:
-                # This text contained characters that don't even make sense
-                # if you assume they were supposed to be Windows-1252. In
-                # that case, let's not assume anything.
                 pass
 
+    # Fix individual characters of Latin-1 with a less satisfying explanation
+    if C1_CONTROL_RE.search(text):
+        steps = [('transcode', 'fix_c1_controls')]
+        fixed = fix_c1_controls(text)
+        return fixed, steps
+    
     # The cases that remain are mixups between two different single-byte
     # encodings, and not the common case of Latin-1 vs. Windows-1252.
     #
@@ -504,8 +505,6 @@ def remove_control_chars(text):
     - Interlinear annotation characters (U+FFF9 to U+FFFB)
     - The Object Replacement Character (U+FFFC)
     - The byte order mark (U+FEFF)
-    - Musical notation control characters (U+1D173 to U+1D17A)
-    - Tag characters (U+E0000 to U+E007F)
 
     However, these similar characters are left alone:
 
@@ -516,6 +515,10 @@ def remove_control_chars(text):
       has happened
     - Control characters that affect glyph rendering, such as joiners and
       right-to-left marks (U+200C to U+200F, U+202A to U+202E)
+    - Musical notation control characters (U+1D173 to U+1D17A) because wow if
+      you're using those you probably have a good reason
+    - Tag characters, because they are now used in emoji sequences such as
+      "Flag of Wales"
     """
     return text.translate(CONTROL_CHARS)
 
@@ -686,12 +689,25 @@ def fix_inconsistent_utf8_mojibake(text):
             return fix_encoding(substr)
         else:
             return substr
-
+    
     return UTF8_DETECTOR_RE.sub(fix_embedded_mojibake, text)
+
+
+def _c1_fixer(match):
+    return match.group(0).encode('latin-1').decode('sloppy-windows-1252')
+
+
+def fix_c1_controls(text):
+    """
+    If text still contains C1 control characters, treat them as their
+    Windows-1252 equivalents. This matches what Web browsers do.
+    """
+    return C1_CONTROL_RE.sub(_c1_fixer, text)
 
 
 TRANSCODERS = {
     'restore_byte_a0': restore_byte_a0,
     'replace_lossy_sequences': replace_lossy_sequences,
-    'fix_inconsistent_utf8_mojibake': fix_inconsistent_utf8_mojibake
+    'fix_inconsistent_utf8_mojibake': fix_inconsistent_utf8_mojibake,
+    'fix_c1_controls': fix_c1_controls
 }
