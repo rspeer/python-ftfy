@@ -131,6 +131,18 @@ CONTROL_CHARS = _build_control_char_mapping()
 #   0xce -> U+3A0 GREEK CAPITAL LETTER PI
 #   0xd0 -> U+420 CYRILLIC CAPITAL LETTER ER
 #
+# In three-character sequences, we exclude some lead bytes in some cases.
+#
+# When the lead byte is immediately followed by 0xA0, we shouldn't accept
+# a space there, because it leads to some less-likely character ranges:
+#
+#   0xe0 -> Samaritan script
+#   0xe1 -> Mongolian script (corresponds to Latin-1 'á' which is too common)
+#   0xea -> Syloti Nagri or North Indic
+#   0xed -> UTF-16 surrogates
+#   0xee -> unassigned
+#   0xef -> unassigned
+#
 # In four-character sequences, the lead byte must be F0, because that accounts
 # for almost all of the usage of high-numbered codepoints (tag characters whose
 # UTF-8 starts with the byte F3 are only used in some rare new emoji sequences).
@@ -144,7 +156,7 @@ CONTROL_CHARS = _build_control_char_mapping()
 
 ALTERED_UTF8_RE = re.compile(
     b'[\xc2\xc3\xc5\xce\xd0][ ]'
-    b'|[\xe0-\xef][ ][\x80-\xbf]'
+    b'|[\xe2-\xe9\xeb\xec][ ][\x80-\xbf]'
     b'|[\xe0-\xef][\x80-\xbf][ ]'
     b'|[\xf0][ ][\x80-\xbf][\x80-\xbf]'
     b'|[\xf0][\x80-\xbf][ ][\x80-\xbf]'
@@ -473,7 +485,7 @@ BADNESS_RE = re.compile("""
     # fancy leetspeak-esque writing
     [{lower_accented}{box}{end_punctuation}] [{currency}]
     |
-    \s [{upper_accented}] [{currency}]
+    \\s [{upper_accented}] [{currency}]
     |
     [{upper_accented}{box}{end_punctuation}] [{numeric}]
     |
