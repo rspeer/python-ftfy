@@ -131,6 +131,10 @@ CONTROL_CHARS = _build_control_char_mapping()
 #   0xce -> U+3A0 GREEK CAPITAL LETTER PI
 #   0xd0 -> U+420 CYRILLIC CAPITAL LETTER ER
 #
+# In four-character sequences, the lead byte must be F0, because that accounts
+# for almost all of the usage of high-numbered codepoints (tag characters whose
+# UTF-8 starts with the byte F3 are only used in some rare new emoji sequences).
+#
 # This is meant to be applied to encodings of text that tests true for `is_bad`.
 # Any of these could represent characters that legitimately appear surrounded by
 # spaces, particularly U+C5 (Å), which is a word in multiple languages!
@@ -142,9 +146,9 @@ ALTERED_UTF8_RE = re.compile(
     b'[\xc2\xc3\xc5\xce\xd0][ ]'
     b'|[\xe0-\xef][ ][\x80-\xbf]'
     b'|[\xe0-\xef][\x80-\xbf][ ]'
-    b'|[\xf0-\xf4][ ][\x80-\xbf][\x80-\xbf]'
-    b'|[\xf0-\xf4][\x80-\xbf][ ][\x80-\xbf]'
-    b'|[\xf0-\xf4][\x80-\xbf][\x80-\xbf][ ]'
+    b'|[\xf0][ ][\x80-\xbf][\x80-\xbf]'
+    b'|[\xf0][\x80-\xbf][ ][\x80-\xbf]'
+    b'|[\xf0][\x80-\xbf][\x80-\xbf][ ]'
 )
 
 
@@ -520,8 +524,8 @@ BADNESS_RE = re.compile("""
     [ВГРС][{c1}{bad}{start_punctuation}{end_punctuation}{currency}°µ][ВГРС]
     |
 
-    # Windows-1252 encodings of 'à'
-    Ã\xa0
+    # Windows-1252 encodings of 'à' and 'á'
+    Ã[\xa0¡]
     |
     [a-z]\\s?Ã[ ]
     |

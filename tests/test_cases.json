@@ -170,6 +170,12 @@
         "expect": "pass"
     },
     {
+        "label": "fancy Unicode crossing-out, but mojibaked",
+        "original": "hotel $49 $Ì¶6Ì¶3Ì¶ updated 2018",
+        "fixed": "hotel $49 $̶6̶3̶ updated 2018",
+        "expect": "pass"
+    },
+    {
         "label": "A face with UTF-8 / sloppy Windows-1252 mixed up twice",
         "original": "Ã¢â€\u009dâ€™(Ã¢Å’Â£Ã‹â€ºÃ¢Å’Â£)Ã¢â€\u009dÅ½",
         "fixed": "┒(⌣˛⌣)┎",
@@ -449,6 +455,20 @@
         "original": "CÃ\u00a0nan nan GÃ\u00a0idheal",
         "fixed": "Cànan nan Gàidheal",
         "expect": "pass"
+    },
+    {
+        "label": "Misleading mix-up in Spanish",
+        "comment": "The original text has mojibake, but the sequence 'á \u0093' can decode as U+1813 MONGOLIAN DIGIT THREE, when the whole string should really just decode as a Latin-1/Windows-1252 mixup",
+        "original": "tiene demora y está \u0093próximo a resolverse\u0094",
+        "fixed": "tiene demora y está \"próximo a resolverse\"",
+        "expect": "fail"
+    },
+    {
+        "label": "A-with-grave in Vietnamese",
+        "comment": "Currently adds extra spaces that shouldn't be there",
+        "original": "Xem clip hĂ i, phim hĂ i má»›i hay nháşĄt",
+        "fixed": "Xem clip hài, phim hài mới hay nhất",
+        "expect": "fail"
     },
     {
         "label": "Punctuation pile-up should actually be musical notes",
