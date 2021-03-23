@@ -218,6 +218,31 @@
         "expect": "pass"
     },
     {
+        "label": "UTF-8 / Windows-1252 mixup in Vietnamese",
+        "original": "Táº¡i sao giÃ¡ háº¡t sáº§u riÃªng láº¡i lÃªn giÃ¡?",
+        "fixed": "Tại sao giá hạt sầu riêng lại lên giá?",
+        "expect": "pass"
+    },
+    {
+        "label": "Science! Mid-word Greek letter gets fixed correctly",
+        "original": "Humanized HLA-DR4.RagKO.IL2RÎ³cKO.NOD (DRAG) mice sustain the complex vertebrate life cycle of Plasmodium falciparum malaria.",
+        "fixed": "Humanized HLA-DR4.RagKO.IL2RγcKO.NOD (DRAG) mice sustain the complex vertebrate life cycle of Plasmodium falciparum malaria.",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: More science! Don't fix a multiplication symbol in quotes",
+        "original": "higher values (“+” and “×” curves) in the superficial region",
+        "fixed-encoding": "higher values (“+” and “×” curves) in the superficial region",
+        "fixed": "higher values (\"+\" and \"×\" curves) in the superficial region",
+        "expect": "pass"
+    },
+    {
+        "label": "For goodness' sake. We can come close to fixing this, but fail in the last step",
+        "original": "ItÃ?Â¢â?¬â?¢s classic. ItÃ?Â¢â?¬â?¢s epic. ItÃ?Â¢â?¬â?¢s ELIZABETH BENNET for goodnessÃ?Â¢â?¬â?¢ sake!",
+        "fixed": "It�¢��s classic. It�¢��s epic. It�¢��s ELIZABETH BENNET for goodness�¢�� sake!",
+        "expect": "pass"
+    },
+    {
         "label": "lossy UTF-8 / Windows-1250 mixup in Spanish",
         "original": "Europa, Asia, Ă�frica, Norte, AmĂ©rica Central y del Sur, Australia y OceanĂ­a",
         "fixed": "Europa, Asia, �frica, Norte, América Central y del Sur, Australia y Oceanía",
@@ -258,6 +283,12 @@
         "expect": "pass"
     },
     {
+        "label": "UTF-8 / Windows-1252 followed by UTF-8 / Windows-1251",
+        "original": "a bigger-than-expected Г‚ВЈ5.8bn rights issue to satisfy the new banking regulator",
+        "fixed": "a bigger-than-expected £5.8bn rights issue to satisfy the new banking regulator",
+        "expect": "pass"
+    },
+    {
         "label": "A face with UTF-8 / sloppy Windows-1252 mixed up twice",
         "original": "Ã¢â€\u009dâ€™(Ã¢Å’Â£Ã‹â€ºÃ¢Å’Â£)Ã¢â€\u009dÅ½",
         "fixed": "┒(⌣˛⌣)┎",
@@ -267,6 +298,13 @@
         "label": "We can mostly decode the face above when we lose the character U+009D",
         "original": "Ã¢â€�â€™(Ã¢Å’Â£Ã‹â€ºÃ¢Å’Â£)Ã¢â€�Å½",
         "fixed": "�(⌣˛⌣)�",
+        "expect": "pass"
+    },
+    {
+        "label": "Lossy decoding can have plain ASCII question marks, as well",
+        "original": "The ICR has been upgraded to â€œbb+â€? from â€œbbâ€?",
+        "fixed-encoding": "The ICR has been upgraded to “bb+� from “bb�",
+        "fixed": "The ICR has been upgraded to \"bb+� from \"bb�",
         "expect": "pass"
     },
     {
