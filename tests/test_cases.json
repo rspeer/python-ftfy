@@ -239,9 +239,9 @@
     },
     {
         "label": "UTF-8 / Windows-1252 mixup in mixed French and Arabic",
-        "comment": "'fixed-encoding' is still mojibaked. The thing that makes this test case work is that the full ftfy pipeline can uncurl the quotes, then fix the mojibake",
+        "comment": "A difficult test case that can depend on the order that steps are applied",
         "original": "Ã€ tous mes frÃ¨res et soeurs dans la syriennetÃ© comme dans l’humanitÃ©, sans discrimination aucune, je vous souhaite bonne fÃªte Ø¹ÙŠØ¯ Ø³Ø¹ÙŠØ¯.Que la paix, la libertÃ©, l’Ã©galitÃ©, la fraternitÃ© et la dignitÃ© soient avec vous.Pardonnez ce ton un peu ecclÃ©siastique.",
-        "fixed-encoding": "Ã€ tous mes frÃ¨res et soeurs dans la syriennetÃ© comme dans l’humanitÃ©, sans discrimination aucune, je vous souhaite bonne fÃªte Ø¹ÙŠØ¯ Ø³Ø¹ÙŠØ¯.Que la paix, la libertÃ©, l’Ã©galitÃ©, la fraternitÃ© et la dignitÃ© soient avec vous.Pardonnez ce ton un peu ecclÃ©siastique.",
+        "fixed-encoding": "À tous mes frères et soeurs dans la syrienneté comme dans l’humanité, sans discrimination aucune, je vous souhaite bonne fête عيد سعيد.Que la paix, la liberté, l’égalité, la fraternité et la dignité soient avec vous.Pardonnez ce ton un peu ecclésiastique.",
         "fixed": "À tous mes frères et soeurs dans la syrienneté comme dans l'humanité, sans discrimination aucune, je vous souhaite bonne fête عيد سعيد.Que la paix, la liberté, l'égalité, la fraternité et la dignité soient avec vous.Pardonnez ce ton un peu ecclésiastique.",
         "expect": "pass"
     },
