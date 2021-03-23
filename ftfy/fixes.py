@@ -179,7 +179,7 @@ def fix_one_step_and_explain(text):
 
                 # Check for the byte 0x1a, which indicates where one of our
                 # 'sloppy' codecs found a replacement character.
-                if encoding.startswith('sloppy') and 0x1a in encoded_bytes:
+                if encoding.startswith('sloppy'):
                     encoded_bytes = replace_lossy_sequences(encoded_bytes)
                     transcode_steps.append(('transcode', 'replace_lossy_sequences'))
 
