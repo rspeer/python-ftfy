@@ -14,9 +14,9 @@ import zlib
 # order that they should be tried.
 CHARMAP_ENCODINGS = [
     'latin-1',
-    'sloppy-windows-1250',
-    'sloppy-windows-1251',
     'sloppy-windows-1252',
+    'sloppy-windows-1251',
+    'sloppy-windows-1250',
     'sloppy-windows-1253',
     'sloppy-windows-1254',
     'iso-8859-2',
@@ -148,20 +148,24 @@ ALTERED_UTF8_RE = re.compile(
 )
 
 
-# This expression matches UTF-8 and CESU-8 sequences where some of the                                                 
-# continuation bytes have been lost. The byte 0x1a (sometimes written as ^Z) is                                        
+# This expression matches UTF-8 and CESU-8 sequences where some of the
+# continuation bytes have been lost. The byte 0x1a (sometimes written as ^Z) is
 # used within ftfy to represent a byte that produced the replacement character
-# \ufffd. We don't know which byte it was, but we can at least decode the UTF-8                                  
-# sequence as \ufffd instead of failing to re-decode it at all.                                                        
+# \ufffd. We don't know which byte it was, but we can at least decode the UTF-8
+# sequence as \ufffd instead of failing to re-decode it at all.
+#
+# In some cases, we allow the ASCII '?' in place of \ufffd, but at most once per
+# sequence.
 LOSSY_UTF8_RE = re.compile(                                                                                            
-    b'[\xc2-\xdf][\x1a]'                                                                                         
-    b'|\xed[\xa0-\xaf][\x1a]\xed[\xb0-\xbf][\x1a\x80-\xbf]'                                                            
-    b'|\xed[\xa0-\xaf][\x1a\x80-\xbf]\xed[\xb0-\xbf][\x1a]'                                                            
-    b'|[\xe0-\xef][\x1a][\x1a\x80-\xbf]'                                                                               
-    b'|[\xe0-\xef][\x1a\x80-\xbf][\x1a]'                                                       
-    b'|[\xf0-\xf4][\x1a][\x1a\x80-\xbf][\x1a\x80-\xbf]'                                                          
-    b'|[\xf0-\xf4][\x1a\x80-\xbf][\x1a][\x1a\x80-\xbf]'                                                                
-    b'|[\xf0-\xf4][\x1a\x80-\xbf][\x1a\x80-\xbf][\x1a]'                                                                
+    b'[\xc2-\xdf][\x1a]'
+    b'|[\xc2-\xc3][?]'
+    b'|\xed[\xa0-\xaf][\x1a?]\xed[\xb0-\xbf][\x1a?\x80-\xbf]'
+    b'|\xed[\xa0-\xaf][\x1a?\x80-\xbf]\xed[\xb0-\xbf][\x1a?]'
+    b'|[\xe0-\xef][\x1a?][\x1a\x80-\xbf]'
+    b'|[\xe0-\xef][\x1a\x80-\xbf][\x1a?]'
+    b'|[\xf0-\xf4][\x1a?][\x1a\x80-\xbf][\x1a\x80-\xbf]'
+    b'|[\xf0-\xf4][\x1a\x80-\xbf][\x1a?][\x1a\x80-\xbf]'
+    b'|[\xf0-\xf4][\x1a\x80-\xbf][\x1a\x80-\xbf][\x1a?]'
     b'|\x1a'
 )
 
@@ -450,48 +454,6 @@ MOJIBAKE_CATEGORIES = {
 }
 
 
-# Character classes that help us pinpoint embedded mojibake. These can
-# include common characters, because we'll also check them for 'badness'.
-UTF8_CLUES = {
-    # Letters that decode to 0xC2 - 0xDF in a Latin-1-like encoding
-    'utf8_first_of_2': (
-        'ÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßĂĆČĎĐĘĚĞİĹŃŇŐŘŞŢŮŰ'
-        'ΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩΪΫάέήίВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
-    ),
-    # Letters that decode to 0xE0 - 0xEF in a Latin-1-like encoding
-    'utf8_first_of_3': (
-        'àáâãäåæçèéêëìíîïăćčďęěĺŕΰαβγδεζηθικλμνξοабвгдежзийклмноп'
-    ),
-    # Letters that decode to 0xF0 or 0xF3 in a Latin-1-like encoding.
-    # (Other leading bytes correspond only to unassigned codepoints)
-    'utf8_first_of_4': (
-        'ðóđğπσру'
-    ),
-    # Letters that decode to 0x80 - 0xBF in a Latin-1-like encoding
-    'utf8_continuation': (
-        '\x80-\xbf'
-        'ĄąĽľŁłŒœŚśŞşŠšŤťŸŹźŻżŽžƒˆˇ˘˛˜˝΄΅'
-        'ΆΈΉΊΌΎΏЁЂЃЄЅІЇЈЉЊЋЌЎЏёђѓєѕіїјљњћќўџҐґ'
-        '–—―‘’‚“”„†‡•…‰‹›€№™'
-        ' '
-    ),
-}
-
-# This regex uses UTF8_CLUES to find sequences of likely mojibake.
-# It matches them with + so that several adjacent UTF-8-looking sequences
-# get coalesced into one, allowing them to be fixed more efficiently
-# and not requiring every individual subsequence to be detected as 'badness'.
-UTF8_DETECTOR_RE = re.compile("""
-    (
-        [{utf8_first_of_2}] [{utf8_continuation}]
-        |
-        [{utf8_first_of_3}] [{utf8_continuation}]{{2}}
-        |
-        [{utf8_first_of_4}] [{utf8_continuation}]{{3}}
-    )+
-""".format(**UTF8_CLUES), re.VERBOSE)
-
-
 BADNESS_RE = re.compile("""
     [{c1}]
     |
@@ -503,9 +465,11 @@ BADNESS_RE = re.compile("""
     |
     [{box}{end_punctuation}{currency}{numeric}] [{lower_accented}]
     |
-    # leave out [upper_accented][currency], because it's used in some fancy
-    # leetspeak-esque writing
+    # leave out [upper_accented][currency] without further info, because it's used in some
+    # fancy leetspeak-esque writing
     [{lower_accented}{box}{end_punctuation}] [{currency}]
+    |
+    \s [{upper_accented}] [{currency}]
     |
     [{upper_accented}{box}{end_punctuation}] [{numeric}]
     |
@@ -531,7 +495,7 @@ BADNESS_RE = re.compile("""
     # Windows-1252 2-character mojibake that isn't covered by the cases above
     [ÂÃÎÐ][€Šš¢Ÿž\xa0\xad®©°·»{end_punctuation}–—´]
     |
-    × [{end_punctuation}²³]
+    × [²³]
     |
 
     # Windows-1252 mojibake sequences for some South Asian alphabets
@@ -584,3 +548,45 @@ def is_bad(text):
     Returns true iff the given text looks like it contains mojibake.
     """
     return bool(BADNESS_RE.search(text))
+
+
+# Character classes that help us pinpoint embedded mojibake. These can
+# include common characters, because we'll also check them for 'badness'.
+UTF8_CLUES = {
+    # Letters that decode to 0xC2 - 0xDF in a Latin-1-like encoding
+    'utf8_first_of_2': (
+        'ÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßĂĆČĎĐĘĚĞİĹŃŇŐŘŞŢŮŰ'
+        'ΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩΪΫάέήίВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ'
+    ),
+    # Letters that decode to 0xE0 - 0xEF in a Latin-1-like encoding
+    'utf8_first_of_3': (
+        'àáâãäåæçèéêëìíîïăćčďęěĺŕΰαβγδεζηθικλμνξοабвгдежзийклмноп'
+    ),
+    # Letters that decode to 0xF0 or 0xF3 in a Latin-1-like encoding.
+    # (Other leading bytes correspond only to unassigned codepoints)
+    'utf8_first_of_4': (
+        'ðóđğπσру'
+    ),
+    # Letters that decode to 0x80 - 0xBF in a Latin-1-like encoding
+    'utf8_continuation': (
+        '\x80-\xbf'
+        'ĄąĽľŁłŒœŚśŞşŠšŤťŸŹźŻżŽžƒˆˇ˘˛˜˝΄΅'
+        'ΆΈΉΊΌΎΏЁЂЃЄЅІЇЈЉЊЋЌЎЏёђѓєѕіїјљњћќўџҐґ'
+        '–—―‘’‚“”„†‡•…‰‹›€№™'
+        ' '
+    ),
+}
+
+# This regex uses UTF8_CLUES to find sequences of likely mojibake.
+# It matches them with + so that several adjacent UTF-8-looking sequences
+# get coalesced into one, allowing them to be fixed more efficiently
+# and not requiring every individual subsequence to be detected as 'badness'.
+UTF8_DETECTOR_RE = re.compile("""
+    (
+        [{utf8_first_of_2}] [{utf8_continuation}]
+        |
+        [{utf8_first_of_3}] [{utf8_continuation}]{{2}}
+        |
+        [{utf8_first_of_4}] [{utf8_continuation}]{{3}}
+    )+
+""".format(**UTF8_CLUES), re.VERBOSE)
