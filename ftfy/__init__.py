@@ -314,28 +314,21 @@ def guess_bytes(bstring):
     Unlike the rest of ftfy, this may not be accurate, and it may *create*
     Unicode problems instead of solving them!
 
-    It doesn't try East Asian encodings at all, and if you have East Asian text
-    that you don't know how to decode, you are somewhat out of luck.  East
-    Asian encodings require some serious statistics to distinguish from each
-    other, so we can't support them without decreasing the accuracy of ftfy.
-
-    If you don't know which encoding you have at all, I recommend
-    trying the 'chardet' module, and being appropriately skeptical about its
-    results.
-
     The encodings we try here are:
 
     - UTF-16 with a byte order mark, because a UTF-16 byte order mark looks
       like nothing else
     - UTF-8, because it's the global standard, which has been used by a
       majority of the Web since 2008
-    - "utf-8-variants", because it's what people actually implement when they
-      think they're doing UTF-8
+    - "utf-8-variants", or buggy implementations of UTF-8
     - MacRoman, because Microsoft Office thinks it's still a thing, and it
       can be distinguished by its line breaks. (If there are no line breaks in
       the string, though, you're out of luck.)
+    - Shift-JIS, the most common encoding of Japanese.
+    - GB18030, a standardized encoding of Simplified Chinese.
+    - Big5, a standardized encoding of Traditional Chinese.
     - "sloppy-windows-1252", the Latin-1-like encoding that is the most common
-      single-byte encoding
+      single-byte encoding.
     """
     if isinstance(bstring, str):
         raise UnicodeError(
@@ -372,6 +365,32 @@ def guess_bytes(bstring):
             return bstring.decode('utf-8-variants'), 'utf-8-variants'
         else:
             return bstring.decode('utf-8'), 'utf-8'
+    except UnicodeDecodeError:
+        pass
+
+    # decode GB18030 text that contains either '人' or '日', or the sequence
+    # that introduces many foreign Unicode characters, U+81 U+30.
+    # (The U+81 U+30 sequence would appear, for example, in the GB18030 encoding
+    # of UTF-8 mojibake.)
+    try:
+        if b'\xc8\xcb' in bstring or b'\xc8\xd5' in bstring or b'\x81\x30' in bstring:
+            return bstring.decode('gb18030'), 'gb18030'
+    except UnicodeDecodeError:
+        pass
+
+    # decode Shift-JIS text that contains at least two of
+    # [punctuation, hiragana, katakana], using bytes that are very uncommon outside
+    # of UTF-8 and GB18030
+    try:
+        if (0x81 in byteset) + (0x82 in byteset) + (0x83 in byteset) >= 2:
+            return bstring.decode('shift-jis'), 'shift-jis'
+    except UnicodeDecodeError:
+        pass
+
+    # decode Big5 text that contains either '人' or '日'
+    try:
+        if b'\xa4\x48' in bstring or b'\xa4\xe9' in bstring:
+            return bstring.decode('big5'), 'big5'
     except UnicodeDecodeError:
         pass
 
