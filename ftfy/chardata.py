@@ -541,6 +541,8 @@ BADNESS_RE = re.compile("""
     |
     [a-z]\\s?Ã[ ]
     |
+    ^Ã[ ]
+    |
 
     # Windows-1253 mojibake of characters in the U+2000 range
     β€[™\xa0Ά\xad®°]
@@ -585,7 +587,7 @@ UTF8_CLUES = {
     ),
     # Letters that decode to 0x80 - 0xBF in a Latin-1-like encoding
     'utf8_continuation': (
-        '\x80-\xbf'
+        '\x80-\xbf '
         'ĄąĽľŁłŒœŚśŞşŠšŤťŸŹźŻżŽžƒˆˇ˘˛˜˝΄΅'
         'ΆΈΉΊΌΎΏЁЂЃЄЅІЇЈЉЊЋЌЎЏёђѓєѕіїјљњћќўџҐґ'
         '–—―‘’‚“”„†‡•…‰‹›€№™'
