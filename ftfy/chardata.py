@@ -283,6 +283,7 @@ MOJIBAKE_CATEGORIES = {
         '\N{NOT SIGN}'
         '\N{MACRON}'
         '\N{PILCROW SIGN}'
+        '\N{SECTION SIGN}'
         '\N{CEDILLA}'
         '\N{LATIN SMALL LETTER F WITH HOOK}'
         '\N{MODIFIER LETTER CIRCUMFLEX ACCENT}'  # it's not a modifier
@@ -315,7 +316,6 @@ MOJIBAKE_CATEGORIES = {
         '\N{LEFT-POINTING DOUBLE ANGLE QUOTATION MARK}'
         '\N{INVERTED QUESTION MARK}'
         '\N{COPYRIGHT SIGN}'
-        '\N{SECTION SIGN}'
         '\N{GREEK TONOS}'
         '\N{GREEK DIALYTIKA TONOS}'
         '\N{LEFT SINGLE QUOTATION MARK}'
@@ -508,8 +508,8 @@ BADNESS_RE = re.compile("""
     [Œœ][^A-Za-z]
     |
 
-    # Windows-1252 2-character mojibake that isn't covered by the cases above
-    [ÂÃÎÐ][€Šš¢Ÿž\xa0\xad®©°·»{end_punctuation}–—´]
+    # Common Windows-1252 2-character mojibake that isn't covered by the cases above
+    [ÂÃÎÐ][€Šš¢£Ÿž\xa0\xad®©°·»{end_punctuation}–—´]
     |
     × [²³]
     |
@@ -585,13 +585,23 @@ UTF8_CLUES = {
     'utf8_first_of_4': (
         'ðóđğπσру'
     ),
-    # Letters that decode to 0x80 - 0xBF in a Latin-1-like encoding
+    # Letters that decode to 0x80 - 0xBF in a Latin-1-like encoding,
+    # including a space standing in for 0xA0
     'utf8_continuation': (
-        '\x80-\xbf '
+        '\x80-\xbf'
         'ĄąĽľŁłŒœŚśŞşŠšŤťŸŹźŻżŽžƒˆˇ˘˛˜˝΄΅'
         'ΆΈΉΊΌΎΏЁЂЃЄЅІЇЈЉЊЋЌЎЏёђѓєѕіїјљњћќўџҐґ'
         '–—―‘’‚“”„†‡•…‰‹›€№™'
         ' '
+    ),
+    # Letters that decode to 0x80 - 0xBF in a Latin-1-like encoding,
+    # and don't usually stand for themselves when adjacent to mojibake.
+    # This excludes spaces, dashes, quotation marks, and ellipses.
+    'utf8_continuation_strict': (
+        '\x80-\xbf'
+        'ĄąĽľŁłŒœŚśŞşŠšŤťŸŹźŻżŽžƒˆˇ˘˛˜˝΄΅'
+        'ΆΈΉΊΌΎΏЁЂЃЄЅІЇЈЉЊЋЌЎЏёђѓєѕіїјљњћќўџҐґ'
+        '†‡•‰‹›€№™'
     ),
 }
 
@@ -599,7 +609,21 @@ UTF8_CLUES = {
 # It matches them with + so that several adjacent UTF-8-looking sequences
 # get coalesced into one, allowing them to be fixed more efficiently
 # and not requiring every individual subsequence to be detected as 'badness'.
+#
+# We accept spaces in place of "utf8_continuation", because spaces might have
+# been intended to be U+A0 NO-BREAK SPACE.
+#
+# We do a lookbehind to make sure the previous character isn't a
+# "utf8_continuation_strict" character, so that we don't fix just a few
+# characters in a huge garble and make the situation worse.
+#
+# Unfortunately, the matches to this regular expression won't show their
+# surrounding context, and including context would make the expression much
+# less efficient. The 'badness' rules that require context, such as a preceding
+# lowercase letter, will prevent some cases of inconsistent UTF-8 from being
+# fixed when they don't see it.
 UTF8_DETECTOR_RE = re.compile("""
+    (?<! [{utf8_continuation_strict}])
     (
         [{utf8_first_of_2}] [{utf8_continuation}]
         |

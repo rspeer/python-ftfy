@@ -322,9 +322,17 @@
     },
     {
         "label": "Two levels of inconsistent mojibake",
-        "comment": "The en-dash was mojibaked in UTF-8 / Windows-1252 as three characters, two of which were mojibaked again as Windows-1252 / Latin-1, and the third of which was mojibaked as UTF-8 / Latin-1",
+        "comment": "The en-dash was mojibaked in UTF-8 / Windows-1252 as three characters, two of which were mojibaked again as Windows-1252 / Latin-1, and the third of which was mojibaked as UTF-8 / Latin-1. Unfortunately, if we fix this, we leave ourselves room to greedily 'decode' random Han characters in complex Latin-alphabet mojibake",
         "original": "Arsenal v Wolfsburg: pre-season friendly â\u0080â\u0080\u009c live!",
         "fixed": "Arsenal v Wolfsburg: pre-season friendly – live!",
+        "expect": "fail"
+    },
+    {
+        "label": "An absolutely hopeless garble",
+        "comment": "If we try too hard to decode this, we'll recursively apply `decode_inconsistent_utf8` until the characters turn into random Han and katakana characters.",
+        "original": "ã†â€™ãƒâ€ ã¢â‚¬â„¢ãƒæ’ã‚â¢ãƒâ¢ã¢â‚¬å¡ã‚â¬ãƒâ€šã‚â",
+        "fixed-encoding": "ã†â€™ãƒâ€ ã¢â‚¬â„¢ãƒæ’ã‚â¢ãƒâ¢ã¢â‚¬å¡ã‚â¬ãƒâ€šã‚â",
+        "fixed": "ã†â€™ãƒâ€ ã¢â'¬â\"¢ãƒæ'ã'â¢ãƒâ¢ã¢â'¬å¡ã'â¬ãƒâ€šã'â",
         "expect": "pass"
     },
     {
@@ -339,6 +347,12 @@
         "original": "Ecuadorâ\u0080\u0099s â\u0080\u0098purely political decision on Assangeâ\u0080\u0099 is likely result of â\u0080\u0098US pressureâ\u0080\u0099…",
         "fixed-encoding": "Ecuador’s ‘purely political decision on Assange’ is likely result of ‘US pressure’…",
         "fixed": "Ecuador's 'purely political decision on Assange' is likely result of 'US pressure'…",
+        "expect": "pass"
+    },
+    {
+        "label": "Inconsistent mojibake in Portuguese",
+        "original": "Campeonatos > III DivisÃ£o - SÃ©rie F > Jornadas Classificação",
+        "fixed": "Campeonatos > III Divisão - Série F > Jornadas Classificação",
         "expect": "pass"
     },
     {
