@@ -538,6 +538,13 @@
         "expect": "pass"
     },
     {
+        "label": "Fix 'à' in inconsistent mojibake",
+        "original": "Le barÃ¨me forfaitaire permet l’Ã©valuation des frais de dÃ©placement relatifs Ã l’utilisation", 
+        "fixed-encoding": "Le barème forfaitaire permet l’évaluation des frais de déplacement relatifs à l’utilisation",
+        "fixed": "Le barème forfaitaire permet l'évaluation des frais de déplacement relatifs à l'utilisation",
+        "expect": "pass"
+    },
+    {
         "label": "The Portuguese word 'às' does not become 'à s' due to the French fix",
         "original": "com especial atenÃ§Ã£o Ã s crianÃ§as",
         "fixed": "com especial atenção às crianças",

@@ -196,8 +196,8 @@ def fix_one_step_and_explain(text):
 
     # Look for a-hat-euro sequences that remain, and fix them in isolation.
     if UTF8_DETECTOR_RE.search(text):
-        steps = [('transcode', 'fix_inconsistent_utf8_mojibake')]
-        fixed = fix_inconsistent_utf8_mojibake(text)
+        steps = [('transcode', 'decode_inconsistent_utf8')]
+        fixed = decode_inconsistent_utf8(text)
         if fixed != text:
             return fixed, steps
 
@@ -673,7 +673,7 @@ def replace_lossy_sequences(byts):
     return LOSSY_UTF8_RE.sub('\ufffd'.encode('utf-8'), byts)
 
     
-def fix_inconsistent_utf8_mojibake(text):
+def decode_inconsistent_utf8(text):
     """
     Sometimes, text from one encoding ends up embedded within text from a
     different one. This is common enough that we need to be able to fix it.
@@ -708,6 +708,6 @@ def fix_c1_controls(text):
 TRANSCODERS = {
     'restore_byte_a0': restore_byte_a0,
     'replace_lossy_sequences': replace_lossy_sequences,
-    'fix_inconsistent_utf8_mojibake': fix_inconsistent_utf8_mojibake,
+    'decode_inconsistent_utf8': decode_inconsistent_utf8,
     'fix_c1_controls': fix_c1_controls
 }
