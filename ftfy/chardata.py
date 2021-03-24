@@ -504,8 +504,8 @@ BADNESS_RE = re.compile("""
     [{lower_accented}{upper_accented}] [{end_punctuation}] \\w
     |
 
-    # The ligature œ outside of English-looking words
-    [Œœ][^a-z]
+    # The ligature œ when not followed by an unaccented Latin letter
+    [Œœ][^A-Za-z]
     |
 
     # Windows-1252 2-character mojibake that isn't covered by the cases above
