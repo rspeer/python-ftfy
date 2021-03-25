@@ -7,15 +7,15 @@ for more information.
 
 import unicodedata
 import warnings
-from typing import Optional
 from collections import namedtuple
+from typing import Optional
 
 import ftfy.bad_codecs
-from ftfy import fixes, chardata
+from ftfy import chardata, fixes
 from ftfy.badness import is_bad
 from ftfy.formatting import display_ljust
 
-__version__ = '6.0'
+__version__ = "6.0"
 
 
 # Though this function does nothing, it lets linters know that we're using
@@ -27,91 +27,74 @@ CONFIG_DEFAULTS = {
     # Replace HTML entities, but not in strings where a < character
     # has appeared literally. Those strings are assumed to be HTML,
     # so entities should be left alone.
-    'unescape_html': 'auto',
-    
+    "unescape_html": "auto",
     # Remove "ANSI" terminal escapes, such as for changing the color
     # of text in a terminal.
-    'remove_terminal_escapes': True,
-
+    "remove_terminal_escapes": True,
     # Detect mojibake, and attempt to decode the entire string in a
     # different encoding when it's detected.
-    'fix_encoding': True,
-
+    "fix_encoding": True,
     # When fixing mojibake, allow a literal space to be interpreted
     # as a non-breaking space, which would have been byte A0 in many
     # encodings.
-    'restore_byte_a0': True,
-
+    "restore_byte_a0": True,
     # Detect mojibake that has been partially replaced by the characters
     # '�' or '?', and replace the detected sequences with '�'.
-    'replace_lossy_sequences': True,
-    
+    "replace_lossy_sequences": True,
     # Detect certain kinds of mojibake even when it's not consistent
     # across the entire string. Replace sufficiently clear sequences
     # of UTF-8 mojibake with the characters they should have been.
-    'decode_inconsistent_utf8': True,
-
+    "decode_inconsistent_utf8": True,
     # Replace C1 control characters with their Windows-1252 equivalents,
     # like HTML5 does.
-    'fix_c1_controls': True,
-    
+    "fix_c1_controls": True,
     # Replace common Latin-alphabet ligatures, such as 'ﬁ', with the
     # letters they're made of.
-    'fix_latin_ligatures': True,
-
+    "fix_latin_ligatures": True,
     # Replace fullwidth Latin characters and halfwidth Katakana with
     # their more standard widths.
-    'fix_character_width': True,
-
+    "fix_character_width": True,
     # Replace curly quotes with straight quotes.
-    'uncurl_quotes': True,
-
+    "uncurl_quotes": True,
     # Replace various forms of line breaks with the standard Unix line
     # break, '\n'.
-    'fix_line_breaks': True,
-
+    "fix_line_breaks": True,
     # Replace sequences of UTF-16 surrogates with the character they were
     # meant to encode.
-    'fix_surrogates': True,
-
+    "fix_surrogates": True,
     # Remove control characters that have no displayed effect on text.
-    'remove_control_chars': True,
-
+    "remove_control_chars": True,
     # Change 'normalization' to 'NFKC' to apply Unicode compatibility
     # conversions. In some cases, this will change the meaning of text.
     #
     # You can also set it to None to apply no normalization, including
     # leaving all combining characters separate.
-    'normalization': 'NFC',
-
+    "normalization": "NFC",
     # The maximum length of line that should be fixed by ftfy without
     # breaking it up into smaller strings.
-    'max_decode_length': 1000000,
-
+    "max_decode_length": 1000000,
     # Set 'explain' to False to not compute explanations, possibly saving
     # time. The functions that return explanations will return None.
-    'explain': True
+    "explain": True,
 }
 TextFixerConfig = namedtuple(
-    'TextFixerConfig',
-    CONFIG_DEFAULTS.keys(),
-    defaults=CONFIG_DEFAULTS.values()
+    "TextFixerConfig", CONFIG_DEFAULTS.keys(), defaults=CONFIG_DEFAULTS.values()
 )
 
 
 FIXERS = {
-    'unescape_html': fixes.unescape_html,
-    'remove_terminal_escapes': fixes.remove_terminal_escapes,
-    'restore_byte_a0': fixes.restore_byte_a0,
-    'replace_lossy_sequences': fixes.replace_lossy_sequences,
-    'decode_inconsistent_utf8': fixes.decode_inconsistent_utf8,
-    'fix_c1_controls': fixes.fix_c1_controls,
-    'fix_latin_ligatures': fixes.fix_latin_ligatures,
-    'fix_character_width': fixes.fix_character_width,
-    'uncurl_quotes': fixes.uncurl_quotes,
-    'fix_line_breaks': fixes.fix_line_breaks,
-    'fix_surrogates': fixes.fix_surrogates,
-    'remove_control_chars': fixes.remove_control_chars,
+    "unescape_html": fixes.unescape_html,
+    "remove_terminal_escapes": fixes.remove_terminal_escapes,
+    "restore_byte_a0": fixes.restore_byte_a0,
+    "replace_lossy_sequences": fixes.replace_lossy_sequences,
+    "decode_inconsistent_utf8": fixes.decode_inconsistent_utf8,
+    "fix_c1_controls": fixes.fix_c1_controls,
+    "fix_latin_ligatures": fixes.fix_latin_ligatures,
+    "fix_character_width": fixes.fix_character_width,
+    "uncurl_quotes": fixes.uncurl_quotes,
+    "fix_line_breaks": fixes.fix_line_breaks,
+    "fix_surrogates": fixes.fix_surrogates,
+    "remove_control_chars": fixes.remove_control_chars,
 }
 
 
@@ -140,7 +123,7 @@ def _try_fix(fixer_name: str, text: str, steps: list) -> str:
     fixer = FIXERS[fixer_name]
     fixed = fixer(text)
     if fixed != text:
-        steps.append(('apply', fixer_name))
+        steps.append(("apply", fixer_name))
     return fixed
 
 
@@ -281,25 +264,22 @@ def fix_text(text: str, config: Optional[TextFixerConfig] = None, **kwargs) -> s
     out = []
     pos = 0
     while pos < len(text):
-        textbreak = text.find('\n', pos) + 1
+        textbreak = text.find("\n", pos) + 1
         if textbreak == 0:
             textbreak = len(text)
         if (textbreak - pos) > config.max_decode_length:
             textbreak = pos + config.max_decode_length
 
         segment = text[pos:textbreak]
-        if config.unescape_html == 'auto' and '<' in segment:
+        if config.unescape_html == "auto" and "<" in segment:
             config = config._replace(unescape_html=False)
         fixed_segment, _ = fix_and_explain(segment, config)
         out.append(fixed_segment)
         pos = textbreak
-    return ''.join(out)
+    return "".join(out)
 
 
-def fix_and_explain(
-    text: str,
-    config: Optional[TextFixerConfig] = None
-) -> (str, list):
+def fix_and_explain(text: str, config: Optional[TextFixerConfig] = None) -> (str, list):
     """
     Apply fixes to text in a single chunk, and also produce an explanation
     of what was fixed.
@@ -312,7 +292,7 @@ def fix_and_explain(
         raise UnicodeError(fixes.BYTES_ERROR_TEXT)
 
     fix_entities = config.unescape_html
-    if fix_entities == 'auto' and '<' in text:
+    if fix_entities == "auto" and "<" in text:
         fix_entities = False
 
     steps = []
@@ -320,15 +300,20 @@ def fix_and_explain(
         origtext = text
 
         if fix_entities:
-            text = _try_fix('unescape_html', text, steps)
-        
+            text = _try_fix("unescape_html", text, steps)
+
         if config.fix_encoding:
             text, encoding_steps = fix_encoding_and_explain(text, config)
             steps.extend(encoding_steps)
 
         for fixer in [
-            'fix_c1_controls', 'fix_latin_ligatures', 'fix_character_width',
-            'uncurl_quotes', 'fix_line_breaks', 'fix_surrogates', 'remove_control_chars'
+            "fix_c1_controls",
+            "fix_latin_ligatures",
+            "fix_character_width",
+            "uncurl_quotes",
+            "fix_line_breaks",
+            "fix_surrogates",
+            "remove_control_chars",
         ]:
             if getattr(config, fixer):
                 text = _try_fix(fixer, text, steps)
@@ -338,8 +323,8 @@ def fix_and_explain(
             fixed = unicodedata.normalize(config.normalization, text)
             if fixed != text:
                 text = fixed
-                steps.append(('normalize', config.normalization))
-        
+                steps.append(("normalize", config.normalization))
+
         if text == origtext:
             return text, steps
 
@@ -373,7 +358,7 @@ def _fix_encoding_one_step_and_explain(text, config):
 
     # The first plan is to return ASCII text unchanged, as well as text
     # that doesn't look like it contains mojibake
-    if chardata.possible_encoding(text, 'ascii') or not is_bad(text):
+    if chardata.possible_encoding(text, "ascii") or not is_bad(text):
         return text, []
 
     # As we go through the next step, remember the possible encodings
@@ -388,32 +373,34 @@ def _fix_encoding_one_step_and_explain(text, config):
         if chardata.possible_encoding(text, encoding):
             possible_1byte_encodings.append(encoding)
             encoded_bytes = text.encode(encoding)
-            encode_step = ('encode', encoding)
+            encode_step = ("encode", encoding)
             transcode_steps = []
 
             # Now, find out if it's UTF-8 (or close enough). Otherwise,
             # remember the encoding for later.
             try:
-                decoding = 'utf-8'
+                decoding = "utf-8"
                 # Check encoded_bytes for sequences that would be UTF-8,
                 # except they have b' ' where b'\xa0' would belong.
-                if config.restore_byte_a0 and chardata.ALTERED_UTF8_RE.search(encoded_bytes):
+                if config.restore_byte_a0 and chardata.ALTERED_UTF8_RE.search(
+                    encoded_bytes
+                ):
                     replaced_bytes = fixes.restore_byte_a0(encoded_bytes)
                     if replaced_bytes != encoded_bytes:
-                        transcode_steps.append(('transcode', 'restore_byte_a0'))
+                        transcode_steps.append(("transcode", "restore_byte_a0"))
                         encoded_bytes = replaced_bytes
 
                 # Replace sequences where information has been lost
-                if config.replace_lossy_sequences and encoding.startswith('sloppy'):
+                if config.replace_lossy_sequences and encoding.startswith("sloppy"):
                     replaced_bytes = fixes.replace_lossy_sequences(encoded_bytes)
                     if replaced_bytes != encoded_bytes:
-                        transcode_steps.append(('transcode', 'replace_lossy_sequences'))
+                        transcode_steps.append(("transcode", "replace_lossy_sequences"))
                         encoded_bytes = replaced_bytes
 
-                if 0xed in encoded_bytes or 0xc0 in encoded_bytes:
-                    decoding = 'utf-8-variants'
+                if 0xED in encoded_bytes or 0xC0 in encoded_bytes:
+                    decoding = "utf-8-variants"
 
-                decode_step = ('decode', decoding)
+                decode_step = ("decode", decoding)
                 steps = [encode_step] + transcode_steps + [decode_step]
                 fixed = encoded_bytes.decode(decoding)
                 return fixed, steps
@@ -423,7 +410,7 @@ def _fix_encoding_one_step_and_explain(text, config):
 
     # Look for a-hat-euro sequences that remain, and fix them in isolation.
     if config.decode_inconsistent_utf8 and chardata.UTF8_DETECTOR_RE.search(text):
-        steps = [('apply', 'decode_inconsistent_utf8')]
+        steps = [("apply", "decode_inconsistent_utf8")]
         fixed = fixes.decode_inconsistent_utf8(text)
         if fixed != text:
             return fixed, steps
@@ -431,8 +418,8 @@ def _fix_encoding_one_step_and_explain(text, config):
     # The next most likely case is that this is Latin-1 that was intended to
     # be read as Windows-1252, because those two encodings in particular are
     # easily confused.
-    if 'latin-1' in possible_1byte_encodings:
-        if 'windows-1252' in possible_1byte_encodings:
+    if "latin-1" in possible_1byte_encodings:
+        if "windows-1252" in possible_1byte_encodings:
             # This text is in the intersection of Latin-1 and
             # Windows-1252, so it's probably legit.
             return text, []
@@ -441,19 +428,19 @@ def _fix_encoding_one_step_and_explain(text, config):
             # not in Windows-1252. Those are C1 control characters. Nobody
             # wants those. Assume they were meant to be Windows-1252.
             try:
-                fixed = text.encode('latin-1').decode('windows-1252')
+                fixed = text.encode("latin-1").decode("windows-1252")
                 if fixed != text:
-                    steps = [('encode', 'latin-1'), ('decode', 'windows-1252')]
+                    steps = [("encode", "latin-1"), ("decode", "windows-1252")]
                     return fixed, steps
             except UnicodeDecodeError:
                 pass
 
     # Fix individual characters of Latin-1 with a less satisfying explanation
     if config.fix_c1_controls and chardata.C1_CONTROL_RE.search(text):
-        steps = [('transcode', 'fix_c1_controls')]
+        steps = [("transcode", "fix_c1_controls")]
         fixed = fixes.fix_c1_controls(text)
         return fixed, steps
-    
+
     # The cases that remain are mixups between two different single-byte
     # encodings, and not the common case of Latin-1 vs. Windows-1252.
     #
@@ -472,7 +459,6 @@ def fix_encoding(text, config=None, **kwargs):
     return fixed
 
 
-
 # Some alternate names for the main functions
 ftfy = fix_text
 
@@ -481,7 +467,7 @@ def fix_text_segment(text, config=None, **kwargs):
     warnings.warn(
         "`fix_text_segment()` is deprecated as of ftfy 6.0. "
         "Use `fix_and_explain()` instead.",
-        DeprecationWarning
+        DeprecationWarning,
     )
 
     if config is None:
@@ -491,11 +477,7 @@ def fix_text_segment(text, config=None, **kwargs):
     return fixed
 
 
-def fix_file(
-    input_file,
-    encoding=None,
-    config=None
-):
+def fix_file(input_file, encoding=None, config=None):
     """
     Fix text that is found in a file.
 
@@ -512,9 +494,9 @@ def fix_file(
                 line, encoding = guess_bytes(line)
             else:
                 line = line.decode(encoding)
-        if config.unescape_html == 'auto' and '<' in line:
+        if config.unescape_html == "auto" and "<" in line:
             config = config._replace(unescape_html=False)
-        
+
         fixed_line, _explan = fix_and_explain(line, config)
         yield fixed_line
 
@@ -553,12 +535,12 @@ def guess_bytes(bstring):
             "bytes to guess_bytes, not Unicode."
         )
 
-    if bstring.startswith(b'\xfe\xff') or bstring.startswith(b'\xff\xfe'):
-        return bstring.decode('utf-16'), 'utf-16'
+    if bstring.startswith(b"\xfe\xff") or bstring.startswith(b"\xff\xfe"):
+        return bstring.decode("utf-16"), "utf-16"
 
     byteset = set(bstring)
     try:
-        if 0xed in byteset or 0xc0 in byteset:
+        if 0xED in byteset or 0xC0 in byteset:
             # Byte 0xed can be used to encode a range of codepoints that
             # are UTF-16 surrogates. UTF-8 does not use UTF-16 surrogates,
             # so when we see 0xed, it's very likely we're being asked to
@@ -580,9 +562,9 @@ def guess_bytes(bstring):
             #
             # The 'utf-8-variants' decoder can handle both of these cases, as
             # well as standard UTF-8, at the cost of a bit of speed.
-            return bstring.decode('utf-8-variants'), 'utf-8-variants'
+            return bstring.decode("utf-8-variants"), "utf-8-variants"
         else:
-            return bstring.decode('utf-8'), 'utf-8'
+            return bstring.decode("utf-8"), "utf-8"
     except UnicodeDecodeError:
         pass
 
@@ -591,8 +573,8 @@ def guess_bytes(bstring):
     # (The U+81 U+30 sequence would appear, for example, in the GB18030 encoding
     # of UTF-8 mojibake.)
     try:
-        if b'\xc8\xcb' in bstring or b'\xc8\xd5' in bstring or b'\x81\x30' in bstring:
-            return bstring.decode('gb18030'), 'gb18030'
+        if b"\xc8\xcb" in bstring or b"\xc8\xd5" in bstring or b"\x81\x30" in bstring:
+            return bstring.decode("gb18030"), "gb18030"
     except UnicodeDecodeError:
         pass
 
@@ -601,22 +583,22 @@ def guess_bytes(bstring):
     # of UTF-8 and GB18030
     try:
         if (0x81 in byteset) + (0x82 in byteset) + (0x83 in byteset) >= 2:
-            return bstring.decode('shift-jis'), 'shift-jis'
+            return bstring.decode("shift-jis"), "shift-jis"
     except UnicodeDecodeError:
         pass
 
     # decode Big5 text that contains either '人' or '日'
     try:
-        if b'\xa4\x48' in bstring or b'\xa4\xe9' in bstring:
-            return bstring.decode('big5'), 'big5'
+        if b"\xa4\x48" in bstring or b"\xa4\xe9" in bstring:
+            return bstring.decode("big5"), "big5"
     except UnicodeDecodeError:
         pass
 
-    if 0x0d in byteset and 0x0a not in byteset:
+    if 0x0D in byteset and 0x0A not in byteset:
         # Files that contain CR and not LF are likely to be MacRoman.
-        return bstring.decode('macroman'), 'macroman'
+        return bstring.decode("macroman"), "macroman"
     else:
-        return bstring.decode('sloppy-windows-1252'), 'sloppy-windows-1252'
+        return bstring.decode("sloppy-windows-1252"), "sloppy-windows-1252"
 
 
 def apply_plan(text, plan):
@@ -637,11 +619,11 @@ def apply_plan(text, plan):
     """
     obj = text
     for operation, encoding in plan:
-        if operation == 'encode':
+        if operation == "encode":
             obj = obj.encode(encoding)
-        elif operation == 'decode':
+        elif operation == "decode":
             obj = obj.decode(encoding)
-        elif operation == 'transcode' or operation == 'apply':
+        elif operation == "transcode" or operation == "apply":
             if encoding in FIXERS:
                 obj = FIXERS[encoding](obj)
             else:
@@ -678,12 +660,12 @@ def explain_unicode(text):
         if char.isprintable():
             display = char
         else:
-            display = char.encode('unicode-escape').decode('ascii')
+            display = char.encode("unicode-escape").decode("ascii")
         print(
-            'U+{code:04X}  {display} [{category}] {name}'.format(
+            "U+{code:04X}  {display} [{category}] {name}".format(
                 display=display_ljust(display, 7),
                 code=ord(char),
                 category=unicodedata.category(char),
-                name=unicodedata.name(char, '<unknown>'),
+                name=unicodedata.name(char, "<unknown>"),
             )
         )
