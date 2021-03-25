@@ -470,7 +470,7 @@ MOJIBAKE_CATEGORIES = {
 }
 
 
-BADNESS_RE = re.compile("""
+BADNESS_RE = re.compile(r"""
     [{c1}]
     |
     [{bad}{lower_accented}{upper_accented}{box}{start_punctuation}{end_punctuation}{currency}{numeric}] [{bad}]
@@ -485,7 +485,7 @@ BADNESS_RE = re.compile("""
     # fancy leetspeak-esque writing
     [{lower_accented}{box}{end_punctuation}] [{currency}]
     |
-    \\s [{upper_accented}] [{currency}]
+    \s [{upper_accented}] [{currency}]
     |
     [{upper_accented}{box}{end_punctuation}] [{numeric}]
     |
@@ -539,7 +539,7 @@ BADNESS_RE = re.compile("""
     # Windows-1252 encodings of 'à' and 'á'
     Ã[\xa0¡]
     |
-    [a-z]\\s?Ã[ ]
+    [a-z]\s?Ã[ ]
     |
     ^Ã[ ]
     |
@@ -551,21 +551,6 @@ BADNESS_RE = re.compile("""
     # Windows-1253 mojibake of Latin-1 characters and/or the Greek alphabet
     [ΒΓΞΟ][{c1}{bad}{start_punctuation}{end_punctuation}{currency}°][ΒΓΞΟ]
 """.format(**MOJIBAKE_CATEGORIES), re.VERBOSE)
-
-
-def badness(text):
-    """
-    Get the 'badness' of a sequence of text. A badness greater than 0 indicates
-    that some of it seems to be mojibake.
-    """
-    return len(BADNESS_RE.findall(text))
-
-
-def is_bad(text):
-    """
-    Returns true iff the given text looks like it contains mojibake.
-    """
-    return bool(BADNESS_RE.search(text))
 
 
 # Character classes that help us pinpoint embedded mojibake. These can
