@@ -6,7 +6,10 @@ can perform.
 import codecs
 import html
 import re
+import unicodedata
+import warnings
 
+import ftfy
 from ftfy.chardata import (
     ALTERED_UTF8_RE,
     C1_CONTROL_RE,
@@ -20,249 +23,42 @@ from ftfy.chardata import (
     SINGLE_QUOTE_RE,
     UTF8_DETECTOR_RE,
     WIDTH_MAP,
-    badness,
-    is_bad,
     possible_encoding,
 )
 
-BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
-
-ftfy is designed to fix problems that were introduced by handling Unicode
-incorrectly. It might be able to fix the bytes you just handed it, but the
-fact that you just gave a pile of bytes to a function that fixes text means
-that your code is *also* handling Unicode incorrectly.
-
-ftfy takes Unicode text as input. You should take these bytes and decode
-them from the encoding you think they are in. If you're not sure what encoding
-they're in:
-
-- First, try to find out. 'utf-8' is a good assumption.
-- If the encoding is simply unknowable, try running your bytes through
-  ftfy.guess_bytes. As the name implies, this may not always be accurate.
-
-If you're confused by this, please read the Python Unicode HOWTO:
-
-    http://docs.python.org/3/howto/unicode.html
-"""
-
-
-def fix_encoding(text):
-    r"""
-    Fix text with incorrectly-decoded garbage ("mojibake") whenever possible.
-
-    This function looks for the evidence of mojibake, formulates a plan to fix
-    it, and applies the plan.  It determines whether it should replace nonsense
-    sequences of single-byte characters that were really meant to be UTF-8
-    characters, and if so, turns them into the correctly-encoded Unicode
-    character that they were meant to represent.
-
-    The input to the function must be Unicode. If you don't have Unicode text,
-    you're not using the right tool to solve your problem.
-
-    `fix_encoding` decodes text that looks like it was decoded incorrectly. It
-    leaves alone text that doesn't.
-
-        >>> fix_encoding('Ãºnico')
-        'único'
-
-        >>> fix_encoding('This text is fine already :þ')
-        'This text is fine already :þ'
-
-    Because these characters often come from Microsoft products, we allow
-    for the possibility that we get not just Unicode characters 128-255, but
-    also Windows's conflicting idea of what characters 128-160 are.
-
-        >>> fix_encoding('This â€” should be an em dash')
-        'This — should be an em dash'
-
-    We might have to deal with both Windows characters and raw control
-    characters at the same time, especially when dealing with characters like
-    0x81 that have no mapping in Windows. This is a string that Python's
-    standard `.encode` and `.decode` methods cannot correct.
-
-        >>> fix_encoding('This text is sad .â\x81”.')
-        'This text is sad .⁔.'
-
-    However, it has safeguards against fixing sequences of letters and
-    punctuation that can occur in valid text. In the following example,
-    the last three characters are not replaced with a Korean character,
-    even though they could be.
-
-        >>> fix_encoding('not such a fan of Charlotte Brontë…”')
-        'not such a fan of Charlotte Brontë…”'
-
-    This function can now recover some complex manglings of text, such as when
-    UTF-8 mojibake has been normalized in a way that replaces U+A0 with a
-    space:
-
-        >>> fix_encoding('The more you know ðŸŒ ')
-        'The more you know 🌠'
-
-    Cases of genuine ambiguity can sometimes be addressed by finding other
-    characters that are not double-encoded, and expecting the encoding to
-    be consistent:
-
-        >>> fix_encoding('AHÅ™, the new sofa from IKEA®')
-        'AHÅ™, the new sofa from IKEA®'
-
-    Finally, we handle the case where the text is in a single-byte encoding
-    that was intended as Windows-1252 all along but read as Latin-1:
-
-        >>> fix_encoding('This text was never UTF-8 at all\x85')
-        'This text was never UTF-8 at all…'
-
-    The best version of the text is found using
-    :func:`ftfy.badness.text_cost`.
-    """
-    text, _ = fix_encoding_and_explain(text)
-    return text
+from ftfy.badness import badness, is_bad
 
 
 def fix_encoding_and_explain(text):
-    """
-    Re-decodes text that has been decoded incorrectly, and also return a
-    "plan" indicating all the steps required to fix it.
+    warnings.warn(
+        "`fix_encoding_and_explain()` has moved to the main module of ftfy.",
+        DeprecationWarning
+    )
+    return ftfy.fix_encoding_and_explain(text)
 
-    The resulting plan could be used with :func:`ftfy.fixes.apply_plan`
-    to fix additional strings that are broken in the same way.
-    """
-    if isinstance(text, bytes):
-        raise UnicodeError(BYTES_ERROR_TEXT)
 
-    plan_so_far = []
-    while True:
-        prevtext = text
-        text, plan = fix_one_step_and_explain(text)
-        plan_so_far.extend(plan)
-        if text == prevtext:
-            return text, plan_so_far
+def fix_encoding(text):
+    warnings.warn(
+        "`fix_encoding()` has moved to the main module of ftfy.",
+        DeprecationWarning
+    )
+    return ftfy.fix_encoding(text)
 
 
 def fix_one_step_and_explain(text):
-    """
-    Performs a single step of re-decoding text that's been decoded incorrectly.
-
-    Returns the decoded text, plus a "plan" for how to reproduce what it did.
-    """
-    if len(text) == 0:
-        return text, []
-
-    # The first plan is to return ASCII text unchanged, as well as text
-    # that doesn't look like it contains mojibake
-    if possible_encoding(text, 'ascii') or not is_bad(text):
-        return text, []
-
-    # As we go through the next step, remember the possible encodings
-    # that we encounter but don't successfully fix yet. We may need them
-    # later.
-    possible_1byte_encodings = []
-
-    # Suppose the text was supposed to be UTF-8, but it was decoded using
-    # a single-byte encoding instead. When these cases can be fixed, they
-    # are usually the correct thing to do, so try them next.
-    for encoding in CHARMAP_ENCODINGS:
-        if possible_encoding(text, encoding):
-            possible_1byte_encodings.append(encoding)
-            encoded_bytes = text.encode(encoding)
-            encode_step = ('encode', encoding)
-            transcode_steps = []
-
-            # Now, find out if it's UTF-8 (or close enough). Otherwise,
-            # remember the encoding for later.
-            try:
-                decoding = 'utf-8'
-                # Check encoded_bytes for sequences that would be UTF-8,
-                # except they have b' ' where b'\xa0' would belong.
-                if ALTERED_UTF8_RE.search(encoded_bytes):
-                    encoded_bytes = restore_byte_a0(encoded_bytes)
-                    transcode_steps.append(('transcode', 'restore_byte_a0'))
-
-                # Check for the byte 0x1a, which indicates where one of our
-                # 'sloppy' codecs found a replacement character.
-                if encoding.startswith('sloppy'):
-                    encoded_bytes = replace_lossy_sequences(encoded_bytes)
-                    transcode_steps.append(('transcode', 'replace_lossy_sequences'))
-
-                if 0xed in encoded_bytes or 0xc0 in encoded_bytes:
-                    decoding = 'utf-8-variants'
-
-                decode_step = ('decode', decoding)
-                steps = [encode_step] + transcode_steps + [decode_step]
-                fixed = encoded_bytes.decode(decoding)
-                return fixed, steps
-
-            except UnicodeDecodeError:
-                pass
-
-    # Look for a-hat-euro sequences that remain, and fix them in isolation.
-    if UTF8_DETECTOR_RE.search(text):
-        steps = [('transcode', 'decode_inconsistent_utf8')]
-        fixed = decode_inconsistent_utf8(text)
-        if fixed != text:
-            return fixed, steps
-
-    # The next most likely case is that this is Latin-1 that was intended to
-    # be read as Windows-1252, because those two encodings in particular are
-    # easily confused.
-    if 'latin-1' in possible_1byte_encodings:
-        if 'windows-1252' in possible_1byte_encodings:
-            # This text is in the intersection of Latin-1 and
-            # Windows-1252, so it's probably legit.
-            return text, []
-        else:
-            # Otherwise, it means we have characters that are in Latin-1 but
-            # not in Windows-1252. Those are C1 control characters. Nobody
-            # wants those. Assume they were meant to be Windows-1252.
-            try:
-                fixed = text.encode('latin-1').decode('windows-1252')
-                if fixed != text:
-                    steps = [('encode', 'latin-1'), ('decode', 'windows-1252')]
-                    return fixed, steps
-            except UnicodeDecodeError:
-                pass
-
-    # Fix individual characters of Latin-1 with a less satisfying explanation
-    if C1_CONTROL_RE.search(text):
-        steps = [('transcode', 'fix_c1_controls')]
-        fixed = fix_c1_controls(text)
-        return fixed, steps
-    
-    # The cases that remain are mixups between two different single-byte
-    # encodings, and not the common case of Latin-1 vs. Windows-1252.
-    #
-    # These cases may be unsolvable without adding false positives, though
-    # I have vague ideas about how to optionally address them in the future.
-
-    # Return the text unchanged; the plan is empty.
-    return text, []
+    warnings.warn(
+        "`fix_one_step_and_explain()` has moved to the main module of ftfy.",
+        DeprecationWarning
+    )
+    return ftfy.fix_one_step_and_explain(text)
 
 
 def apply_plan(text, plan):
-    """
-    Apply a plan for fixing the encoding of text.
-
-    The plan is a list of tuples of the form (operation, encoding):
-
-    - `operation` is 'encode' if it turns a string into bytes, 'decode' if it
-      turns bytes into a string, and 'transcode' if it keeps the type the same.
-    - `encoding` is the name of the encoding to use, such as 'utf-8' or
-      'latin-1', or the function name in the case of 'transcode'.
-    """
-    obj = text
-    for operation, encoding in plan:
-        if operation == 'encode':
-            obj = obj.encode(encoding)
-        elif operation == 'decode':
-            obj = obj.decode(encoding)
-        elif operation == 'transcode':
-            if encoding in TRANSCODERS:
-                obj = TRANSCODERS[encoding](obj)
-            else:
-                raise ValueError("Unknown transcode operation: %s" % encoding)
-        else:
-            raise ValueError("Unknown plan step: %s" % operation)
-
-    return obj
+    warnings.warn(
+        "`apply_plan()` has moved to the main module of ftfy.",
+        DeprecationWarning
+    )
+    return ftfy.apply_plan(text, plan)
 
 
 def _unescape_fixup(match):
