@@ -464,12 +464,6 @@ ftfy = fix_text
 
 
 def fix_text_segment(text, config=None, **kwargs):
-    warnings.warn(
-        "`fix_text_segment()` is deprecated as of ftfy 6.0. "
-        "Use `fix_and_explain()` instead.",
-        DeprecationWarning,
-    )
-
     if config is None:
         config = TextFixerConfig()
     config = config._replace(**kwargs)
