@@ -7,7 +7,6 @@ import html
 import itertools
 import re
 import unicodedata
-import zlib
 
 
 # These are the encodings we will try to fix in ftfy, in the

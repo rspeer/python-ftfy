@@ -2,7 +2,6 @@
 Heuristics to detect likely mojibake.
 """
 
-import re
 import warnings
 from ftfy import chardata
 

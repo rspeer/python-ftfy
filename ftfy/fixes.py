@@ -6,14 +6,12 @@ can perform.
 import codecs
 import html
 import re
-import unicodedata
 import warnings
 
 import ftfy
 from ftfy.chardata import (
     ALTERED_UTF8_RE,
     C1_CONTROL_RE,
-    CHARMAP_ENCODINGS,
     CONTROL_CHARS,
     DOUBLE_QUOTE_RE,
     HTML_ENTITIES,
@@ -23,10 +21,9 @@ from ftfy.chardata import (
     SINGLE_QUOTE_RE,
     UTF8_DETECTOR_RE,
     WIDTH_MAP,
-    possible_encoding,
 )
 
-from ftfy.badness import badness, is_bad
+from ftfy.badness import is_bad
 
 
 def fix_encoding_and_explain(text):
