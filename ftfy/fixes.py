@@ -27,6 +27,9 @@ from ftfy.badness import is_bad
 
 
 def fix_encoding_and_explain(text):
+    """
+    Deprecated copy of `ftfy.fix_encoding_and_explain()`.
+    """
     warnings.warn(
         "`fix_encoding_and_explain()` has moved to the main module of ftfy.",
         DeprecationWarning,
@@ -35,21 +38,19 @@ def fix_encoding_and_explain(text):
 
 
 def fix_encoding(text):
+    """
+    Deprecated copy of `ftfy.fix_encoding()`.
+    """
     warnings.warn(
         "`fix_encoding()` has moved to the main module of ftfy.", DeprecationWarning
     )
     return ftfy.fix_encoding(text)
 
 
-def fix_one_step_and_explain(text):
-    warnings.warn(
-        "`fix_one_step_and_explain()` has moved to the main module of ftfy.",
-        DeprecationWarning,
-    )
-    return ftfy.fix_one_step_and_explain(text)
-
-
 def apply_plan(text, plan):
+    """
+    Deprecated copy of `ftfy.apply_plan()`.
+    """
     warnings.warn(
         "`apply_plan()` has moved to the main module of ftfy.", DeprecationWarning
     )
@@ -495,11 +496,3 @@ def fix_c1_controls(text):
     Windows-1252 equivalents. This matches what Web browsers do.
     """
     return C1_CONTROL_RE.sub(_c1_fixer, text)
-
-
-TRANSCODERS = {
-    "restore_byte_a0": restore_byte_a0,
-    "replace_lossy_sequences": replace_lossy_sequences,
-    "decode_inconsistent_utf8": decode_inconsistent_utf8,
-    "fix_c1_controls": fix_c1_controls,
-}
