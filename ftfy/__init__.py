@@ -6,10 +6,9 @@ for more information.
 """
 
 import unicodedata
-from collections import namedtuple
-from typing import Optional
+from typing import Optional, Tuple, NamedTuple, Union, List
 
-import ftfy.bad_codecs
+from ftfy import bad_codecs
 from ftfy import chardata, fixes
 from ftfy.badness import is_bad
 from ftfy.formatting import display_ljust
@@ -19,149 +18,151 @@ __version__ = "6.0"
 
 # Though this function does nothing, it lets linters know that we're using
 # ftfy.bad_codecs. See the docstring in `bad_codecs/__init__.py` for more.
-ftfy.bad_codecs.ok()
+bad_codecs.ok()
 
 
-CONFIG_DEFAULTS = {
-    "unescape_html": "auto",
-    "remove_terminal_escapes": True,
-    "fix_encoding": True,
-    "restore_byte_a0": True,
-    "replace_lossy_sequences": True,
-    "decode_inconsistent_utf8": True,
-    "fix_c1_controls": True,
-    "fix_latin_ligatures": True,
-    "fix_character_width": True,
-    "uncurl_quotes": True,
-    "fix_line_breaks": True,
-    "fix_surrogates": True,
-    "remove_control_chars": True,
-    "normalization": "NFC",
-    "max_decode_length": 1000000,
-    "explain": True,
-}
-TextFixerConfig = namedtuple(
-    "TextFixerConfig", CONFIG_DEFAULTS.keys(), defaults=CONFIG_DEFAULTS.values()
-)
-TextFixerConfig.__doc__ = r"""
-A TextFixerConfig object stores configuration options for ftfy.
+class TextFixerConfig(NamedTuple):
+    """
+    A TextFixerConfig object stores configuration options for ftfy.
 
-It's implemented as a namedtuple with defaults, so you can instantiate
-it by providing the values to change from their defaults as keyword arguments.
-For example, to disable 'unescape_html' and keep the rest of the defaults:
+    It's implemented as a namedtuple with defaults, so you can instantiate
+    it by providing the values to change from their defaults as keyword arguments.
+    For example, to disable 'unescape_html' and keep the rest of the defaults:
 
-    TextFixerConfig(unescape_html=False)
+        TextFixerConfig(unescape_html=False)
 
-Here are the options and their default values:
+    Here are the options and their default values:
 
-- `unescape_html`: "auto"
+    - `unescape_html`: "auto"
 
-  Configures whether to replace HTML entities such as &amp; with the character
-  they represent. "auto" says to do this by default, but disable it when a
-  literal < character appears, indicating that the input is actual HTML and
-  entities should be preserved. The value can be True, to always enable this
-  fixer, or False, to always disable it.
+    Configures whether to replace HTML entities such as &amp; with the character
+    they represent. "auto" says to do this by default, but disable it when a
+    literal < character appears, indicating that the input is actual HTML and
+    entities should be preserved. The value can be True, to always enable this
+    fixer, or False, to always disable it.
 
-- `remove_terminal_escapes`: True
+    - `remove_terminal_escapes`: True
 
-  Removes "ANSI" terminal escapes, such as for changing the color of text in a
-  terminal window.
+    Removes "ANSI" terminal escapes, such as for changing the color of text in a
+    terminal window.
 
-- `fix_encoding`: True
+    - `fix_encoding`: True
 
-  Detect mojibake and attempt to fix it by decoding the text in a different
-  encoding standard.
+    Detect mojibake and attempt to fix it by decoding the text in a different
+    encoding standard.
 
-  The following four options affect `fix_encoding` works, and do nothing if
-  `fix_encoding` is False:
+    The following four options affect `fix_encoding` works, and do nothing if
+    `fix_encoding` is False:
 
-    - `restore_byte_a0`: True
+        - `restore_byte_a0`: True
 
-      Allow a literal space (U+20) to be interpreted as a non-breaking space
-      (U+A0) when that would make it part of a fixable mojibake string.
+        Allow a literal space (U+20) to be interpreted as a non-breaking space
+        (U+A0) when that would make it part of a fixable mojibake string.
 
-      Because spaces are very common characters, this could lead to false
-      positives, but we try to apply it only when there's strong evidence for
-      mojibake. Disabling `restore_byte_a0` is safer from false positives,
-      but creates false negatives.
+        Because spaces are very common characters, this could lead to false
+        positives, but we try to apply it only when there's strong evidence for
+        mojibake. Disabling `restore_byte_a0` is safer from false positives,
+        but creates false negatives.
 
-    - `replace_lossy_sequences`: True
+        - `replace_lossy_sequences`: True
 
-      Detect mojibake that has been partially replaced by the characters
-      '�' or '?'. If the mojibake could be decoded otherwise, replace the
-      detected sequence with '�'.
+        Detect mojibake that has been partially replaced by the characters
+        '�' or '?'. If the mojibake could be decoded otherwise, replace the
+        detected sequence with '�'.
 
-    - `decode_inconsistent_utf8`: True
+        - `decode_inconsistent_utf8`: True
 
-      When we see sequences that distinctly look like UTF-8 mojibake, but
-      there's no consistent way to reinterpret the string in a new encoding,
-      replace the mojibake with the appropriate UTF-8 characters anyway.
+        When we see sequences that distinctly look like UTF-8 mojibake, but
+        there's no consistent way to reinterpret the string in a new encoding,
+        replace the mojibake with the appropriate UTF-8 characters anyway.
 
-      This helps to decode strings that are concatenated from different
-      encodings.
+        This helps to decode strings that are concatenated from different
+        encodings.
 
-    - `fix_c1_controls`: True
+        - `fix_c1_controls`: True
 
-      Replace C1 control characters (the useless characters U+80 - U+9B that
-      come from Latin-1) with their Windows-1252 equivalents, like HTML5 does,
-      even if the whole string doesn't decode as Latin-1.
+        Replace C1 control characters (the useless characters U+80 - U+9B that
+        come from Latin-1) with their Windows-1252 equivalents, like HTML5 does,
+        even if the whole string doesn't decode as Latin-1.
 
-- `fix_latin_ligatures`: True
+    - `fix_latin_ligatures`: True
 
-  Replace common Latin-alphabet ligatures, such as 'ﬁ', with the
-  letters they're made of.
+    Replace common Latin-alphabet ligatures, such as 'ﬁ', with the
+    letters they're made of.
 
-- `fix_character_width`: True
+    - `fix_character_width`: True
 
-  Replace fullwidth Latin characters and halfwidth Katakana with
-  their more standard widths.
+    Replace fullwidth Latin characters and halfwidth Katakana with
+    their more standard widths.
 
-- `uncurl_quotes`: True
+    - `uncurl_quotes`: True
 
-  Replace curly quotes with straight quotes.
+    Replace curly quotes with straight quotes.
 
-- `fix_line_breaks`: True
+    - `fix_line_breaks`: True
 
-  Replace various forms of line breaks with the standard Unix line
-  break, '\n'.
+    Replace various forms of line breaks with the standard Unix line
+    break, '\n'.
 
-- `fix_surrogates`: True
+    - `fix_surrogates`: True
 
-  Replace sequences of UTF-16 surrogate codepoints with the character
-  they were meant to encode. This fixes text that was decoded with the
-  obsolete UCS-2 standard, and allows it to support high-numbered
-  codepoints such as emoji.
+    Replace sequences of UTF-16 surrogate codepoints with the character
+    they were meant to encode. This fixes text that was decoded with the
+    obsolete UCS-2 standard, and allows it to support high-numbered
+    codepoints such as emoji.
 
-- `remove_control_chars`: True
+    - `remove_control_chars`: True
 
-  Remove certain control characters that have no displayed effect on text.
+    Remove certain control characters that have no displayed effect on text.
 
-- `normalization`: "NFC"
+    - `normalization`: "NFC"
 
-  Choose what kind of Unicode normalization is applied. Usually, we apply
-  NFC normalization, so that letters followed by combining characters become
-  single combined characters.
+    Choose what kind of Unicode normalization is applied. Usually, we apply
+    NFC normalization, so that letters followed by combining characters become
+    single combined characters.
 
-  Changing this to "NFKC" applies more compatibility conversions, such as
-  replacing the 'micro sign' with a standard Greek lowercase mu, which looks
-  identical. However, some NFKC normalizations change the meaning of text,
-  such as converting "10³" to "103".
+    Changing this to "NFKC" applies more compatibility conversions, such as
+    replacing the 'micro sign' with a standard Greek lowercase mu, which looks
+    identical. However, some NFKC normalizations change the meaning of text,
+    such as converting "10³" to "103".
 
-  `normalization` can be None, to apply no normalization.
+    `normalization` can be None, to apply no normalization.
 
-- `max_decode_length`: 1_000_000
+    - `max_decode_length`: 1_000_000
 
-  The maximum size of "segment" that ftfy will try to fix all at once.
+    The maximum size of "segment" that ftfy will try to fix all at once.
 
-- `explain`: True
+    - `explain`: True
 
-  Whether to compute 'explanations', lists describing what ftfy changed.
-  When this is False, the explanation will be None, and the code that
-  builds the explanation will be skipped, possibly saving time.
+    Whether to compute 'explanations', lists describing what ftfy changed.
+    When this is False, the explanation will be None, and the code that
+    builds the explanation will be skipped, possibly saving time.
 
-  Functions that accept TextFixerConfig and don't return an explanation
-  will automatically set `explain` to False.
-"""
+    Functions that accept TextFixerConfig and don't return an explanation
+    will automatically set `explain` to False.
+    """
+    unescape_html: Union[str, bool] = "auto"
+    remove_terminal_escapes: bool = True
+    fix_encoding: bool = True
+    restore_byte_a0: bool = True
+    replace_lossy_sequences: bool = True
+    decode_inconsistent_utf8: bool = True
+    fix_c1_controls: bool = True
+    fix_latin_ligatures: bool = True
+    fix_character_width: bool = True
+    uncurl_quotes: bool = True
+    fix_line_breaks: bool = True
+    fix_surrogates: bool = True
+    remove_control_chars: bool = True
+    normalization: Optional[str] = "NFC"
+    max_decode_length: int = 1000000
+    explain: bool = True
+
+
+class ExplainedText(NamedTuple):
+    text: str
+    explanation: Optional[List[Tuple[str, str]]]
+
 
 FIXERS = {
     "unescape_html": fixes.unescape_html,
@@ -212,8 +213,8 @@ def _try_fix(
         if steps is not None and fixed != text:
             steps.append(("apply", fixer_name))
         return fixed
-    else:
-        return text
+
+    return text
 
 
 def fix_text(text: str, config: Optional[TextFixerConfig] = None, **kwargs) -> str:
@@ -281,7 +282,7 @@ def fix_text(text: str, config: Optional[TextFixerConfig] = None, **kwargs) -> s
     config = config._replace(**kwargs)
     config = config._replace(explain=False)
     if isinstance(text, bytes):
-        raise UnicodeError(fixes.BYTES_ERROR_TEXT)
+        raise UnicodeError(BYTES_ERROR_TEXT)
 
     out = []
     pos = 0
@@ -303,7 +304,7 @@ def fix_text(text: str, config: Optional[TextFixerConfig] = None, **kwargs) -> s
 
 def fix_and_explain(
     text: str, config: Optional[TextFixerConfig] = None, **kwargs
-) -> (str, Optional[list]):
+) -> ExplainedText:
     """
     Fix text as a single segment, returning the fixed text and an explanation
     of what was fixed.
@@ -314,14 +315,14 @@ def fix_and_explain(
     if config is None:
         config = TextFixerConfig()
     if isinstance(text, bytes):
-        raise UnicodeError(fixes.BYTES_ERROR_TEXT)
+        raise UnicodeError(BYTES_ERROR_TEXT)
     config = config._replace(**kwargs)
 
     if config.unescape_html == "auto" and "<" in text:
         config = config._replace(unescape_html=False)
 
     if config.explain:
-        steps = []
+        steps: Optional[List[Tuple[str, str]]] = []
     else:
         # If explanations aren't desired, `steps` will be None
         steps = None
@@ -356,12 +357,12 @@ def fix_and_explain(
             text = fixed
 
         if text == origtext:
-            return text, steps
+            return ExplainedText(text, steps)
 
 
 def fix_encoding_and_explain(
     text: str, config: Optional[TextFixerConfig] = None
-) -> (str, list):
+) -> ExplainedText:
     """
     Apply the steps of ftfy that detect mojibake and fix it. Returns the fixed
     text and a list explaining what was fixed.
@@ -373,24 +374,24 @@ def fix_encoding_and_explain(
     if config is None:
         config = TextFixerConfig()
     if isinstance(text, bytes):
-        raise UnicodeError(fixes.BYTES_ERROR_TEXT)
+        raise UnicodeError(BYTES_ERROR_TEXT)
     if not config.fix_encoding:
         # A weird trivial case: we're asked to fix the encoding, but skip
         # fixing the encoding
-        return text, []
+        return ExplainedText(text, [])
 
-    plan_so_far = []
+    plan_so_far: List[Tuple[str, str]] = []
     while True:
         prevtext = text
         text, plan = _fix_encoding_one_step_and_explain(text, config)
         plan_so_far.extend(plan)
         if text == prevtext:
-            return text, plan_so_far
+            return ExplainedText(text, plan_so_far)
 
 
 def _fix_encoding_one_step_and_explain(
     text: str, config: TextFixerConfig
-) -> (str, list):
+) -> ExplainedText:
     """
     Perform one step of fixing the encoding of text.
     """
@@ -398,12 +399,12 @@ def _fix_encoding_one_step_and_explain(
         config = TextFixerConfig()
 
     if len(text) == 0:
-        return text, []
+        return ExplainedText(text, [])
 
     # The first plan is to return ASCII text unchanged, as well as text
     # that doesn't look like it contains mojibake
     if chardata.possible_encoding(text, "ascii") or not is_bad(text):
-        return text, []
+        return ExplainedText(text, [])
 
     # As we go through the next step, remember the possible encodings
     # that we encounter but don't successfully fix yet. We may need them
@@ -447,7 +448,7 @@ def _fix_encoding_one_step_and_explain(
                 decode_step = ("decode", decoding)
                 steps = [encode_step] + transcode_steps + [decode_step]
                 fixed = encoded_bytes.decode(decoding)
-                return fixed, steps
+                return ExplainedText(fixed, steps)
 
             except UnicodeDecodeError:
                 pass
@@ -457,7 +458,7 @@ def _fix_encoding_one_step_and_explain(
         steps = [("apply", "decode_inconsistent_utf8")]
         fixed = fixes.decode_inconsistent_utf8(text)
         if fixed != text:
-            return fixed, steps
+            return ExplainedText(fixed, steps)
 
     # The next most likely case is that this is Latin-1 that was intended to
     # be read as Windows-1252, because those two encodings in particular are
@@ -466,7 +467,7 @@ def _fix_encoding_one_step_and_explain(
         if "windows-1252" in possible_1byte_encodings:
             # This text is in the intersection of Latin-1 and
             # Windows-1252, so it's probably legit.
-            return text, []
+            return ExplainedText(text, [])
         else:
             # Otherwise, it means we have characters that are in Latin-1 but
             # not in Windows-1252. Those are C1 control characters. Nobody
@@ -475,7 +476,7 @@ def _fix_encoding_one_step_and_explain(
                 fixed = text.encode("latin-1").decode("windows-1252")
                 if fixed != text:
                     steps = [("encode", "latin-1"), ("decode", "windows-1252")]
-                    return fixed, steps
+                    return ExplainedText(fixed, steps)
             except UnicodeDecodeError:
                 pass
 
@@ -483,7 +484,7 @@ def _fix_encoding_one_step_and_explain(
     if config.fix_c1_controls and chardata.C1_CONTROL_RE.search(text):
         steps = [("transcode", "fix_c1_controls")]
         fixed = fixes.fix_c1_controls(text)
-        return fixed, steps
+        return ExplainedText(fixed, steps)
 
     # The cases that remain are mixups between two different single-byte
     # encodings, and not the common case of Latin-1 vs. Windows-1252.
@@ -491,7 +492,7 @@ def _fix_encoding_one_step_and_explain(
     # With the new heuristic in 6.0, it's possible that we're closer to solving
     # these in some cases. It would require a lot of testing and tuning, though.
     # For now, we leave the text unchanged in these cases.
-    return text, []
+    return ExplainedText(text, [])
 
 
 def fix_encoding(text: str, config: TextFixerConfig = None, **kwargs):
@@ -613,8 +614,8 @@ def guess_bytes(bstring):
     if 0x0D in byteset and 0x0A not in byteset:
         # Files that contain CR and not LF are likely to be MacRoman.
         return bstring.decode("macroman"), "macroman"
-    else:
-        return bstring.decode("sloppy-windows-1252"), "sloppy-windows-1252"
+
+    return bstring.decode("sloppy-windows-1252"), "sloppy-windows-1252"
 
 
 def apply_plan(text, plan):
@@ -639,7 +640,7 @@ def apply_plan(text, plan):
             obj = obj.encode(encoding)
         elif operation == "decode":
             obj = obj.decode(encoding)
-        elif operation == "transcode" or operation == "apply":
+        elif operation in ("transcode", "apply"):
             if encoding in FIXERS:
                 obj = FIXERS[encoding](obj)
             else:
