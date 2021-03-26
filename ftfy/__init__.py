@@ -6,7 +6,6 @@ for more information.
 """
 
 import unicodedata
-import warnings
 from collections import namedtuple
 from typing import Optional
 
@@ -24,63 +23,145 @@ ftfy.bad_codecs.ok()
 
 
 CONFIG_DEFAULTS = {
-    # Replace HTML entities, but not in strings where a < character
-    # has appeared literally. Those strings are assumed to be HTML,
-    # so entities should be left alone.
     "unescape_html": "auto",
-    # Remove "ANSI" terminal escapes, such as for changing the color
-    # of text in a terminal.
     "remove_terminal_escapes": True,
-    # Detect mojibake, and attempt to decode the entire string in a
-    # different encoding when it's detected.
     "fix_encoding": True,
-    # When fixing mojibake, allow a literal space to be interpreted
-    # as a non-breaking space, which would have been byte A0 in many
-    # encodings.
     "restore_byte_a0": True,
-    # Detect mojibake that has been partially replaced by the characters
-    # '�' or '?', and replace the detected sequences with '�'.
     "replace_lossy_sequences": True,
-    # Detect certain kinds of mojibake even when it's not consistent
-    # across the entire string. Replace sufficiently clear sequences
-    # of UTF-8 mojibake with the characters they should have been.
     "decode_inconsistent_utf8": True,
-    # Replace C1 control characters with their Windows-1252 equivalents,
-    # like HTML5 does.
     "fix_c1_controls": True,
-    # Replace common Latin-alphabet ligatures, such as 'ﬁ', with the
-    # letters they're made of.
     "fix_latin_ligatures": True,
-    # Replace fullwidth Latin characters and halfwidth Katakana with
-    # their more standard widths.
     "fix_character_width": True,
-    # Replace curly quotes with straight quotes.
     "uncurl_quotes": True,
-    # Replace various forms of line breaks with the standard Unix line
-    # break, '\n'.
     "fix_line_breaks": True,
-    # Replace sequences of UTF-16 surrogates with the character they were
-    # meant to encode.
     "fix_surrogates": True,
-    # Remove control characters that have no displayed effect on text.
     "remove_control_chars": True,
-    # Change 'normalization' to 'NFKC' to apply Unicode compatibility
-    # conversions. In some cases, this will change the meaning of text.
-    #
-    # You can also set it to None to apply no normalization, including
-    # leaving all combining characters separate.
     "normalization": "NFC",
-    # The maximum length of line that should be fixed by ftfy without
-    # breaking it up into smaller strings.
     "max_decode_length": 1000000,
-    # Set 'explain' to False to not compute explanations, possibly saving
-    # time. The functions that return explanations will return None.
     "explain": True,
 }
 TextFixerConfig = namedtuple(
     "TextFixerConfig", CONFIG_DEFAULTS.keys(), defaults=CONFIG_DEFAULTS.values()
 )
+TextFixerConfig.__doc__ = r"""
+A TextFixerConfig object stores configuration options for ftfy.
 
+It's implemented as a namedtuple with defaults, so you can instantiate
+it by providing the values to change from their defaults as keyword arguments.
+For example, to disable 'unescape_html' and keep the rest of the defaults:
+
+    TextFixerConfig(unescape_html=False)
+
+Here are the options and their default values:
+
+- `unescape_html`: "auto"
+
+  Configures whether to replace HTML entities such as &amp; with the character
+  they represent. "auto" says to do this by default, but disable it when a
+  literal < character appears, indicating that the input is actual HTML and
+  entities should be preserved. The value can be True, to always enable this
+  fixer, or False, to always disable it.
+
+- `remove_terminal_escapes`: True
+
+  Removes "ANSI" terminal escapes, such as for changing the color of text in a
+  terminal window.
+
+- `fix_encoding`: True
+
+  Detect mojibake and attempt to fix it by decoding the text in a different
+  encoding standard.
+
+  The following four options affect `fix_encoding` works, and do nothing if
+  `fix_encoding` is False:
+
+    - `restore_byte_a0`: True
+
+      Allow a literal space (U+20) to be interpreted as a non-breaking space
+      (U+A0) when that would make it part of a fixable mojibake string.
+
+      Because spaces are very common characters, this could lead to false
+      positives, but we try to apply it only when there's strong evidence for
+      mojibake. Disabling `restore_byte_a0` is safer from false positives,
+      but creates false negatives.
+
+    - `replace_lossy_sequences`: True
+
+      Detect mojibake that has been partially replaced by the characters
+      '�' or '?'. If the mojibake could be decoded otherwise, replace the
+      detected sequence with '�'.
+
+    - `decode_inconsistent_utf8`: True
+
+      When we see sequences that distinctly look like UTF-8 mojibake, but
+      there's no consistent way to reinterpret the string in a new encoding,
+      replace the mojibake with the appropriate UTF-8 characters anyway.
+
+      This helps to decode strings that are concatenated from different
+      encodings.
+
+    - `fix_c1_controls`: True
+
+      Replace C1 control characters (the useless characters U+80 - U+9B that
+      come from Latin-1) with their Windows-1252 equivalents, like HTML5 does,
+      even if the whole string doesn't decode as Latin-1.
+
+- `fix_latin_ligatures`: True
+
+  Replace common Latin-alphabet ligatures, such as 'ﬁ', with the
+  letters they're made of.
+
+- `fix_character_width`: True
+
+  Replace fullwidth Latin characters and halfwidth Katakana with
+  their more standard widths.
+
+- `uncurl_quotes`: True
+
+  Replace curly quotes with straight quotes.
+
+- `fix_line_breaks`: True
+
+  Replace various forms of line breaks with the standard Unix line
+  break, '\n'.
+
+- `fix_surrogates`: True
+
+  Replace sequences of UTF-16 surrogate codepoints with the character
+  they were meant to encode. This fixes text that was decoded with the
+  obsolete UCS-2 standard, and allows it to support high-numbered
+  codepoints such as emoji.
+
+- `remove_control_chars`: True
+
+  Remove certain control characters that have no displayed effect on text.
+
+- `normalization`: "NFC"
+
+  Choose what kind of Unicode normalization is applied. Usually, we apply
+  NFC normalization, so that letters followed by combining characters become
+  single combined characters.
+
+  Changing this to "NFKC" applies more compatibility conversions, such as
+  replacing the 'micro sign' with a standard Greek lowercase mu, which looks
+  identical. However, some NFKC normalizations change the meaning of text,
+  such as converting "10³" to "103".
+
+  `normalization` can be None, to apply no normalization.
+
+- `max_decode_length`: 1_000_000
+
+  The maximum size of "segment" that ftfy will try to fix all at once.
+
+- `explain`: True
+
+  Whether to compute 'explanations', lists describing what ftfy changed.
+  When this is False, the explanation will be None, and the code that
+  builds the explanation will be skipped, possibly saving time.
+
+  Functions that accept TextFixerConfig and don't return an explanation
+  will automatically set `explain` to False.
+"""
 
 FIXERS = {
     "unescape_html": fixes.unescape_html,
@@ -100,164 +181,105 @@ FIXERS = {
 
 BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
 
-ftfy is designed to fix problems that were introduced by handling Unicode
-incorrectly. It might be able to fix the bytes you just handed it, but the
-fact that you just gave a pile of bytes to a function that fixes text means
-that your code is *also* handling Unicode incorrectly.
+ftfy is designed to fix problems with text. Treating bytes like they're
+interchangeable with Unicode text is usually something that introduces
+problems with text.
 
-ftfy takes Unicode text as input. You should take these bytes and decode
-them from the encoding you think they are in. If you're not sure what encoding
-they're in:
+You should first decode these bytes from the encoding you think they're in.
+If you're not sure what encoding they're in:
 
 - First, try to find out. 'utf-8' is a good assumption.
 - If the encoding is simply unknowable, try running your bytes through
   ftfy.guess_bytes. As the name implies, this may not always be accurate.
 
-If you're confused by this, please read the Python Unicode HOWTO:
+For more information on the distinction between bytes and text, read the
+Python Unicode HOWTO:
 
     http://docs.python.org/3/howto/unicode.html
 """
 
 
-def _try_fix(fixer_name: str, text: str, steps: list) -> str:
-    fixer = FIXERS[fixer_name]
-    fixed = fixer(text)
-    if fixed != text:
-        steps.append(("apply", fixer_name))
-    return fixed
+def _try_fix(
+    fixer_name: str, text: str, config: TextFixerConfig, steps: Optional[list]
+) -> str:
+    """
+    A helper function used across several 'fixer' steps, deciding whether to
+    apply the fix and whether to record the fix in `steps`.
+    """
+    if getattr(config, fixer_name):
+        fixer = FIXERS[fixer_name]
+        fixed = fixer(text)
+        if steps is not None and fixed != text:
+            steps.append(("apply", fixer_name))
+        return fixed
+    else:
+        return text
 
 
 def fix_text(text: str, config: Optional[TextFixerConfig] = None, **kwargs) -> str:
     r"""
     Given Unicode text as input, fix inconsistencies and glitches in it,
-    such as mojibake.
-
-    FIXME: clean up this docstring
+    such as mojibake (text that was decoded in the wrong encoding).
 
     Let's start with some examples:
 
-        >>> print(fix_text('uÌˆnicode'))
-        ünicode
+        >>> fix_text('âœ” No problems')
+        '✔ No problems'
 
-        >>> print(fix_text('Broken text&hellip; it&#x2019;s ﬂubberiﬁc!',
-        ...                normalization='NFKC'))
-        Broken text... it's flubberific!
-
-        >>> print(fix_text('HTML entities &lt;3'))
-        HTML entities <3
-
-        >>> print(fix_text('<em>HTML entities &lt;3</em>'))
-        <em>HTML entities &lt;3</em>
+        >>> fix_text('uÌˆnicode')
+        'ünicode'
 
         >>> print(fix_text("&macr;\\_(ã\x83\x84)_/&macr;"))
         ¯\_(ツ)_/¯
 
-        >>> # This example string starts with a byte-order mark, even if
-        >>> # you can't see it on the Web.
-        >>> print(fix_text('\ufeffParty like\nit&rsquo;s 1999!'))
-        Party like
-        it's 1999!
+        >>> fix_text('Broken text&hellip; it&#x2019;s ﬂubberiﬁc!',
+        ...          normalization='NFKC')
+        "Broken text... it's flubberific!"
 
-        >>> print(fix_text('ＬＯＵＤ　ＮＯＩＳＥＳ'))
-        LOUD NOISES
+        >>> fix_text('HTML entities &lt;3')
+        'HTML entities <3'
 
-        >>> len(fix_text('ﬁ' * 100000))
-        200000
+        >>> fix_text('<em>HTML entities &lt;3</em>')
+        '<em>HTML entities &lt;3</em>'
 
-        >>> len(fix_text(''))
-        0
+        >>> fix_text('ＬＯＵＤ　ＮＯＩＳＥＳ')
+        'LOUD NOISES'
 
-    Based on the options you provide, ftfy applies these steps in order:
+    ftfy applies a number of different fixes to the text, and can accept
+    configuration to select which fixes to apply.
 
-    - If `remove_terminal_escapes` is True, remove sequences of bytes that are
-      instructions for Unix terminals, such as the codes that make text appear
-      in different colors.
+    The configuration takes the form of a :class:`TextFixerConfig` object,
+    and you can see a description of the options in that class's docstring
+    or in the full documentation at ftfy.readthedocs.org.
 
-    - If `fix_encoding` is True, look for common mistakes that come from
-      encoding or decoding Unicode text incorrectly, and fix them if they are
-      reasonably fixable. See `fixes.fix_encoding` for details.
+    For convenience and backward compatibility, the configuration can also
+    take the form of keyword arguments, which will set the equivalently-named
+    fields of the TextFixerConfig object.
 
-    - If `fix_entities` is True, replace HTML entities with their equivalent
-      characters. If it's "auto" (the default), then consider replacing HTML
-      entities, but don't do so in text where you have seen a pair of actual
-      angle brackets (that's probably actually HTML and you shouldn't mess
-      with the entities).
+    For example, here are two ways to fix text but skip the "uncurl_quotes"
+    step:
 
-    - If `uncurl_quotes` is True, replace various curly quotation marks with
-      plain-ASCII straight quotes.
+        fix_text(text, TextFixerConfig(uncurl_quotes=False))
+        fix_text(text, uncurl_quotes=False)
 
-    - If `fix_latin_ligatures` is True, then ligatures made of Latin letters,
-      such as `ﬁ`, will be separated into individual letters. These ligatures
-      are usually not meaningful outside of font rendering, and often represent
-      copy-and-paste errors.
-
-    - If `fix_character_width` is True, half-width and full-width characters
-      will be replaced by their standard-width form.
-
-    - If `fix_line_breaks` is true, convert all line breaks to Unix style
-      (CRLF and CR line breaks become LF line breaks).
-
-    - If `fix_surrogates` is true, ensure that there are no UTF-16 surrogates
-      in the resulting string, by converting them to the correct characters
-      when they're appropriately paired, or replacing them with \ufffd
-      otherwise.
-
-    - If `remove_control_chars` is true, remove control characters that
-      are not suitable for use in text. This includes most of the ASCII control
-      characters, plus some Unicode controls such as the byte order mark
-      (U+FEFF). Useful control characters, such as Tab, Line Feed, and
-      bidirectional marks, are left as they are.
-
-    - If `remove_bom` is True, remove the Byte-Order Mark at the start of the
-      string if it exists. (This is largely redundant, because it's a special
-      case of `remove_control_characters`. This option will become deprecated
-      in a later version.)
-
-    - If `normalization` is not None, apply the specified form of Unicode
-      normalization, which can be one of 'NFC', 'NFKC', 'NFD', and 'NFKD'.
-
-      - The default normalization, NFC, combines characters and diacritics that
-        are written using separate code points, such as converting "e" plus an
-        acute accent modifier into "é", or converting "ka" (か) plus a dakuten
-        into the single character "ga" (が). Unicode can be converted to NFC
-        form without any change in its meaning.
-
-      - If you ask for NFKC normalization, it will apply additional
-        normalizations that can change the meanings of characters. For example,
-        ellipsis characters will be replaced with three periods, all ligatures
-        will be replaced with the individual characters that make them up,
-        and characters that differ in font style will be converted to the same
-        character.
-
-    - If anything was changed, repeat all the steps, so that the function is
-      idempotent. "&amp;amp;" will become "&", for example, not "&amp;".
-
-    `fix_text` will work one line at a time, with the possibility that some
-    lines are in different encodings, allowing it to fix text that has been
-    concatenated together from different sources.
-
-    When it encounters lines longer than `max_decode_length` (1 million
-    codepoints by default), it will not run the `fix_encoding` step, to avoid
-    unbounded slowdowns.
-
-    If you're certain that any decoding errors in the text would have affected
-    the entire text in the same way, and you don't mind operations that scale
-    with the length of the text, you can use `fix_text_segment` directly to
-    fix the whole string in one batch.
+    This function fixes text in independent segments, which are usually lines
+    of text, or arbitrarily broken up every 1 million codepoints (configurable
+    with `config.max_decode_length`) if there aren't enough line breaks. The
+    bound on segment lengths helps to avoid unbounded slowdowns.
 
     ftfy can also provide an 'explanation', a list of transformations it applied
-    to the text that would fix more text like it.
+    to the text that would fix more text like it. This function doesn't provide
+    explanations (because there may be different fixes for different segments
+    of text).
 
-    However, this function doesn't provide explanations, because it can apply
-    different fixes to different lines of text, and one explanation may not
-    suffice.
-
-    To get an explanation, use the :func:`fix_and_explain()` function.
+    To get an explanation, use the :func:`fix_and_explain()` function, which
+    fixes the string in one segment and explains what it fixed.
     """
 
     if config is None:
         config = TextFixerConfig()
     config = config._replace(**kwargs)
+    config = config._replace(explain=False)
     if isinstance(text, bytes):
         raise UnicodeError(fixes.BYTES_ERROR_TEXT)
 
@@ -279,32 +301,42 @@ def fix_text(text: str, config: Optional[TextFixerConfig] = None, **kwargs) -> s
     return "".join(out)
 
 
-def fix_and_explain(text: str, config: Optional[TextFixerConfig] = None) -> (str, list):
+def fix_and_explain(
+    text: str, config: Optional[TextFixerConfig] = None, **kwargs
+) -> (str, Optional[list]):
     """
-    Apply fixes to text in a single chunk, and also produce an explanation
+    Fix text as a single segment, returning the fixed text and an explanation
     of what was fixed.
 
-    Returns the fixed text, and a list explaining what was fixed.
+    The explanation is a list of steps that can be applied with
+    :func:`apply_plan`, or if config.explain is False, it will be None.
     """
     if config is None:
         config = TextFixerConfig()
     if isinstance(text, bytes):
         raise UnicodeError(fixes.BYTES_ERROR_TEXT)
+    config = config._replace(**kwargs)
 
-    fix_entities = config.unescape_html
-    if fix_entities == "auto" and "<" in text:
-        fix_entities = False
+    if config.unescape_html == "auto" and "<" in text:
+        config = config._replace(unescape_html=False)
 
-    steps = []
+    if config.explain:
+        steps = []
+    else:
+        # If explanations aren't desired, `steps` will be None
+        steps = None
+
     while True:
         origtext = text
 
-        if fix_entities:
-            text = _try_fix("unescape_html", text, steps)
+        text = _try_fix("unescape_html", text, config, steps)
 
         if config.fix_encoding:
-            text, encoding_steps = fix_encoding_and_explain(text, config)
-            steps.extend(encoding_steps)
+            if steps is None:
+                text = fix_encoding(text)
+            else:
+                text, encoding_steps = fix_encoding_and_explain(text, config)
+                steps.extend(encoding_steps)
 
         for fixer in [
             "fix_c1_controls",
@@ -315,30 +347,37 @@ def fix_and_explain(text: str, config: Optional[TextFixerConfig] = None) -> (str
             "fix_surrogates",
             "remove_control_chars",
         ]:
-            if getattr(config, fixer):
-                text = _try_fix(fixer, text, steps)
-        # TODO: backward compatibility for remove_bom
+            text = _try_fix(fixer, text, config, steps)
 
         if config.normalization is not None:
             fixed = unicodedata.normalize(config.normalization, text)
-            if fixed != text:
-                text = fixed
+            if steps is not None and fixed != text:
                 steps.append(("normalize", config.normalization))
+            text = fixed
 
         if text == origtext:
             return text, steps
 
 
-def fix_encoding_and_explain(text, config=None):
+def fix_encoding_and_explain(
+    text: str, config: Optional[TextFixerConfig] = None
+) -> (str, list):
+    """
+    Apply the steps of ftfy that detect mojibake and fix it. Returns the fixed
+    text and a list explaining what was fixed.
+
+    This includes fixing text by encoding and decoding it in different encodings,
+    as well as the subordinate fixes `restore_byte_a0`, `replace_lossy_sequences`,
+    `decode_inconsistent_utf8`, and `fix_c1_controls`.
+    """
     if config is None:
         config = TextFixerConfig()
     if isinstance(text, bytes):
         raise UnicodeError(fixes.BYTES_ERROR_TEXT)
     if not config.fix_encoding:
-        raise ValueError(
-            "It doesn't make sense to run fix_encoding_and_explain "
-            "with fix_encoding=False"
-        )
+        # A weird trivial case: we're asked to fix the encoding, but skip
+        # fixing the encoding
+        return text, []
 
     plan_so_far = []
     while True:
@@ -349,7 +388,12 @@ def fix_encoding_and_explain(text, config=None):
             return text, plan_so_far
 
 
-def _fix_encoding_one_step_and_explain(text, config):
+def _fix_encoding_one_step_and_explain(
+    text: str, config: TextFixerConfig
+) -> (str, list):
+    """
+    Perform one step of fixing the encoding of text.
+    """
     if config is None:
         config = TextFixerConfig()
 
@@ -444,18 +488,21 @@ def _fix_encoding_one_step_and_explain(text, config):
     # The cases that remain are mixups between two different single-byte
     # encodings, and not the common case of Latin-1 vs. Windows-1252.
     #
-    # These cases may be unsolvable without adding false positives, though
-    # I have vague ideas about how to optionally address them in the future.
-
-    # Return the text unchanged; the plan is empty.
+    # With the new heuristic in 6.0, it's possible that we're closer to solving
+    # these in some cases. It would require a lot of testing and tuning, though.
+    # For now, we leave the text unchanged in these cases.
     return text, []
 
 
-def fix_encoding(text, config=None, **kwargs):
+def fix_encoding(text: str, config: TextFixerConfig = None, **kwargs):
+    """
+    Apply just the encoding-fixing steps of ftfy to this text. Returns the
+    fixed text, discarding the explanation.
+    """
     if config is None:
         config = TextFixerConfig()
     config = config._replace(**kwargs)
-    fixed, explan = fix_encoding_and_explain(text, config)
+    fixed, _explan = fix_encoding_and_explain(text, config)
     return fixed
 
 
@@ -463,11 +510,15 @@ def fix_encoding(text, config=None, **kwargs):
 ftfy = fix_text
 
 
-def fix_text_segment(text, config=None, **kwargs):
+def fix_text_segment(text: str, config: TextFixerConfig = None, **kwargs):
+    """
+    Fix text as a single segment, with a consistent sequence of steps that
+    are applied to fix the text. Discard the explanation.
+    """
     if config is None:
-        config = TextFixerConfig()
+        config = TextFixerConfig(explain=False)
     config = config._replace(**kwargs)
-    fixed, explan = fix_and_explain(text, config)
+    fixed, _explan = fix_and_explain(text, config)
     return fixed
 
 
