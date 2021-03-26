@@ -1,5 +1,6 @@
+from ftfy import fix_encoding, fix_encoding_and_explain, apply_plan
 from ftfy.fixes import (
-    fix_encoding, fix_encoding_and_explain, apply_plan, possible_encoding,
+    possible_encoding,
     remove_control_chars, fix_surrogates
 )
 from ftfy.badness import badness

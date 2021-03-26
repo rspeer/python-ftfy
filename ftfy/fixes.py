@@ -482,7 +482,7 @@ def decode_inconsistent_utf8(text):
         
         # Require the match to be shorter, so that this doesn't recurse infinitely
         if len(substr) < len(text) and is_bad(substr):
-            return fix_encoding(substr)
+            return ftfy.fix_encoding(substr)
         else:
             return substr
     
