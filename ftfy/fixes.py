@@ -29,15 +29,14 @@ from ftfy.badness import is_bad
 def fix_encoding_and_explain(text):
     warnings.warn(
         "`fix_encoding_and_explain()` has moved to the main module of ftfy.",
-        DeprecationWarning
+        DeprecationWarning,
     )
     return ftfy.fix_encoding_and_explain(text)
 
 
 def fix_encoding(text):
     warnings.warn(
-        "`fix_encoding()` has moved to the main module of ftfy.",
-        DeprecationWarning
+        "`fix_encoding()` has moved to the main module of ftfy.", DeprecationWarning
     )
     return ftfy.fix_encoding(text)
 
@@ -45,15 +44,14 @@ def fix_encoding(text):
 def fix_one_step_and_explain(text):
     warnings.warn(
         "`fix_one_step_and_explain()` has moved to the main module of ftfy.",
-        DeprecationWarning
+        DeprecationWarning,
     )
     return ftfy.fix_one_step_and_explain(text)
 
 
 def apply_plan(text, plan):
     warnings.warn(
-        "`apply_plan()` has moved to the main module of ftfy.",
-        DeprecationWarning
+        "`apply_plan()` has moved to the main module of ftfy.", DeprecationWarning
     )
     return ftfy.apply_plan(text, plan)
 
@@ -66,12 +64,12 @@ def _unescape_fixup(match):
     text = match.group(0)
     if text in HTML_ENTITIES:
         return HTML_ENTITIES[text]
-    elif text.startswith('&#'):
+    elif text.startswith("&#"):
         unescaped = html.unescape(text)
 
         # If html.unescape only decoded part of the string, that's not what
         # we want. The semicolon should be consumed.
-        if ';' in unescaped:
+        if ";" in unescaped:
             return text
         else:
             return unescaped
@@ -127,7 +125,7 @@ def unescape_html(text):
     return HTML_ENTITY_RE.sub(_unescape_fixup, text)
 
 
-ANSI_RE = re.compile('\033\\[((?:\\d|;)*)([a-zA-Z])')
+ANSI_RE = re.compile("\033\\[((?:\\d|;)*)([a-zA-Z])")
 
 
 def remove_terminal_escapes(text):
@@ -140,7 +138,7 @@ def remove_terminal_escapes(text):
         ... ))
         I'm blue, da ba dee da ba doo...
     """
-    return ANSI_RE.sub('', text)
+    return ANSI_RE.sub("", text)
 
 
 def uncurl_quotes(text):
@@ -236,16 +234,16 @@ def fix_line_breaks(text):
         What is this \n I don't even
     """
     return (
-        text.replace('\r\n', '\n')
-        .replace('\r', '\n')
-        .replace('\u2028', '\n')
-        .replace('\u2029', '\n')
-        .replace('\u0085', '\n')
+        text.replace("\r\n", "\n")
+        .replace("\r", "\n")
+        .replace("\u2028", "\n")
+        .replace("\u2029", "\n")
+        .replace("\u0085", "\n")
     )
 
 
-SURROGATE_RE = re.compile('[\ud800-\udfff]')
-SURROGATE_PAIR_RE = re.compile('[\ud800-\udbff][\udc00-\udfff]')
+SURROGATE_RE = re.compile("[\ud800-\udfff]")
+SURROGATE_PAIR_RE = re.compile("[\ud800-\udbff][\udc00-\udfff]")
 
 
 def convert_surrogate_pair(match):
@@ -256,7 +254,7 @@ def convert_surrogate_pair(match):
     http://en.wikipedia.org/wiki/Universal_Character_Set_characters#Surrogates
     """
     pair = match.group(0)
-    codept = 0x10000 + (ord(pair[0]) - 0xd800) * 0x400 + (ord(pair[1]) - 0xdc00)
+    codept = 0x10000 + (ord(pair[0]) - 0xD800) * 0x400 + (ord(pair[1]) - 0xDC00)
     return chr(codept)
 
 
@@ -279,7 +277,7 @@ def fix_surrogates(text):
     """
     if SURROGATE_RE.search(text):
         text = SURROGATE_PAIR_RE.sub(convert_surrogate_pair, text)
-        text = SURROGATE_RE.sub('\ufffd', text)
+        text = SURROGATE_RE.sub("\ufffd", text)
     return text
 
 
@@ -324,19 +322,19 @@ def remove_bom(text):
     >>> print(remove_bom(chr(0xfeff) + "Where do you want to go today?"))
     Where do you want to go today?
     """
-    return text.lstrip(chr(0xfeff))
+    return text.lstrip(chr(0xFEFF))
 
 
 # Define a regex to match valid escape sequences in Python string literals.
 ESCAPE_SEQUENCE_RE = re.compile(
-    r'''
+    r"""
     ( \\U........      # 8-digit hex escapes
     | \\u....          # 4-digit hex escapes
     | \\x..            # 2-digit hex escapes
     | \\[0-7]{1,3}     # Octal escapes
     | \\N\{[^}]+\}     # Unicode characters by name
     | \\[\\'"abfnrtv]  # Single-character escapes
-    )''',
+    )""",
     re.UNICODE | re.VERBOSE,
 )
 
@@ -374,7 +372,7 @@ def decode_escapes(text):
 
     def decode_match(match):
         "Given a regex match, decode the escape sequence it contains."
-        return codecs.decode(match.group(0), 'unicode-escape')
+        return codecs.decode(match.group(0), "unicode-escape")
 
     return ESCAPE_SEQUENCE_RE.sub(decode_match, text)
 
@@ -402,7 +400,8 @@ def decode_escapes(text):
 # contain it will end up with inserted spaces. We can't do the right thing with
 # every word. The cost is that the mojibake text "fÃ cil" will be interpreted as
 # "fà cil", not "fàcil".
-A_GRAVE_WORD_RE = re.compile(b'\xc3 (?! |quele|quela|quilo|s )')
+A_GRAVE_WORD_RE = re.compile(b"\xc3 (?! |quele|quela|quilo|s )")
+
 
 def restore_byte_a0(byts):
     """
@@ -418,11 +417,11 @@ def restore_byte_a0(byts):
 
     This is used as a step within `fix_encoding`.
     """
-    byts = A_GRAVE_WORD_RE.sub(b'\xc3\xa0 ', byts)
+    byts = A_GRAVE_WORD_RE.sub(b"\xc3\xa0 ", byts)
 
     def replacement(match):
         "The function to apply when this regex matches."
-        return match.group(0).replace(b'\x20', b'\xa0')
+        return match.group(0).replace(b"\x20", b"\xa0")
 
     return ALTERED_UTF8_RE.sub(replacement, byts)
 
@@ -463,9 +462,9 @@ def replace_lossy_sequences(byts):
 
     This is used as a transcoder within `fix_encoding`.
     """
-    return LOSSY_UTF8_RE.sub('\ufffd'.encode('utf-8'), byts)
+    return LOSSY_UTF8_RE.sub("\ufffd".encode("utf-8"), byts)
 
-    
+
 def decode_inconsistent_utf8(text):
     """
     Sometimes, text from one encoding ends up embedded within text from a
@@ -476,18 +475,18 @@ def decode_inconsistent_utf8(text):
 
     def fix_embedded_mojibake(match):
         substr = match.group(0)
-        
+
         # Require the match to be shorter, so that this doesn't recurse infinitely
         if len(substr) < len(text) and is_bad(substr):
             return ftfy.fix_encoding(substr)
         else:
             return substr
-    
+
     return UTF8_DETECTOR_RE.sub(fix_embedded_mojibake, text)
 
 
 def _c1_fixer(match):
-    return match.group(0).encode('latin-1').decode('sloppy-windows-1252')
+    return match.group(0).encode("latin-1").decode("sloppy-windows-1252")
 
 
 def fix_c1_controls(text):
@@ -499,8 +498,8 @@ def fix_c1_controls(text):
 
 
 TRANSCODERS = {
-    'restore_byte_a0': restore_byte_a0,
-    'replace_lossy_sequences': replace_lossy_sequences,
-    'decode_inconsistent_utf8': decode_inconsistent_utf8,
-    'fix_c1_controls': fix_c1_controls
+    "restore_byte_a0": restore_byte_a0,
+    "replace_lossy_sequences": replace_lossy_sequences,
+    "decode_inconsistent_utf8": decode_inconsistent_utf8,
+    "fix_c1_controls": fix_c1_controls,
 }
