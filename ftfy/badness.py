@@ -245,6 +245,8 @@ BADNESS_RE = re.compile(
     |
     [{upper_accented}{box}{end_punctuation}] [{numeric}]
     |
+    [{lower_accented}{upper_accented}{box}{currency}{end_punctuation}] [{start_punctuation}] [{numeric}]
+    |
     [{lower_accented}{upper_accented}{currency}{numeric}{box}] [{end_punctuation}] [{start_punctuation}]
     |
     [{currency}{numeric}{box}] [{start_punctuation}]
