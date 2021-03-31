@@ -1,3 +1,6 @@
+Accuracy
+========
+
 ftfy uses Twitter's streaming API as an endless source of realistic sample
 data. Twitter is massively multilingual, and despite that it's supposed to be
 uniformly UTF-8, in practice, any encoding mistake that someone can make will

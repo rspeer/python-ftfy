@@ -1,0 +1,17 @@
+    Once there was a little o,
+    with an accent on top like só.
+
+    It started out as UTF8,
+    (universal since '98),
+    but the program only knew latin1,
+    and changed little ó to "Ã³" for fun.
+
+    A second program saw the "Ã³"
+    and said "I know HTML entity!"
+    So "Ã³" was smartened to "&ATILDE;&SUP3;"
+    and passed on through happily.
+
+    Another program saw the tangle
+    (more precisely, ampersands to mangle)
+    and thus the humble "&ATILDE;&SUP3;"
+    became "&AMP;AMP;ATILDE;&AMP;AMP;SUP3;"
