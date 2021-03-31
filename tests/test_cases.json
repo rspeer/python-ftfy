@@ -143,6 +143,12 @@
         "expect": "pass"
     },
     {
+        "label": "Latin-1 / Windows-1252 mixup of the replacement character",
+        "original": "Some comments may be republished on the website or in the newspaper ï¿½ email addresses will not be published.",
+        "fixed": "Some comments may be republished on the website or in the newspaper � email addresses will not be published.",
+        "expect": "pass"
+    },
+    {
         "label": "CESU-8 / Windows-1252 emoji",
         "original": "Hi guys í ½í¸\u008d",
         "fixed": "Hi guys 😍",
