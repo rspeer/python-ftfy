@@ -3,7 +3,9 @@ Command-line usage
 ftfy can be used from the command line. By default, it takes UTF-8 input and
 writes it to UTF-8 output, fixing problems in its Unicode as it goes.
 
-Here's the usage documentation for the `ftfy` command::
+Here's the usage documentation for the `ftfy` command:
+
+.. code-block:: text
 
     usage: ftfy [-h] [-o OUTPUT] [-g] [-e ENCODING] [-n NORMALIZATION]
                 [--preserve-entities]

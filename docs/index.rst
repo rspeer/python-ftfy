@@ -16,15 +16,14 @@ ftfy is a heuristic that was designed (not machine-learned) by Robyn Speer, at L
 .. toctree::
    :maxdepth: 1
 
-   config
    explain
+   config
    encodings
    fixes
    detect
    avoid
+   bad_encodings
    cli
-   accuracy
-   modules
    cite
 
 
