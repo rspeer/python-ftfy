@@ -222,11 +222,11 @@ IncrementalEncoder = UTF8IncrementalEncoder
 
 # Everything below here is boilerplate that matches the modules in the
 # built-in `encodings` package.
-def encode(input: str, errors: str='strict') -> Tuple[bytes, int]:
+def encode(input, errors='strict'):
     return IncrementalEncoder(errors).encode(input, final=True), len(input)
 
 
-def decode(input: bytes, errors: str='strict') -> Tuple[str, int]:
+def decode(input, errors='strict'):
     return IncrementalDecoder(errors).decode(input, final=True), len(input)
 
 
