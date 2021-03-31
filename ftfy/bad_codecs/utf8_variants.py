@@ -35,7 +35,8 @@ never.
 
 .. [1] In a pinch, you can decode CESU-8 in Python 2 using the UTF-8 codec:
    first decode the bytes (incorrectly), then encode them, then decode them
-   again, using UTF-8 as the codec every time.
+   again, using UTF-8 as the codec every time. But Python 2 is dead, so use
+   ftfy instead.
 """
 
 import re

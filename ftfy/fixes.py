@@ -1,6 +1,7 @@
 """
-This module contains the individual fixes that the main fix_text function
-can perform.
+The `ftfy.fixes` module contains the individual fixes that :func:`ftfy.fix_text`
+can perform, and provides the functions that are named in "explanations"
+such as the output of :func:`ftfy.fix_and_explain`.
 """
 
 import codecs
@@ -197,14 +198,13 @@ def fix_line_breaks(text):
     This will convert the following sequences into the standard \\n
     line break:
 
-        - CRLF (\\r\\n), used on Windows and in some communication
-          protocols
-        - CR (\\r), once used on Mac OS Classic, and now kept alive
-          by misguided software such as Microsoft Office for Mac
-        - LINE SEPARATOR (\\u2028) and PARAGRAPH SEPARATOR (\\u2029),
-          defined by Unicode and used to sow confusion and discord
-        - NEXT LINE (\\x85), a C1 control character that is certainly
-          not what you meant
+    - CRLF (\\r\\n), used on Windows and in some communication protocols
+    - CR (\\r), once used on Mac OS Classic, and now kept alive by misguided
+      software such as Microsoft Office for Mac
+    - LINE SEPARATOR (\\u2028) and PARAGRAPH SEPARATOR (\\u2029), defined by
+      Unicode and used to sow confusion and discord
+    - NEXT LINE (\\x85), a C1 control character that is certainly not what you
+      meant
 
     The NEXT LINE character is a bit of an odd case, because it
     usually won't show up if `fix_encoding` is also being run.
