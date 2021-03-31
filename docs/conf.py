@@ -81,7 +81,8 @@ default_role = 'code'
 #show_authors = False
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'default'
+pygments_dark_style = 'monokai'
 
 # A list of ignored prefixes for module index sorting.
 #modindex_common_prefix = []
@@ -94,29 +95,36 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-import guzzle_sphinx_theme
-html_theme_path = guzzle_sphinx_theme.html_theme_path()
-html_theme = 'guzzle_sphinx_theme'
-
-extensions.append("guzzle_sphinx_theme")
+html_theme = "furo"
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
 html_theme_options = {
-    "project_nav_name": "ftfy",
-    "project_link": "https://github.com/LuminosoInsight/ftfy",
+    "light_css_variables": {
+        "color-brand-primary": "#7C4DFF",
+        "color-brand-content": "#7C4DFF",
+        "font-stack": "Source Sans Pro, sans-serif",
+        "font-stack--monospace": "Inconsolata",
+        "code-font-size": "18px",
+
+        # I don't know why furo wants inline code to be so small, but don't let it
+        "font-size--small--2": "100%",
+    },
 }
+html_css_files = [
+    'css/custom.css',
+]
 
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
-#html_title = None
+html_title = "ftfy v6 documentation"
 
 # A shorter title for the navigation bar.  Default is the same as html_title.
-html_short_title = "ftfy documentation"
+html_short_title = "ftfy"
 
 # The name of an image file (relative to this directory) to place at the top
 # of the sidebar.
@@ -157,7 +165,7 @@ html_last_updated_fmt = '%b %d, %Y'
 #html_split_index = False
 
 # If true, links to the reST sources are added to the pages.
-#html_show_sourcelink = True
+html_show_sourcelink = False
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
 #html_show_sphinx = True
