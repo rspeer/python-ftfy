@@ -277,6 +277,13 @@
         "expect": "pass"
     },
     {
+        "label": "Synthetic: Incomplete UTF-8 / Windows-1252 mixup in Arabic",
+        "comment": "I find text like this in OSCAR a fair amount, but couldn't isolate a good example that tested digits. The intended text means 'more than 100 countries'.",
+        "original": "أكثر Ù…Ù† Ù Ù Ù¡ Ø¨Ù„Ø¯",
+        "fixed": "أكثر من ٠٠١ بلد",
+        "expect": "fail"
+    },
+    {
         "label": "UTF-8 / sloppy Windows-1250 mixup in Romanian",
         "original": "vedere Ă®nceĹŁoĹźatÄ\u0083",
         "fixed": "vedere înceţoşată",

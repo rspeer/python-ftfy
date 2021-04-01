@@ -129,6 +129,7 @@ CONTROL_CHARS = _build_control_char_mapping()
 #   0xc5 -> U+160 LATIN CAPITAL LETTER S WITH CARON
 #   0xce -> U+3A0 GREEK CAPITAL LETTER PI
 #   0xd0 -> U+420 CYRILLIC CAPITAL LETTER ER
+#   0xd9 -> U+660 ARABIC-INDIC DIGIT ZERO
 #
 # In three-character sequences, we exclude some lead bytes in some cases.
 #
@@ -154,7 +155,7 @@ CONTROL_CHARS = _build_control_char_mapping()
 # I've seen it once, but the text still wasn't recoverable.
 
 ALTERED_UTF8_RE = re.compile(
-    b"[\xc2\xc3\xc5\xce\xd0][ ]"
+    b"[\xc2\xc3\xc5\xce\xd0\xd9][ ]"
     b"|[\xe2-\xe9\xeb\xec][ ][\x80-\xbf]"
     b"|[\xe0-\xef][\x80-\xbf][ ]"
     b"|[\xf0][ ][\x80-\xbf][\x80-\xbf]"
