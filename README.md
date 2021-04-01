@@ -8,7 +8,19 @@
 (ง'⌣')ง
 ```
 
-The full documentation of ftfy is available at [ftfy.readthedocs.org](https://ftfy.readthedocs.org). It covers a lot more than this README.
+The full documentation of ftfy is available at [ftfy.readthedocs.org](https://ftfy.readthedocs.org). The documentation covers a lot more than this README, so here are
+some links into it:
+
+- [Fixing problems and getting explanations](https://ftfy.readthedocs.io/en/v6.0/explain.html)
+- [Configuring ftfy](https://ftfy.readthedocs.io/en/v6.0/config.html)
+- [Encodings ftfy can handle](https://ftfy.readthedocs.io/en/v6.0/encodings.html)
+- [“Fixer” functions](https://ftfy.readthedocs.io/en/v6.0/fixes.html)
+- [Is ftfy an encoding detector?](https://ftfy.readthedocs.io/en/v6.0/detect.html)
+- [Heuristics for detecting mojibake](https://ftfy.readthedocs.io/en/v6.0/heuristics.html)
+- [Support for “bad” encodings](https://ftfy.readthedocs.io/en/v6.0/bad_encodings.html)
+- [Command-line usage](https://ftfy.readthedocs.io/en/v6.0/cli.html)
+- [Citing ftfy](https://ftfy.readthedocs.io/en/v6.0/cite.html)
+
 
 ## Testimonials
 
