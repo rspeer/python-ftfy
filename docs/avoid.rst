@@ -1,12 +1,19 @@
 How can I avoid producing mojibake?
 ===================================
 
+Read the Python Unicode HOWTO
+-----------------------------
+
+The `Python Unicode HOWTO`_ is a useful introduction to how to use Unicode correctly in Python. If you find yourself confused about the difference between bytes and characters, or you need to unlearn bad habits from Python 2, it's a great place to start.
+
+.. _`Python Unicode HOWTO`: https://docs.python.org/3/howto/unicode.html
+
 Assume UTF-8
 ------------
 
 **Assume text is in UTF-8** unless you have a specific reason to believe it isn't.
 
-In the 2020s, `UTF-8 is everywhere`_, especially in text meant to be transferred over the Internet.
+In the 2020s, `UTF-8 is everywhere`_, especially in text meant to be transferred over the Internet. Most mojibake comes from decoding correct UTF-8 as if it were some other encoding.
 
 .. _`UTF-8 is everywhere`: http://utf8everywhere.org/
 
@@ -55,14 +62,19 @@ ASCII isn't extended
 
 A sign that something is about to go wrong with encodings is if a developer is talking about "extended ASCII".
 
-ASCII is a set of 128 character codes (95 of them displayable), and has not had any new characters added to it since the backslash was added in 1967.
+ASCII is a set of 128 character codes (95 of them displayable). It has not had any new characters added to it since the backslash was added in 1967.
 
-Because ASCII is a 7-bit encoding but our computers use 8-bit bytes, it seems clear that ASCII *could* be extended to assign a meaning to all 256 possible bytes. There are many different, incompatible encodings that have done so. Many developers refer to one of these encodings as "extended ASCII", whose colloquial meaning is "the encoding of 256 characters that I learned first". Its meaning is completely dependent on the country you were in and the operating system you were using when you started programming:
+Because ASCII is a 7-bit encoding but our computers use 8-bit bytes, it seems clear that ASCII *could* be extended to assign a meaning to all 256 possible bytes. There are many different encodings that have done so, and they're all incompatible with one another, which is why treating bytes as characters as a bad idea and why we have Unicode now.
+
+Many developers refer to one of these encodings as "extended ASCII", whose colloquial meaning is "the encoding of 256 characters that I learned first". Its meaning is completely dependent on the country you were in and the operating system you were using when you started programming:
 
 - My "extended ASCII" when I learned to program was IBM codepage 437, the one that was used in US versions of MS-DOS.
 - To many people, "extended ASCII" is Windows codepage 1252, which they'd find in the Character Map of their Windows 9x computer, at least if they were in North America or Western Europe.
-- Or it might be Latin-1, the common name for the ISO-8859-1 standard that became the first 256 characters of Unicode.
+- To others in other countries, it could be a different Windows codepage, such as 1251 (which contains Cyrillic letters) or 1250 (which contains a different set of accented letters for Eastern European languages).
+- Or it might be Latin-1, the common name for the ISO-8859-1 standard that became the first 256 characters of Unicode. Latin-1 is easy to implement by accident, such as when you see byte C2 and assume it means Unicode codepoint U+00C2 -- what you get by incorrectly running `chr()` on each byte.
 
 "Extended ASCII" doesn't specify which encoding you mean, and often indicates that you don't realize that different people are thinking of different sets of 256 characters.
 
-Instead of "extended ASCII", say the name of the encoding such as "Latin-1", "Windows-1252", "Windows-1250", "codepage 437", or maybe "I don't know what it is but it looks right on my machine". And then revise things so that you use UTF-8.
+Instead of "extended ASCII", say the name of the encoding such as "Latin-1", "Windows-1252", "Windows-1250", "codepage 437", or maybe "I don't know what it is but it looks right on my machine".
+
+And then revise things so that you use UTF-8, which is still a superset of ASCII but can represent every Unicode character.
