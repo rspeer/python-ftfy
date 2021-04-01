@@ -4,33 +4,9 @@ Fixing problems and getting explanations
 Ode to a Shipping Label
 -----------------------
 
-There's a silly poem about mojibake by `@shyhoof`_ on Twitter, and it's going to serve as an excellent example for this section:
+A `poem about mojibake by Twitter user @shyhoof`_ shows a shipping label that serves as an excellent example for this section, addressed to the surname `L&AMP;AMP;ATILDE;&AMP;AMP;SUP3;PEZ`.
 
-.. code-block:: text
-
-    Once there was a little o,
-    with an accent on top like só.
-
-    It started out as UTF8,
-    (universal since '98),
-    but the program only knew latin1,
-    and changed little ó to "Ã³" for fun.
-
-    A second program saw the "Ã³"
-    and said "I know HTML entity!"
-    So "Ã³" was smartened to "&ATILDE;&SUP3;"
-    and passed on through happily.
-
-    Another program saw the tangle
-    (more precisely, ampersands to mangle)
-    and thus the humble "&ATILDE;&SUP3;"
-    became "&AMP;AMP;ATILDE;&AMP;AMP;SUP3;"
-
-.. image:: images/shipping-label.png
-   :width: 450
-   :alt: A picture of the shipping label being described by the poem
-
-.. _`@shyhoof`: https://twitter.com/shyhoof/status/332621356338405376
+.. _`poem about mojibake by Twitter user @shyhoof`: https://twitter.com/shyhoof/status/332621356338405376
 
 We can use ftfy not only to fix the text that was on the label, but to show us what happened to it (like the poem does)::
 
