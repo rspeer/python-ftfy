@@ -1,4 +1,4 @@
-from ftfy import fix_encoding, fix_encoding_and_explain, apply_plan
+from ftfy import fix_encoding, fix_encoding_and_explain, fix_text, apply_plan
 from ftfy.fixes import remove_control_chars, fix_surrogates
 from ftfy.chardata import possible_encoding
 from ftfy.badness import badness
@@ -30,6 +30,14 @@ def test_welsh_flag():
     # "Flag of England", "Flag of Scotland", and "Flag of Wales" emoji sequences.
     text = "This flag has a dragon on it 🏴󠁧󠁢󠁷󠁬󠁳󠁿"
     assert remove_control_chars(text) == text
+
+
+def test_ohio_flag():
+    # I did not expect to find the "Flag of Ohio" emoji in the wild but there it is.
+    # Test that this emoji (which no emoji database believes has been implemented)
+    # passes through unchanged.
+    text = "#superman #ohio 🏴\U000e0075\U000e0073\U000e006f\U000e0068\U000e007f #cleveland #usa 🇺🇸"
+    assert fix_text(text) == text
 
 
 def test_surrogates():
