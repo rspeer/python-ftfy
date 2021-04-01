@@ -230,6 +230,12 @@
         "expect": "pass"
     },
     {
+        "label": "Negative: using diaereses as quotation marks in Greek",
+        "original": "Η ¨ανατροφή¨ δυστυχώς από τους προπονητές",
+        "fixed": "Η ¨ανατροφή¨ δυστυχώς από τους προπονητές",
+        "expect": "pass"
+    },
+    {
         "label": "Science! Mid-word Greek letter gets fixed correctly",
         "original": "Humanized HLA-DR4.RagKO.IL2RÎ³cKO.NOD (DRAG) mice sustain the complex vertebrate life cycle of Plasmodium falciparum malaria.",
         "fixed": "Humanized HLA-DR4.RagKO.IL2RγcKO.NOD (DRAG) mice sustain the complex vertebrate life cycle of Plasmodium falciparum malaria.",
