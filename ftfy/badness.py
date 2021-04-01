@@ -295,6 +295,11 @@ BADNESS_RE = re.compile(
     |
     × [²³]
     |
+    # Windows-1252 mojibake of Arabic words needs to include the 'common' characters.
+    # To compensate, we require four characters to be matched.
+      [ØÙ] [{common}{currency}{bad}{numeric}{start_punctuation}ŸŠ®°µ»]
+      [ØÙ] [{common}{currency}{bad}{numeric}{start_punctuation}ŸŠ®°µ»]
+    |
 
     # Windows-1252 mojibake that starts 3-character sequences for some South Asian
     # alphabets
