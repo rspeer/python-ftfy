@@ -253,7 +253,9 @@ BADNESS_RE = re.compile(
     r"""
     [{c1}]
     |
-    [{bad}{lower_accented}{upper_accented}{lower_common}{upper_common}{box}{start_punctuation}{end_punctuation}{currency}{numeric}] [{bad}]
+    [{bad}{lower_accented}{upper_accented}{box}{start_punctuation}{end_punctuation}{currency}{numeric}] [{bad}]
+    |
+    [a-zA-Z] [{lower_common}{upper_common}] [{bad}]
     |
     [{bad}] [{lower_accented}{upper_accented}{box}{start_punctuation}{end_punctuation}{currency}{numeric}]
     |
