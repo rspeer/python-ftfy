@@ -2,6 +2,12 @@
 The `ftfy.fixes` module contains the individual fixes that :func:`ftfy.fix_text`
 can perform, and provides the functions that are named in "explanations"
 such as the output of :func:`ftfy.fix_and_explain`.
+
+Two of these functions are particularly useful on their own, as more robust
+versions of functions in the Python standard library:
+
+- :func:`ftfy.fixes.decode_escapes`
+- :func:`ftfy.fixes.unescape_html`
 """
 
 import codecs
@@ -345,6 +351,10 @@ def decode_escapes(text):
     Decode backslashed escape sequences, including \\x, \\u, and \\U character
     references, even in the presence of other Unicode.
 
+    This function has to be called specifically. It's not run automatically by
+    ftfy, because escaped text is not necessarily a mistake, and there is no
+    way to distinguish when it is.
+
     This is what Python's "string-escape" and "unicode-escape" codecs were
     meant to do, but in contrast, this actually works. It will decode the
     string exactly the same way that the Python interpreter decodes its string
@@ -365,10 +375,6 @@ def decode_escapes(text):
     represent escape sequences, and decodes them, leaving the rest alone. All
     valid escape sequences are made of ASCII characters, and this allows
     "unicode-escape" to work correctly.
-
-    This fix cannot be automatically applied by the `ftfy.fix_text` function,
-    because escaped text is not necessarily a mistake, and there is no way
-    to distinguish text that's supposed to be escaped from text that isn't.
     """
 
     def decode_match(match):

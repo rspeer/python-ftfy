@@ -1,15 +1,15 @@
 ftfy: fixes text for you
 ========================
 
+*Version 6.0*
+
 **ftfy** fixes Unicode that's broken in various ways.
 
 The goal of ftfy is to **take in bad Unicode and output good Unicode**, for use in your Unicode-aware code.
 
 This is different from taking in non-Unicode and outputting Unicode, which is not a goal of ftfy. It also isn't designed to protect you from having to write Unicode-aware code. ftfy helps those who help themselves.
 
-Of course you're better off if your input is decoded properly and has no glitches. But you often don't have any control over your input; it's someone else's mistake, but it's your problem now.
-
-ftfy will do everything it can to fix the problem.
+Of course you're better off if your input is decoded properly and has no glitches. But you often don't have any control over your input; it's someone else's mistake, but it's your problem now. ftfy will do everything it can to fix the problem.
 
 ftfy is a heuristic that was designed (not machine-learned) by Robyn Speer, at Luminoso. If you use ftfy in research, including pre-processing your language model data, you need to cite it: see :ref:`cite`.
 
@@ -22,6 +22,7 @@ ftfy is a heuristic that was designed (not machine-learned) by Robyn Speer, at L
    fixes
    detect
    avoid
+   heuristic
    bad_encodings
    cli
    cite
