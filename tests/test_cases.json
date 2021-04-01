@@ -535,6 +535,13 @@
         "expect": "pass"
     },
     {
+        "label": "Mostly negative: we only need to fix C1 control characters",
+        "comment": "We should not decode 'é\u0085 ' as '酠'",
+        "original": "C'est vrai que nous n'en avons pas encore beaucoup parlé\u0085 Tu sais, ça fait de nombreuses années",
+        "fixed": "C'est vrai que nous n'en avons pas encore beaucoup parlé… Tu sais, ça fait de nombreuses années",
+        "expect": "pass"
+    },
+    {
         "label": "French example containing non-breaking spaces",
         "original": "ART TRIP Ã\u00a0 l'office de tourisme",
         "fixed": "ART TRIP à l'office de tourisme",
