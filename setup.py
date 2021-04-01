@@ -51,6 +51,9 @@ setup(
             'ftfy = ftfy.cli:main'
         ]
     },
+    extras_require={
+        "docs": ["furo", "sphinx"]
+    },
     project_urls={
         'Documentation': 'http://ftfy.readthedocs.io',
     }
