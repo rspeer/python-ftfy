@@ -138,10 +138,10 @@ CONTROL_CHARS = _build_control_char_mapping()
 #
 #   0xe0 -> Samaritan script
 #   0xe1 -> Mongolian script (corresponds to Latin-1 'á' which is too common)
-#   0xea -> Syloti Nagri or North Indic
-#   0xed -> UTF-16 surrogates
-#   0xee -> unassigned
-#   0xef -> unassigned
+#
+# We accept 0xe2 and 0xe3, which cover many scripts. Bytes 0xe4 and
+# higher point mostly to CJK characters, which we generally don't want to
+# decode near Latin lowercase letters.
 #
 # In four-character sequences, the lead byte must be F0, because that accounts
 # for almost all of the usage of high-numbered codepoints (tag characters whose
@@ -156,8 +156,8 @@ CONTROL_CHARS = _build_control_char_mapping()
 
 ALTERED_UTF8_RE = re.compile(
     b"[\xc2\xc3\xc5\xce\xd0\xd9][ ]"
-    b"|[\xe2-\xe9\xeb\xec][ ][\x80-\xbf]"
-    b"|[\xe0-\xef][\x80-\xbf][ ]"
+    b"|[\xe2\xe3][ ][\x80-\x84\x86-\x9f\xa1-\xbf]"
+    b"|[\xe0-\xe3][\x80-\x84\x86-\x9f\xa1-\xbf][ ]"
     b"|[\xf0][ ][\x80-\xbf][\x80-\xbf]"
     b"|[\xf0][\x80-\xbf][ ][\x80-\xbf]"
     b"|[\xf0][\x80-\xbf][\x80-\xbf][ ]"
