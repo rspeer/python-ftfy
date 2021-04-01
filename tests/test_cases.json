@@ -548,6 +548,13 @@
         "expect": "pass"
     },
     {
+        "label": "English example in UTF-8 / Windows-1251 with a ligature",
+        "original": "This is signiп¬Ѓcantly lower than the respective share",
+        "fixed-encoding": "This is signiﬁcantly lower than the respective share",
+        "fixed": "This is significantly lower than the respective share",
+        "expect": "pass"
+    },
+    {
         "label": "Synthetic: we can recognize Ã in some cases when it's the only mojibake",
         "original": "voilÃ  le travail",
         "fixed": "voilà le travail",
