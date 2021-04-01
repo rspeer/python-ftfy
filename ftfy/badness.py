@@ -1,18 +1,20 @@
 """
-Heuristics to detect likely mojibake.
+`ftfy.badness` contains a heuristic that detects likely mojibake.
+
+This heuristic signals to ftfy which segments of text need to be fixed, and
+also indicates when the text can stop being fixed.
+
+The design of this heuristic is that we categorize the approximately 400
+Unicode characters that occur in UTF-8 mojibake, specifically the characters
+that come from mixing up UTF-8 with the other encodings we support. We
+identify sequences and contexts of these characters that are much more likely
+to be mojibake than intended strings, such as lowercase accented letters
+followed immediately by currency symbols.
 """
 
 import warnings
 import re
 from ftfy import chardata
-
-
-def _char_range(start, end):
-    """
-    Get a contiguous range of characters as a string. Useful for including
-    in a regex without making the representation _only_ usable in regexes.
-    """
-    return "".join(chr(codept) for codept in range(start, end + 1))
 
 
 # There are only 403 characters that occur in known UTF-8 mojibake, and we can
@@ -33,7 +35,7 @@ MOJIBAKE_CATEGORIES = {
         "\N{RIGHT SINGLE QUOTATION MARK}"
     ),
     # the C1 control character range, which have no uses outside of mojibake anymore
-    "c1": _char_range(0x80, 0x9F),
+    "c1": "\x80-\x9f",
     # Characters that are nearly 100% used in mojibake
     "bad": (
         "\N{BROKEN BAR}"
@@ -118,16 +120,24 @@ MOJIBAKE_CATEGORIES = {
         "\N{LESS-THAN OR EQUAL TO}"
         "\N{GREATER-THAN OR EQUAL TO}"
     ),
+    # Letters that might be used to make emoticon faces (kaomoji), and
+    # therefore might need to appear in more improbable-looking contexts.
+    #
+    # These are concatenated character ranges for use in a regex. I know
+    # they look like faces themselves. I think expressing the ranges like
+    # this helps to illustrate why we need to be careful with these
+    # characters.
     "kaomoji": (
-        _char_range(0xD2, 0xD6)
-        + _char_range(0xD9, 0xDC)
-        + _char_range(0xF2, 0xF6)
-        + _char_range(0xF8, 0xFC)
-        + "\N{LATIN CAPITAL LETTER O WITH DOUBLE ACUTE}"
+        "Ò-Ö"
+        "Ù-Ü"
+        "ò-ö"
+        "ø-ü"
+        "\N{LATIN CAPITAL LETTER O WITH DOUBLE ACUTE}"
         "\N{DEGREE SIGN}"
     ),
     "upper_accented": (
-        _char_range(0xC0, 0xD1) +
+        # LATIN CAPITAL LETTER A WITH GRAVE - LATIN CAPITAL LETTER N WITH TILDE
+        "\xc0-\xd1"
         # skip capital O's and U's that could be used in kaomoji, but
         # include Ø because it's very common in Arabic mojibake:
         "\N{LATIN CAPITAL LETTER O WITH STROKE}"
@@ -164,7 +174,9 @@ MOJIBAKE_CATEGORIES = {
         "\N{CYRILLIC CAPITAL LETTER GHE WITH UPTURN}"
     ),
     "lower_accented": (
-        "\N{LATIN SMALL LETTER SHARP S}" + _char_range(0xE0, 0xF1) +
+        "\N{LATIN SMALL LETTER SHARP S}"
+        # LATIN SMALL LETTER A WITH GRAVE - LATIN SMALL LETTER N WITH TILDE
+        "\xe0-\xf1"
         # skip o's and u's that could be used in kaomoji
         "\N{LATIN SMALL LETTER A WITH BREVE}"
         "\N{LATIN SMALL LETTER A WITH OGONEK}"
@@ -193,11 +205,11 @@ MOJIBAKE_CATEGORIES = {
     ),
     "upper_common": (
         "\N{LATIN CAPITAL LETTER THORN}"
-        + _char_range(0x391, 0x3A9)  # Greek capital letters
+        "\N{GREEK CAPITAL LETTER ALPHA}-\N{GREEK CAPITAL LETTER OMEGA}"
         # not included under 'accented' because these can commonly
         # occur at ends of words, in positions where they'd be detected
         # as mojibake
-        + "\N{GREEK CAPITAL LETTER ALPHA WITH TONOS}"
+        "\N{GREEK CAPITAL LETTER ALPHA WITH TONOS}"
         "\N{GREEK CAPITAL LETTER EPSILON WITH TONOS}"
         "\N{GREEK CAPITAL LETTER ETA WITH TONOS}"
         "\N{GREEK CAPITAL LETTER IOTA WITH TONOS}"
@@ -206,24 +218,36 @@ MOJIBAKE_CATEGORIES = {
         "\N{GREEK CAPITAL LETTER OMEGA WITH TONOS}"
         "\N{GREEK CAPITAL LETTER IOTA WITH DIALYTIKA}"
         "\N{GREEK CAPITAL LETTER UPSILON WITH DIALYTIKA}"
-        + _char_range(0x401, 0x42F)  # Cyrillic capital letters
+        "\N{CYRILLIC CAPITAL LETTER IO}-\N{CYRILLIC CAPITAL LETTER YA}"
     ),
     "lower_common": (
         # lowercase thorn does not appear in mojibake
-        _char_range(0x3B1, 0x3C6)  # Greek lowercase letters
-        + "\N{GREEK SMALL LETTER ALPHA WITH TONOS}"
+        "\N{GREEK SMALL LETTER ALPHA}-\N{GREEK SMALL LETTER OMEGA}"
+        "\N{GREEK SMALL LETTER ALPHA WITH TONOS}"
         "\N{GREEK SMALL LETTER EPSILON WITH TONOS}"
         "\N{GREEK SMALL LETTER ETA WITH TONOS}"
         "\N{GREEK SMALL LETTER IOTA WITH TONOS}"
         "\N{GREEK SMALL LETTER UPSILON WITH DIALYTIKA AND TONOS}"
-        + _char_range(0x430, 0x45F)  # Cyrillic lowercase letters
+        "\N{CYRILLIC SMALL LETTER A}-\N{CYRILLIC SMALL LETTER DZHE}"
     ),
-    "box": ("─│┌┐┘├┤┬┼" + _char_range(0x2550, 0x256C) + "▀▄█▌▐░▒▓"),
+    "box": (
+        # omit the single horizontal line, might be used in kaomoji
+        "│┌┐┘├┤┬┼"
+        "\N{BOX DRAWINGS DOUBLE HORIZONTAL}-\N{BOX DRAWINGS DOUBLE VERTICAL AND HORIZONTAL}"
+        "▀▄█▌▐░▒▓"
+    ),
 }
 
 
 # We can now build a regular expression that detects unlikely juxtapositions
-# of characters, mostly based on their categories
+# of characters, mostly based on their categories.
+#
+# Another regular expression, which detects sequences that look more specifically
+# like UTF-8 mojibake, appears in chardata.py.
+#
+# This is a verbose regular expression, with whitespace added for somewhat more
+# readability. Remember that the only spaces that count as literal spaces in this
+# expression are ones inside character classes (square brackets).
 
 BADNESS_RE = re.compile(
     r"""
@@ -296,13 +320,23 @@ BADNESS_RE = re.compile(
     # seeing a 3-character sequence.
     [ВГРС][{c1}{bad}{start_punctuation}{end_punctuation}{currency}°µ][ВГРС]
     |
+    # A distinctive five-character sequence of Cyrillic letters, which can be
+    # Windows-1251 mojibake on top of Latin-1 mojibake of Windows-1252 characters.
+    # Require a Latin letter nearby.
+    ГўВЂВ.[A-Za-z ]
+    |
 
-    # Windows-1252 encodings of 'à' and 'á'
+    # Windows-1252 encodings of 'à' and 'á', as well as \xa0 itself
     Ã[\xa0¡]
     |
-    [a-z]\s?Ã[ ]
+    [a-z]\s?[ÃÂ][ ]
     |
-    ^Ã[ ]
+    ^[ÃÂ][ ]
+    |
+    
+    # Cases where Â precedes a character as an encoding of exactly the same
+    # character, and the character is common enough
+    [a-z.,?!{end_punctuation}] Â [ {start_punctuation}{end_punctuation}]
     |
 
     # Windows-1253 mojibake of characters in the U+2000 range
