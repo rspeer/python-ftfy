@@ -62,7 +62,6 @@ MOJIBAKE_CATEGORIES = {
         # co-occur with other mojibake characters, it's not really ambiguous
         "\N{FEMININE ORDINAL INDICATOR}"
         "\N{MASCULINE ORDINAL INDICATOR}"
-        "\N{NUMERO SIGN}"
     ),
     "currency": (
         "\N{CENT SIGN}"
@@ -119,6 +118,7 @@ MOJIBAKE_CATEGORIES = {
         "\N{IDENTICAL TO}"
         "\N{LESS-THAN OR EQUAL TO}"
         "\N{GREATER-THAN OR EQUAL TO}"
+        "\N{NUMERO SIGN}"
     ),
     # Letters that might be used to make emoticon faces (kaomoji), and
     # therefore might need to appear in more improbable-looking contexts.
@@ -267,7 +267,7 @@ BADNESS_RE = re.compile(
     |
     \s [{upper_accented}] [{currency}]
     |
-    [{upper_accented}{box}{end_punctuation}] [{numeric}]
+    [{upper_accented}{box}] [{numeric}]
     |
     [{lower_accented}{upper_accented}{box}{currency}{end_punctuation}] [{start_punctuation}] [{numeric}]
     |
