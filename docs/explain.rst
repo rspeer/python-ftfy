@@ -4,9 +4,10 @@ Fixing problems and getting explanations
 Ode to a Shipping Label
 -----------------------
 
-A `poem about mojibake by Twitter user @shyhoof`_ shows a shipping label that serves as an excellent example for this section, addressed to the surname `L&AMP;AMP;ATILDE;&AMP;AMP;SUP3;PEZ`.
+A `poem about mojibake`_, whose original author might be `Carlos Bueno on Facebook`_, shows a shipping label that serves as an excellent example for this section, addressed to the surname `L&AMP;AMP;ATILDE;&AMP;AMP;SUP3;PEZ`.
 
-.. _`poem about mojibake by Twitter user @shyhoof`: https://twitter.com/shyhoof/status/332621356338405376
+.. _`poem about mojibake`: https://imgur.com/4J7Il0m
+.. _`Carlos Bueno on Facebook`: https://www.facebook.com/cmb/posts/619241744770551:0
 
 We can use ftfy not only to fix the text that was on the label, but to show us what happened to it (like the poem does)::
 
