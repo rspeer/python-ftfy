@@ -409,7 +409,7 @@
     },
     {
         "label": "Negative: accents are sometimes used as quotes",
-        "comment": "The CESU-8 decoder will try to decode this, and then fail when it hits the end of the string",
+        "comment": "Under a previous heuristic, this tested the CESU-8 decoder, which would try to decode it and fail when it hit the end of the string",
         "original": "``toda produzida pronta pra assa aí´´",
         "fixed": "``toda produzida pronta pra assa aí´´",
         "expect": "pass"
@@ -722,7 +722,7 @@
     },
     {
         "label": "Italian UTF-8 / MacRoman mojibake that looks like math",
-        "comment": "False negative: Dangerous to fix because of the following example",
+        "comment": "False negative: 'pi√π' is a bit too reasonable to fix",
         "original": "Sarai ricontattato dal nostro Esperto al pi√π presto.",
         "fixed": "Sarai ricontattato dal nostro Esperto al più presto.",
         "expect": "fail"
@@ -902,7 +902,7 @@
     },
     {
         "label": "Synthetic, negative: Romanian word before a trademark sign",
-        "comment": "We would change 'DATÃ™' to 'DATÙ', but getting windows-1250 involved makes it better to leave alone",
+        "comment": "We would change 'DATÃ™' to 'DATÙ' if it passed the badness heuristic",
         "original": "NICIODATĂ™",
         "fixed": "NICIODATĂ™",
         "expect": "pass"
@@ -923,7 +923,7 @@
     },
     {
         "label": "Synthetic: mojibake with trademark sign at the end of a word",
-        "comment": "I recall the correct version of this text from a sign in the movie Amélie. Unfortunately, we can't help her twin AmÃ©lie, who makes mojibaked signs.",
+        "comment": "I recall the correct version of this text from a sign in the movie Amélie. Now we can help her twin AmÃ©lie, who makes mojibaked signs.",
         "original": "OÃ™ ET QUAND?",
         "fixed": "OÙ ET QUAND?",
         "expect": "pass"
