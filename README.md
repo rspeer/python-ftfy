@@ -39,17 +39,6 @@ some links into it:
 - “9.2/10”
   — [pylint](https://bitbucket.org/logilab/pylint/)
 
-## Developed at Luminoso
-
-[Luminoso](https://www.luminoso.com) makes groundbreaking software for text
-analytics, built on open source technologies, that really understands what
-words mean, in many languages.
-
-We use ftfy every day at Luminoso, because the first step in understanding text
-is making sure it has the correct characters in it!
-
-If you're interested in joining us, take a look at [our careers page](https://luminoso.com/about/work-here).
-
 ## What it does
 
 Here are some examples (found in the real world) of what ftfy can do:

@@ -9,6 +9,10 @@ A `poem about mojibake`_, whose original author might be `Carlos Bueno on Facebo
 .. _`poem about mojibake`: https://imgur.com/4J7Il0m
 .. _`Carlos Bueno on Facebook`: https://www.facebook.com/cmb/posts/619241744770551:0
 
+.. image:: images/shipping-label.png
+   :width: 600
+   :alt: A package addressed to a name including "L&AMP;AMP;ATILDE;&AMP;AMP;SUP3;PEZ"
+
 We can use ftfy not only to fix the text that was on the label, but to show us what happened to it (like the poem does)::
 
     >>> from ftfy import fix_and_explain, apply_plan
