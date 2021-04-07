@@ -11,7 +11,7 @@ Here's the usage documentation for the `ftfy` command:
                 [--preserve-entities]
                 [filename]
 
-    ftfy (fixes text for you), version 5.0
+    ftfy (fixes text for you), version 6.0
 
     positional arguments:
       filename              The file whose Unicode is to be fixed. Defaults to -,
