@@ -358,7 +358,7 @@ def fix_and_explain(
 
 
 def fix_encoding_and_explain(
-    text: str, config: Optional[TextFixerConfig] = None
+    text: str, config: Optional[TextFixerConfig] = None, **kwargs
 ) -> ExplainedText:
     """
     Apply the steps of ftfy that detect mojibake and fix it. Returns the fixed
@@ -384,6 +384,8 @@ def fix_encoding_and_explain(
         config = TextFixerConfig()
     if isinstance(text, bytes):
         raise UnicodeError(BYTES_ERROR_TEXT)
+    config = config._replace(**kwargs)
+
     if not config.fix_encoding:
         # A weird trivial case: we're asked to fix the encoding, but skip
         # fixing the encoding
@@ -537,7 +539,7 @@ def fix_text_segment(text: str, config: TextFixerConfig = None, **kwargs):
     return fixed
 
 
-def fix_file(input_file, encoding=None, config=None):
+def fix_file(input_file, encoding=None, config=None, **kwargs):
     """
     Fix text that is found in a file.
 
@@ -548,6 +550,10 @@ def fix_file(input_file, encoding=None, config=None):
 
     The output is a stream of fixed lines of text.
     """
+    if config is None:
+        config = TextFixerConfig()
+    config = config._replace(**kwargs)
+
     for line in input_file:
         if isinstance(line, bytes):
             if encoding is None:
