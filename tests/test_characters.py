@@ -1,28 +1,9 @@
-from ftfy.fixes import (
-    fix_encoding, fix_encoding_and_explain, apply_plan, possible_encoding,
-    remove_control_chars, fix_surrogates
-)
-from ftfy.badness import sequence_weirdness
+from ftfy import fix_encoding, fix_encoding_and_explain, fix_text, apply_plan
+from ftfy.fixes import remove_control_chars, fix_surrogates
+from ftfy.chardata import possible_encoding
+from ftfy.badness import badness
 import unicodedata
 import sys
-from ftfy.char_classes import CHAR_CLASS_STRING
-
-
-# Most single-character strings which have been misencoded should be restored.
-def test_bmp_characters():
-    for index in range(0xa0, 0xfffd):
-        char = chr(index)
-        # Exclude code points that are not assigned
-        if unicodedata.category(char) not in ('Co', 'Cn', 'Cs', 'Mc', 'Mn', 'Sk'):
-            garble = char.encode('utf-8').decode('latin-1')
-            # Exclude characters whose re-encoding is protected by the
-            # 'sequence_weirdness' metric
-            if sequence_weirdness(garble) >= 0:
-                garble2 = char.encode('utf-8').decode('latin-1').encode('utf-8').decode('latin-1')
-                for garb in (garble, garble2):
-                    fixed, plan = fix_encoding_and_explain(garb)
-                    assert fixed == char
-                    assert apply_plan(garb, plan) == char
 
 
 def test_possible_encoding():
@@ -38,28 +19,28 @@ def test_byte_order_mark():
 def test_control_chars():
     text = (
         "\ufeffSometimes, \ufffcbad ideas \x7f\ufffalike these characters\ufffb "
-        "\u206aget standardized\U000E0065\U000E006E.\r\n"
+        "\u206aget standardized.\r\n"
     )
     fixed = "Sometimes, bad ideas like these characters get standardized.\r\n"
     assert remove_control_chars(text) == fixed
 
 
-def test_emoji_variation_selector():
-    # The hearts here are explicitly marked as emoji using the variation
-    # selector U+FE0F. This is not weird.
-    assert sequence_weirdness('❤\ufe0f' * 10) == 0
+def test_welsh_flag():
+    # ftfy used to remove "tag characters", but they have been repurposed in the
+    # "Flag of England", "Flag of Scotland", and "Flag of Wales" emoji sequences.
+    text = "This flag has a dragon on it 🏴󠁧󠁢󠁷󠁬󠁳󠁿"
+    assert remove_control_chars(text) == text
 
 
-def test_emoji_skintone_selector():
-    # Dear heuristic, you can't call skin-tone selectors weird anymore.
-    # We welcome Santa Clauses of all colors.
-    assert sequence_weirdness('🎅🏿🎅🏽🎅🏼🎅🏻') == 0
+def test_ohio_flag():
+    # I did not expect to find the "Flag of Ohio" emoji in the wild but there it is.
+    # Test that this emoji (which no emoji database believes has been implemented)
+    # passes through unchanged.
+    text = "#superman #ohio 🏴\U000e0075\U000e0073\U000e006f\U000e0068\U000e007f #cleveland #usa 🇺🇸"
+    assert fix_text(text) == text
 
 
 def test_surrogates():
     assert fix_surrogates('\udbff\udfff') == '\U0010ffff'
     assert fix_surrogates('\ud800\udc00') == '\U00010000'
 
-
-def test_char_class_type():
-    assert isinstance(CHAR_CLASS_STRING, str)

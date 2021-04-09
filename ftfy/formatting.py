@@ -10,7 +10,7 @@ from unicodedata import normalize
 from wcwidth import wcswidth, wcwidth
 
 
-def character_width(char):
+def character_width(char: str) -> int:
     r"""
     Determine the width that a character is likely to be displayed as in
     a monospaced terminal. The width for a printable character will
@@ -31,7 +31,7 @@ def character_width(char):
     return wcwidth(char)
 
 
-def monospaced_width(text):
+def monospaced_width(text: str) -> int:
     r"""
     Return the number of character cells that this string is likely to occupy
     when displayed in a monospaced, modern, Unicode-aware terminal emulator.
