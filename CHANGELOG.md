@@ -17,7 +17,7 @@
   use less RAM when imported.
 
 - The heuristic `ftfy.badness.is_bad(text)` can be used to determine whether
-  there apears to be mojibake in a string. Some users were already using
+  there appears to be mojibake in a string. Some users were already using
   the old function `sequence_weirdness()` for that, but this one is actually
   designed for that purpose.
 
