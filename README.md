@@ -95,14 +95,9 @@ You can also clone this Git repository and install it with
 
 ## Who maintains ftfy?
 
-I'm Robyn Speer (rspeer@luminoso.com). I develop this tool as part of my
-text-understanding company, [Luminoso](https://luminoso.com), where it has
-proven essential.
-
-Luminoso provides ftfy as free, open source software under the extremely
-permissive MIT license.
-
-You can report bugs regarding ftfy on GitHub and we'll handle them.
+I'm Robyn Speer. You can find me [on GitHub](https://github.com/rspeer).
+I created ftfy as part of my work at the text understanding company
+[Luminoso](https://luminoso.com).
 
 
 ## Citing ftfy
