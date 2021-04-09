@@ -1,6 +1,9 @@
 r"""
-Decodes single-byte encodings, filling their "holes" in the same messy way that
-everyone else does.
+`ftfy.bad_codecs.sloppy` provides character-map encodings that fill their "holes"
+in a messy but common way: by outputting the Unicode codepoints with the same
+numbers.
+
+This is incredibly ugly, and it's also in the HTML5 standard.
 
 A single-byte encoding maps each byte to a Unicode character, except that some
 bytes are left unmapped. In the commonly-used Windows-1252 encoding, for
@@ -45,10 +48,10 @@ The following encodings will become defined:
 Aliases such as "sloppy-cp1252" for "sloppy-windows-1252" will also be
 defined.
 
-Only sloppy-windows-1251 and sloppy-windows-1252 are used by the rest of ftfy;
-the rest are rather uncommon.
+Five of these encodings (`sloppy-windows-1250` through `sloppy-windows-1254`)
+are used within ftfy.
 
-Here are some examples, using `ftfy.explain_unicode` to illustrate how
+Here are some examples, using :func:`ftfy.explain_unicode` to illustrate how
 sloppy-windows-1252 merges Windows-1252 with Latin-1:
 
     >>> from ftfy import explain_unicode

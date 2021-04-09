@@ -1,5 +1,117 @@
 [
     {
+        "label": "Messy language names: Czech",
+        "comment": "This and several following examples came from the same language selector",
+        "original": "ÄŒeÅ¡tina",
+        "fixed": "Čeština",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Gaelic",
+        "comment": "note that if U+A0 is replaced by a space, it comes out slightly incorrectly as 'Gà idhlig'",
+        "original": "GÃ\u00a0idhlig",
+        "fixed": "Gàidhlig",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Lithuanian",
+        "original": "LietuviÅ³",
+        "fixed": "Lietuvių",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Slovak",
+        "original": "SlovenÄ�ina",
+        "fixed": "Sloven�ina",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Vietnamese",
+        "original": "Tiáº¿ng Viá»‡t",
+        "fixed": "Tiếng Việt",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Greek",
+        "original": "Î•Î»Î»Î·Î½Î¹ÎºÎ¬",
+        "fixed": "Ελληνικά",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Bulgarian",
+        "original": "Ð±ÑŠÐ»Ð³Ð°Ñ€Ñ�ÐºÐ¸ ÐµÐ·Ð¸Ðº",
+        "fixed": "българ�ки език",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Russian",
+        "original": "Ð ÑƒÑ�Ñ�ÐºÐ¸Ð¹",
+        "fixed": "Ру��кий",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Serbian [Cyrillic]",
+        "original": "CÑ€Ð¿Ñ�ÐºÐ¸ [Ñ›Ð¸Ñ€Ð¸Ð»Ð¸Ñ†Ð¾Ð¼]",
+        "fixed": "Cрп�ки [ћирилицом]",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Hebrew",
+        "original": "×¢×‘×¨×™×ª",
+        "fixed": "עברית",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Russian",
+        "original": "Ð ÑƒÑ�Ñ�ÐºÐ¸Ð¹",
+        "fixed": "Ру��кий",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Hindi",
+        "comment": "My terminal has difficulty rendering the mostly-fixed text",
+        "original": "à¤¹à¤¿à¤¨à¥�à¤¦à¥€",
+        "fixed": "\u0939\u093f\u0928\ufffd\u0926\u0940",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Tamil",
+        "comment": "My terminal has difficulty rendering the mostly-fixed text",
+        "original": "à®¤à®®à®¿à®´à¯�",
+        "fixed": "\u0ba4\u0bae\u0bbf\u0bb4\ufffd",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Thai",
+        "original": "à¸ à¸²à¸©à¸²à¹„à¸—à¸¢",
+        "fixed": "ภาษาไทย",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Simplified Chinese",
+        "original": "ç®€ä½“ä¸\u00adæ–‡",
+        "fixed": "简体中文",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Traditional Chinese",
+        "original": "æ\u00ad£é«”ä¸\u00adæ–‡",
+        "fixed": "正體中文",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Japanese",
+        "original": "æ—¥æœ¬èªž",
+        "fixed": "日本語",
+        "expect": "pass"
+    },
+    {
+        "label": "Messy language names: Korean",
+        "original": "í•œêµ\u00adì–´",
+        "fixed": "한국어",
+        "expect": "pass"
+    },
+    {
         "label": "Low-codepoint emoji",
         "original": "He's Justinâ\u009d¤",
         "fixed": "He's Justin❤",
@@ -28,6 +140,12 @@
         "original": "\u0084Handwerk bringt dich überall hin\u0093: Von der YOU bis nach Monaco",
         "fixed-encoding": "„Handwerk bringt dich überall hin“: Von der YOU bis nach Monaco",
         "fixed": "\"Handwerk bringt dich überall hin\": Von der YOU bis nach Monaco",
+        "expect": "pass"
+    },
+    {
+        "label": "Latin-1 / Windows-1252 mixup of the replacement character",
+        "original": "Some comments may be republished on the website or in the newspaper ï¿½ email addresses will not be published.",
+        "fixed": "Some comments may be republished on the website or in the newspaper � email addresses will not be published.",
         "expect": "pass"
     },
     {
@@ -106,6 +224,43 @@
         "expect": "pass"
     },
     {
+        "label": "UTF-8 / Windows-1252 mixup in Vietnamese",
+        "original": "Táº¡i sao giÃ¡ háº¡t sáº§u riÃªng láº¡i lÃªn giÃ¡?",
+        "fixed": "Tại sao giá hạt sầu riêng lại lên giá?",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: using diaereses as quotation marks in Greek",
+        "original": "Η ¨ανατροφή¨ δυστυχώς από τους προπονητές",
+        "fixed": "Η ¨ανατροφή¨ δυστυχώς από τους προπονητές",
+        "expect": "pass"
+    },
+    {
+        "label": "Science! Mid-word Greek letter gets fixed correctly",
+        "original": "Humanized HLA-DR4.RagKO.IL2RÎ³cKO.NOD (DRAG) mice sustain the complex vertebrate life cycle of Plasmodium falciparum malaria.",
+        "fixed": "Humanized HLA-DR4.RagKO.IL2RγcKO.NOD (DRAG) mice sustain the complex vertebrate life cycle of Plasmodium falciparum malaria.",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: More science! Don't fix a multiplication symbol in quotes",
+        "original": "higher values (“+” and “×” curves) in the superficial region",
+        "fixed-encoding": "higher values (“+” and “×” curves) in the superficial region",
+        "fixed": "higher values (\"+\" and \"×\" curves) in the superficial region",
+        "expect": "pass"
+    },
+    {
+        "label": "For goodness' sake. We can come close to fixing this, but fail in the last step",
+        "original": "ItÃ?Â¢â?¬â?¢s classic. ItÃ?Â¢â?¬â?¢s epic. ItÃ?Â¢â?¬â?¢s ELIZABETH BENNET for goodnessÃ?Â¢â?¬â?¢ sake!",
+        "fixed": "It�¢��s classic. It�¢��s epic. It�¢��s ELIZABETH BENNET for goodness�¢�� sake!",
+        "expect": "pass"
+    },
+    {
+        "label": "lossy UTF-8 / Windows-1250 mixup in Spanish",
+        "original": "Europa, Asia, Ă�frica, Norte, AmĂ©rica Central y del Sur, Australia y OceanĂ­a",
+        "fixed": "Europa, Asia, �frica, Norte, América Central y del Sur, Australia y Oceanía",
+        "expect": "pass"
+    },
+    {
         "label": "UTF-8 / sloppy Windows-1250 mixup in English",
         "original": "It was namedÂ â€žscarsÂ´ stonesâ€ś after the rock-climbers who got hurt while climbing on it.",
         "fixed-encoding": "It was named\u00a0„scars´ stones“ after the rock-climbers who got hurt while climbing on it.",
@@ -121,11 +276,18 @@
     },
     {
         "label": "UTF-8 / Windows-1252 mixup in mixed French and Arabic",
-        "comment": "'fixed-encoding' is still mojibaked. The thing that makes this test case work is that the full ftfy pipeline can uncurl the quotes, then fix the mojibake",
+        "comment": "A difficult test case that can depend on the order that steps are applied",
         "original": "Ã€ tous mes frÃ¨res et soeurs dans la syriennetÃ© comme dans l’humanitÃ©, sans discrimination aucune, je vous souhaite bonne fÃªte Ø¹ÙŠØ¯ Ø³Ø¹ÙŠØ¯.Que la paix, la libertÃ©, l’Ã©galitÃ©, la fraternitÃ© et la dignitÃ© soient avec vous.Pardonnez ce ton un peu ecclÃ©siastique.",
-        "fixed-encoding": "Ã€ tous mes frÃ¨res et soeurs dans la syriennetÃ© comme dans l’humanitÃ©, sans discrimination aucune, je vous souhaite bonne fÃªte Ø¹ÙŠØ¯ Ø³Ø¹ÙŠØ¯.Que la paix, la libertÃ©, l’Ã©galitÃ©, la fraternitÃ© et la dignitÃ© soient avec vous.Pardonnez ce ton un peu ecclÃ©siastique.",
+        "fixed-encoding": "À tous mes frères et soeurs dans la syrienneté comme dans l’humanité, sans discrimination aucune, je vous souhaite bonne fête عيد سعيد.Que la paix, la liberté, l’égalité, la fraternité et la dignité soient avec vous.Pardonnez ce ton un peu ecclésiastique.",
         "fixed": "À tous mes frères et soeurs dans la syrienneté comme dans l'humanité, sans discrimination aucune, je vous souhaite bonne fête عيد سعيد.Que la paix, la liberté, l'égalité, la fraternité et la dignité soient avec vous.Pardonnez ce ton un peu ecclésiastique.",
         "expect": "pass"
+    },
+    {
+        "label": "Synthetic: Incomplete UTF-8 / Windows-1252 mixup in Arabic",
+        "comment": "I find text like this in OSCAR a fair amount, but couldn't isolate a good example that tested digits. The intended text means 'more than 100 countries'.",
+        "original": "أكثر Ù…Ù† Ù Ù Ù¡ Ø¨Ù„Ø¯",
+        "fixed": "أكثر من ٠٠١ بلد",
+        "expect": "fail"
     },
     {
         "label": "UTF-8 / sloppy Windows-1250 mixup in Romanian",
@@ -137,6 +299,18 @@
         "label": "UTF-8 / Windows-1250 mixup in Slovak",
         "original": "NapĂ\u00adĹˇte nĂˇm !",
         "fixed": "Napíšte nám !",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Windows-1252 followed by UTF-8 / Windows-1251",
+        "original": "a bigger-than-expected Г‚ВЈ5.8bn rights issue to satisfy the new banking regulator",
+        "fixed": "a bigger-than-expected £5.8bn rights issue to satisfy the new banking regulator",
+        "expect": "pass"
+    },
+    {
+        "label": "fancy Unicode crossing-out, but mojibaked",
+        "original": "hotel $49 $Ì¶6Ì¶3Ì¶ updated 2018",
+        "fixed": "hotel $49 $̶6̶3̶ updated 2018",
         "expect": "pass"
     },
     {
@@ -152,6 +326,13 @@
         "expect": "pass"
     },
     {
+        "label": "Lossy decoding can have plain ASCII question marks, as well",
+        "original": "The ICR has been upgraded to â€œbb+â€? from â€œbbâ€?",
+        "fixed-encoding": "The ICR has been upgraded to “bb+� from “bb�",
+        "fixed": "The ICR has been upgraded to \"bb+� from \"bb�",
+        "expect": "pass"
+    },
+    {
         "label": "CESU-8 / Latin-1 mixup over several emoji",
         "comment": "You tried",
         "original": "I just figured out how to tweet emojis! â\u009a½í\u00a0½í¸\u0080í\u00a0½í¸\u0081í\u00a0½í¸\u0082í\u00a0½í¸\u0086í\u00a0½í¸\u008eí\u00a0½í¸\u008eí\u00a0½í¸\u008eí\u00a0½í¸\u008e",
@@ -160,9 +341,17 @@
     },
     {
         "label": "Two levels of inconsistent mojibake",
-        "comment": "The en-dash was mojibaked in UTF-8 / Windows-1252 as three characters, two of which were mojibaked again as Windows-1252 / Latin-1, and the third of which was mojibaked as UTF-8 / Latin-1",
+        "comment": "The en-dash was mojibaked in UTF-8 / Windows-1252 as three characters, two of which were mojibaked again as Windows-1252 / Latin-1, and the third of which was mojibaked as UTF-8 / Latin-1. Unfortunately, if we fix this, we leave ourselves room to greedily 'decode' random Han characters in complex Latin-alphabet mojibake",
         "original": "Arsenal v Wolfsburg: pre-season friendly â\u0080â\u0080\u009c live!",
         "fixed": "Arsenal v Wolfsburg: pre-season friendly – live!",
+        "expect": "fail"
+    },
+    {
+        "label": "An absolutely hopeless garble",
+        "comment": "If we try too hard to decode this, we'll recursively apply `decode_inconsistent_utf8` until the characters turn into random Han and katakana characters.",
+        "original": "ã†â€™ãƒâ€ ã¢â‚¬â„¢ãƒæ’ã‚â¢ãƒâ¢ã¢â‚¬å¡ã‚â¬ãƒâ€šã‚â",
+        "fixed-encoding": "ã†â€™ãƒâ€ ã¢â‚¬â„¢ãƒæ’ã‚â¢ãƒâ¢ã¢â‚¬å¡ã‚â¬ãƒâ€šã‚â",
+        "fixed": "ã†â€™ãƒâ€ ã¢â'¬â\"¢ãƒæ'ã'â¢ãƒâ¢ã¢â'¬å¡ã'â¬ãƒâ€šã'â",
         "expect": "pass"
     },
     {
@@ -177,6 +366,12 @@
         "original": "Ecuadorâ\u0080\u0099s â\u0080\u0098purely political decision on Assangeâ\u0080\u0099 is likely result of â\u0080\u0098US pressureâ\u0080\u0099…",
         "fixed-encoding": "Ecuador’s ‘purely political decision on Assange’ is likely result of ‘US pressure’…",
         "fixed": "Ecuador's 'purely political decision on Assange' is likely result of 'US pressure'…",
+        "expect": "pass"
+    },
+    {
+        "label": "Inconsistent mojibake in Portuguese",
+        "original": "Campeonatos > III DivisÃ£o - SÃ©rie F > Jornadas Classificação",
+        "fixed": "Campeonatos > III Divisão - Série F > Jornadas Classificação",
         "expect": "pass"
     },
     {
@@ -214,7 +409,7 @@
     },
     {
         "label": "Negative: accents are sometimes used as quotes",
-        "comment": "The CESU-8 decoder will try to decode this, and then fail when it hits the end of the string",
+        "comment": "Under a previous heuristic, this tested the CESU-8 decoder, which would try to decode it and fail when it hit the end of the string",
         "original": "``toda produzida pronta pra assa aí´´",
         "fixed": "``toda produzida pronta pra assa aí´´",
         "expect": "pass"
@@ -346,9 +541,23 @@
         "expect": "pass"
     },
     {
+        "label": "Mostly negative: we only need to fix C1 control characters",
+        "comment": "We should not decode 'é\u0085 ' as '酠'",
+        "original": "C'est vrai que nous n'en avons pas encore beaucoup parlé\u0085 Tu sais, ça fait de nombreuses années",
+        "fixed": "C'est vrai que nous n'en avons pas encore beaucoup parlé… Tu sais, ça fait de nombreuses années",
+        "expect": "pass"
+    },
+    {
         "label": "French example containing non-breaking spaces",
         "original": "ART TRIP Ã\u00a0 l'office de tourisme",
         "fixed": "ART TRIP à l'office de tourisme",
+        "expect": "pass"
+    },
+    {
+        "label": "English example in UTF-8 / Windows-1251 with a ligature",
+        "original": "This is signiп¬Ѓcantly lower than the respective share",
+        "fixed-encoding": "This is signiﬁcantly lower than the respective share",
+        "fixed": "This is significantly lower than the respective share",
         "expect": "pass"
     },
     {
@@ -373,6 +582,13 @@
         "label": "'à' remains its own word, even if spaces after it get coalesced into one",
         "original": "Ã perturber la rÃ©flexion des thÃ©ologiens jusqu'Ã nos jours",
         "fixed": "à perturber la réflexion des théologiens jusqu'à nos jours",
+        "expect": "pass"
+    },
+    {
+        "label": "Fix 'à' in inconsistent mojibake",
+        "original": "Le barÃ¨me forfaitaire permet l’Ã©valuation des frais de dÃ©placement relatifs Ã l’utilisation", 
+        "fixed-encoding": "Le barème forfaitaire permet l’évaluation des frais de déplacement relatifs à l’utilisation",
+        "fixed": "Le barème forfaitaire permet l'évaluation des frais de déplacement relatifs à l'utilisation",
         "expect": "pass"
     },
     {
@@ -408,23 +624,41 @@
     },
     {
         "label": "UTF-8 / Windows-1252 mixup in Gaelic involving non-breaking spaces",
-        "comment": "Too similar to the Finnish negative example with non-breaking spaces",
         "original": "CÃ\u00a0nan nan GÃ\u00a0idheal",
         "fixed": "Cànan nan Gàidheal",
         "expect": "pass"
     },
     {
+        "label": "Misleading mix-up in Spanish",
+        "comment": "The original text has mojibake, but the sequence 'á \u0093' can decode as U+1813 MONGOLIAN DIGIT THREE, when the whole string should really just decode as a Latin-1/Windows-1252 mixup",
+        "original": "tiene demora y está \u0093próximo a resolverse\u0094",
+        "fixed": "tiene demora y está \"próximo a resolverse\"",
+        "expect": "fail"
+    },
+    {
+        "label": "A-with-grave in Vietnamese",
+        "comment": "Currently adds extra spaces that shouldn't be there",
+        "original": "Xem clip hĂ i, phim hĂ i má»›i hay nháşĄt",
+        "fixed": "Xem clip hài, phim hài mới hay nhất",
+        "expect": "fail"
+    },
+    {
         "label": "Punctuation pile-up should actually be musical notes",
-        "comment": "Unfortunately, the difference doesn't look convincing to ftfy",
         "original": "Engkau masih yg terindah, indah di dalam hatikuâ™«~",
         "fixed": "Engkau masih yg terindah, indah di dalam hatiku♫~",
-        "expect": "fail"
+        "expect": "pass"
     },
     {
         "label": "Latin-1 / MacRoman mixup in Spanish",
         "comment": "Requires something like encoding detection",
         "original": "Deja dos heridos hundimiento de barco tur\u0092stico en Acapulco.",
         "fixed": "Deja dos heridos hundimiento de barco turístico en Acapulco.",
+        "expect": "fail"
+    },
+    {
+        "label": "subtle UTF-8 / codepage 437 mixup in Spanish",
+        "original": "┬┐que diferencia hay?",
+        "fixed": "¿que diferencia hay?",
         "expect": "fail"
     },
     {
@@ -488,7 +722,7 @@
     },
     {
         "label": "Italian UTF-8 / MacRoman mojibake that looks like math",
-        "comment": "False negative: Dangerous to fix because of the following example",
+        "comment": "False negative: 'pi√π' is a bit too reasonable to fix",
         "original": "Sarai ricontattato dal nostro Esperto al pi√π presto.",
         "fixed": "Sarai ricontattato dal nostro Esperto al più presto.",
         "expect": "fail"
@@ -546,10 +780,10 @@
     },
     {
         "label": "Negative: Leet line-art",
-        "comment": "Current false positive: it coincidentally all decodes as UTF-8/CP437 mojibake and becomes 'ôaſaſaſaſa'",
+        "comment": "The heuristic before v6 loved to 'fix' this and decode it as 'ôaſaſaſaſa'",
         "original": "├┤a┼┐a┼┐a┼┐a┼┐a",
         "fixed": "├┤a┼┐a┼┐a┼┐a┼┐a",
-        "expect": "fail"
+        "expect": "pass"
     },
     {
         "label": "Synthetic, negative: Brontë's name does not end with a Korean syllable",
@@ -668,7 +902,7 @@
     },
     {
         "label": "Synthetic, negative: Romanian word before a trademark sign",
-        "comment": "We would change 'DATÃ™' to 'DATÙ', but getting windows-1250 involved makes it better to leave alone",
+        "comment": "We would change 'DATÃ™' to 'DATÙ' if it passed the badness heuristic",
         "original": "NICIODATĂ™",
         "fixed": "NICIODATĂ™",
         "expect": "pass"
@@ -688,10 +922,10 @@
         "expect": "pass"
     },
     {
-        "label": "Synthetic, false negative: mojibake with trademark sign at the end of a word",
-        "comment": "I recall the correct version of this text from a sign in the movie Amélie. Unfortunately, we can't help her twin AmÃ©lie, who makes mojibaked signs.",
+        "label": "Synthetic: mojibake with trademark sign at the end of a word",
+        "comment": "I recall the correct version of this text from a sign in the movie Amélie. Now we can help her twin AmÃ©lie, who makes mojibaked signs.",
         "original": "OÃ™ ET QUAND?",
         "fixed": "OÙ ET QUAND?",
-        "expect": "fail"
+        "expect": "pass"
     }
 ]

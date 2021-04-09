@@ -23,8 +23,7 @@ There are also two optional fields:
   If missing, it will be considered to be the same as "fixed".
 - "comment": possibly-enlightening commentary on the test case.
 """
-from ftfy import fix_text
-from ftfy.fixes import fix_encoding_and_explain, apply_plan
+from ftfy import fix_text, fix_and_explain, fix_encoding_and_explain, apply_plan
 import json
 import os
 import pytest
@@ -49,10 +48,32 @@ def test_json_example(test_case):
     orig = test_case['original']
     fixed = test_case['fixed']
 
-    # Make sure that the fix_encoding step outputs a plan that we can
-    # successfully run to reproduce its result
+    # Make sure that we can fix the text as intended
+    assert fix_text(orig) == fixed
+
+    # Make sure that fix_and_explain outputs a plan that we can successfully
+    # run to reproduce its result
+    fixed_output, plan = fix_and_explain(orig)
+    assert apply_plan(orig, plan) == fixed_output
+    
+    # Do the same for fix_encoding_and_explain
     encoding_fix, plan = fix_encoding_and_explain(orig)
     assert apply_plan(orig, plan) == encoding_fix
+
+    # Ask for the encoding fix a different way, by disabling all the other steps
+    # in the config object
+    assert fix_text(
+        orig,
+        unescape_html=False,
+        remove_terminal_escapes=False,
+        fix_character_width=False,
+        fix_latin_ligatures=False,
+        uncurl_quotes=False,
+        fix_line_breaks=False,
+        fix_surrogates=False,
+        remove_control_chars=False,
+        normalization=None
+    ) == encoding_fix
 
     # Make sure we can decode the text as intended
     assert fix_text(orig) == fixed
