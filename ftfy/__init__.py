@@ -517,7 +517,7 @@ def fix_encoding(text: str, config: TextFixerConfig = None, **kwargs):
         '&ATILDE;&SUP3;'
     """
     if config is None:
-        config = TextFixerConfig()
+        config = TextFixerConfig(explain=False)
     config = config._replace(**kwargs)
     fixed, _explan = fix_encoding_and_explain(text, config)
     return fixed
