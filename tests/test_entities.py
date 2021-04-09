@@ -7,14 +7,14 @@ def test_entities():
     assert fix_text(example) == '&\n<html>\n&amp;'
     assert fix_text_segment(example) == '&amp;\n<html>\n&amp;'
 
-    assert fix_text(example, fix_entities=True) == '&\n<html>\n&'
-    assert fix_text_segment(example, fix_entities=True) == '&\n<html>\n&'
+    assert fix_text(example, unescape_html=True) == '&\n<html>\n&'
+    assert fix_text_segment(example, unescape_html=True) == '&\n<html>\n&'
 
-    assert fix_text(example, fix_entities=False) == '&amp;\n<html>\n&amp;'
-    assert fix_text_segment(example, fix_entities=False) == '&amp;\n<html>\n&amp;'
+    assert fix_text(example, unescape_html=False) == '&amp;\n<html>\n&amp;'
+    assert fix_text_segment(example, unescape_html=False) == '&amp;\n<html>\n&amp;'
 
-    assert fix_text_segment('&lt;&gt;', fix_entities=False) == '&lt;&gt;'
-    assert fix_text_segment('&lt;&gt;', fix_entities=True) == '<>'
+    assert fix_text_segment('&lt;&gt;', unescape_html=False) == '&lt;&gt;'
+    assert fix_text_segment('&lt;&gt;', unescape_html=True) == '<>'
     assert fix_text_segment('&lt;&gt;') == '<>'
     assert fix_text_segment('jednocze&sacute;nie') == 'jednocześnie'
     assert fix_text_segment('JEDNOCZE&Sacute;NIE') == 'JEDNOCZEŚNIE'

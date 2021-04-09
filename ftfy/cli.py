@@ -4,7 +4,7 @@ A command-line utility for fixing text found in a file.
 import os
 import sys
 
-from ftfy import __version__, fix_file
+from ftfy import __version__, fix_file, TextFixerConfig
 
 ENCODE_ERROR_TEXT_UNIX = """ftfy error:
 Unfortunately, this output stream does not support Unicode.
@@ -118,16 +118,20 @@ def main():
         normalization = None
 
     if args.preserve_entities:
-        fix_entities = False
+        unescape_html = False
     else:
-        fix_entities = 'auto'
+        unescape_html = 'auto'
+
+    config = TextFixerConfig(
+        unescape_html=unescape_html,
+        normalization=normalization
+    )
 
     try:
         for line in fix_file(
             file,
             encoding=encoding,
-            fix_entities=fix_entities,
-            normalization=normalization,
+            config=config
         ):
             try:
                 outfile.write(line)

@@ -1,3 +1,34 @@
+## Version 6.0 (April 2, 2021)
+
+- New function: `ftfy.fix_and_explain()` can describe all the transformations
+  that happen when fixing a string. This is similar to what
+  `ftfy.fixes.fix_encoding_and_explain()` did in previous versions, but it
+  can fix more than the encoding.
+
+- `fix_and_explain()` and `fix_encoding_and_explain()` are now in the top-level
+  ftfy module.
+
+- Changed the heuristic entirely. ftfy no longer needs to categorize every
+  Unicode character, but only characters that are expected to appear in
+  mojibake.
+
+- Because of the new heuristic, ftfy will no longer have to release a new
+  version for every new version of Unicode. It should also run faster and
+  use less RAM when imported.
+
+- The heuristic `ftfy.badness.is_bad(text)` can be used to determine whether
+  there apears to be mojibake in a string. Some users were already using
+  the old function `sequence_weirdness()` for that, but this one is actually
+  designed for that purpose.
+
+- Instead of a pile of named keyword arguments, ftfy functions now take in
+  a TextFixerConfig object. The keyword arguments still work, and become
+  settings that override the defaults in TextFixerConfig.
+
+- Added support for UTF-8 mixups with Windows-1253 and Windows-1254.
+
+- Overhauled the documentation: https://ftfy.readthedocs.org
+
 ## Version 5.9 (February 10, 2021)
 
 This version is brought to you by the letter à and the number 0xC3.
