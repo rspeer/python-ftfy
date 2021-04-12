@@ -1,3 +1,11 @@
+## Version 6.0.1 (April 12, 2021)
+
+- ftfy uses specific features introduced in Python 3.6. I'd forgotten to specify
+  this version constraint in the setup.py of version 6.0, but version 6.0.1
+  adds it.
+
+- Use a lighter link color when the docs are viewed in dark mode.
+
 ## Version 6.0 (April 2, 2021)
 
 - New function: `ftfy.fix_and_explain()` can describe all the transformations
