@@ -112,8 +112,8 @@ html_theme_options = {
         "font-size--small--2": "100%",
     },
     "dark_css_variables": {
-        "color-brand-primary": "#9C6DFF",
-        "color-brand-content": "#9C6DFF",
+        "color-brand-primary": "#AC8DFF",
+        "color-brand-content": "#AC8DFF",
         "font-stack": "Source Sans Pro, sans-serif",
         "font-stack--monospace": "Inconsolata",
         "code-font-size": "18px",
