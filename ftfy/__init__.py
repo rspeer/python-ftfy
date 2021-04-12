@@ -343,6 +343,7 @@ def fix_and_explain(
             "uncurl_quotes",
             "fix_line_breaks",
             "fix_surrogates",
+            "remove_terminal_escapes",
             "remove_control_chars",
         ]:
             text = _try_fix(fixer, text, config, steps)

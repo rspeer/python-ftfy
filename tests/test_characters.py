@@ -1,4 +1,6 @@
-from ftfy import fix_encoding, fix_encoding_and_explain, fix_text, apply_plan
+from ftfy import (
+    fix_encoding, fix_encoding_and_explain, fix_text, fix_and_explain, apply_plan
+)
 from ftfy.fixes import remove_control_chars, fix_surrogates
 from ftfy.chardata import possible_encoding
 from ftfy.badness import badness
@@ -44,3 +46,12 @@ def test_surrogates():
     assert fix_surrogates('\udbff\udfff') == '\U0010ffff'
     assert fix_surrogates('\ud800\udc00') == '\U00010000'
 
+
+def test_color_escapes():
+    fixed, plan = fix_and_explain("\001\033[36;44mfoo")
+    print(plan)
+    assert fixed == "foo"
+    assert plan == [
+        ("apply", "remove_terminal_escapes"),
+        ("apply", "remove_control_chars")
+    ]
