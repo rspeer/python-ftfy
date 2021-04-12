@@ -1,8 +1,9 @@
 ## Version 6.0.1 (April 12, 2021)
 
-- ftfy uses specific features introduced in Python 3.6. I'd forgotten to specify
-  this version constraint in the setup.py of version 6.0, but version 6.0.1
-  adds it.
+- The `remove_terminal_escapes` step was accidentally not being used. This
+  version restores it.
+
+- Specified in setup.py that ftfy 6 requires Python 3.6 or later.
 
 - Use a lighter link color when the docs are viewed in dark mode.
 
