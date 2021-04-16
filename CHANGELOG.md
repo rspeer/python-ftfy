@@ -1,3 +1,12 @@
+## Version 6.0.1 (April 12, 2021)
+
+- The `remove_terminal_escapes` step was accidentally not being used. This
+  version restores it.
+
+- Specified in setup.py that ftfy 6 requires Python 3.6 or later.
+
+- Use a lighter link color when the docs are viewed in dark mode.
+
 ## Version 6.0 (April 2, 2021)
 
 - New function: `ftfy.fix_and_explain()` can describe all the transformations
@@ -17,7 +26,7 @@
   use less RAM when imported.
 
 - The heuristic `ftfy.badness.is_bad(text)` can be used to determine whether
-  there apears to be mojibake in a string. Some users were already using
+  there appears to be mojibake in a string. Some users were already using
   the old function `sequence_weirdness()` for that, but this one is actually
   designed for that purpose.
 
