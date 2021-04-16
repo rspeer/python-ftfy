@@ -13,7 +13,7 @@ from ftfy import chardata, fixes
 from ftfy.badness import is_bad
 from ftfy.formatting import display_ljust
 
-__version__ = "6.0"
+__version__ = "6.0.1"
 
 
 # Though this function does nothing, it lets linters know that we're using
@@ -343,6 +343,7 @@ def fix_and_explain(
             "uncurl_quotes",
             "fix_line_breaks",
             "fix_surrogates",
+            "remove_terminal_escapes",
             "remove_control_chars",
         ]:
             text = _try_fix(fixer, text, config, steps)
@@ -517,7 +518,7 @@ def fix_encoding(text: str, config: TextFixerConfig = None, **kwargs):
         '&ATILDE;&SUP3;'
     """
     if config is None:
-        config = TextFixerConfig()
+        config = TextFixerConfig(explain=False)
     config = config._replace(**kwargs)
     fixed, _explan = fix_encoding_and_explain(text, config)
     return fixed
