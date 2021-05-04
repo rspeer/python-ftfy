@@ -25,7 +25,7 @@ setup(
     maintainer='Robyn Speer',
     maintainer_email='rspeer@arborelia.net',
     license="MIT",
-    url='http://github.com/r_speer/python-ftfy',
+    url='http://github.com/rspeer/python-ftfy',
     platforms=["any"],
     description="Fixes some problems with Unicode text after the fact",
     long_description=DESCRIPTION,
