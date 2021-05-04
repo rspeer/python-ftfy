@@ -1,3 +1,9 @@
+## Version 6.0.2 (May 4, 2021)
+
+This version is purely a cosmetic change, updating the maintainer's e-mail
+address and the project's canonical location on GitHub.
+
+
 ## Version 6.0.1 (April 12, 2021)
 
 - The `remove_terminal_escapes` step was accidentally not being used. This
