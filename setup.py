@@ -21,11 +21,11 @@ DESCRIPTION = open('README.md', encoding='utf-8').read()
 
 setup(
     name="ftfy",
-    version='6.0.1',
+    version='6.0.2',
     maintainer='Robyn Speer',
-    maintainer_email='rspeer@luminoso.com',
+    maintainer_email='rspeer@arborelia.net',
     license="MIT",
-    url='http://github.com/LuminosoInsight/python-ftfy',
+    url='http://github.com/r_speer/python-ftfy',
     platforms=["any"],
     description="Fixes some problems with Unicode text after the fact",
     long_description=DESCRIPTION,

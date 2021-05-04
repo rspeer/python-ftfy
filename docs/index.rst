@@ -11,7 +11,7 @@ This is different from taking in non-Unicode and outputting Unicode, which is no
 
 Of course you're better off if your input is decoded properly and has no glitches. But you often don't have any control over your input; it's someone else's mistake, but it's your problem now. ftfy will do everything it can to fix the problem.
 
-ftfy is a heuristic that was designed (not machine-learned) by Robyn Speer, at Luminoso. If you use ftfy in research, including pre-processing your language model data, you need to cite it: see :ref:`cite`.
+ftfy is a heuristic that was designed (not machine-learned) by Robyn Speer. If you use ftfy in research, including pre-processing your language model data, you need to cite it: see :ref:`cite`.
 
 .. toctree::
    :maxdepth: 1
