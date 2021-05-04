@@ -97,7 +97,7 @@ You can also clone this Git repository and install it with
 
 I'm Robyn Speer. You can find me [on GitHub](https://github.com/rspeer).
 I created ftfy as part of my work at the text understanding company
-[Luminoso](https://luminoso.com).
+[Luminoso](https://luminoso.com), and now maintain it independently.
 
 
 ## Citing ftfy
