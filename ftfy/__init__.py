@@ -6,6 +6,7 @@ for more information.
 """
 
 import unicodedata
+import warnings
 from typing import List, NamedTuple, Optional, Tuple, Union
 
 from ftfy import bad_codecs
@@ -171,6 +172,23 @@ class TextFixerConfig(NamedTuple):
     explain: bool = True
 
 
+def _config_from_kwargs(config: TextFixerConfig, kwargs: dict):
+    """
+    Handle parameters provided as keyword arguments to ftfy's top-level
+    functions, converting them into a TextFixerConfig.
+    """
+    if 'fix_entities' in kwargs:
+        warnings.warn(
+            "`fix_entities` has been renamed to `unescape_html`",
+            DeprecationWarning
+        )
+        kwargs = kwargs.copy()
+        kwargs['unescape_html'] = kwargs['fix_entities']
+        del kwargs['fix_entities']
+    config = config._replace(**kwargs)
+    return config
+
+
 FIXERS = {
     "unescape_html": fixes.unescape_html,
     "remove_terminal_escapes": fixes.remove_terminal_escapes,
@@ -205,7 +223,6 @@ Python Unicode HOWTO:
 
     http://docs.python.org/3/howto/unicode.html
 """
-
 
 def _try_fix(
     fixer_name: str, text: str, config: TextFixerConfig, steps: Optional[list]
@@ -275,9 +292,8 @@ def fix_text(text: str, config: Optional[TextFixerConfig] = None, **kwargs) -> s
     """
 
     if config is None:
-        config = TextFixerConfig()
-    config = config._replace(**kwargs)
-    config = config._replace(explain=False)
+        config = TextFixerConfig(explain=False)
+    config = _config_from_kwargs(config, kwargs)
     if isinstance(text, bytes):
         raise UnicodeError(BYTES_ERROR_TEXT)
 
@@ -313,7 +329,7 @@ def fix_and_explain(
         config = TextFixerConfig()
     if isinstance(text, bytes):
         raise UnicodeError(BYTES_ERROR_TEXT)
-    config = config._replace(**kwargs)
+    config = _config_from_kwargs(config, kwargs)
 
     if config.unescape_html == "auto" and "<" in text:
         config = config._replace(unescape_html=False)
@@ -385,7 +401,7 @@ def fix_encoding_and_explain(
         config = TextFixerConfig()
     if isinstance(text, bytes):
         raise UnicodeError(BYTES_ERROR_TEXT)
-    config = config._replace(**kwargs)
+    config = _config_from_kwargs(config, kwargs)
 
     if not config.fix_encoding:
         # A weird trivial case: we're asked to fix the encoding, but skip
@@ -519,7 +535,7 @@ def fix_encoding(text: str, config: TextFixerConfig = None, **kwargs):
     """
     if config is None:
         config = TextFixerConfig(explain=False)
-    config = config._replace(**kwargs)
+    config = _config_from_kwargs(config, kwargs)
     fixed, _explan = fix_encoding_and_explain(text, config)
     return fixed
 
@@ -535,7 +551,7 @@ def fix_text_segment(text: str, config: TextFixerConfig = None, **kwargs):
     """
     if config is None:
         config = TextFixerConfig(explain=False)
-    config = config._replace(**kwargs)
+    config = _config_from_kwargs(config, kwargs)
     fixed, _explan = fix_and_explain(text, config)
     return fixed
 
@@ -553,7 +569,7 @@ def fix_file(input_file, encoding=None, config=None, **kwargs):
     """
     if config is None:
         config = TextFixerConfig()
-    config = config._replace(**kwargs)
+    config = _config_from_kwargs(config, kwargs)
 
     for line in input_file:
         if isinstance(line, bytes):
