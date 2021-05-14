@@ -1,6 +1,8 @@
 from ftfy import fix_text, fix_text_segment
 from ftfy.fixes import unescape_html
 
+import pytest
+
 
 def test_entities():
     example = '&amp;\n<html>\n&amp;'
@@ -33,3 +35,11 @@ def test_entities():
         fix_text_segment('this is just informal english &not html') ==
         'this is just informal english &not html'
     )
+
+
+def test_old_parameter_name():
+    example = '&amp;\n<html>\n&amp;'
+    with pytest.deprecated_call():
+        assert fix_text(example, fix_entities=True) == '&\n<html>\n&'
+    with pytest.deprecated_call():
+        assert fix_text(example, fix_entities=False) == '&amp;\n<html>\n&amp;'
