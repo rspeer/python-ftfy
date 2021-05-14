@@ -1,3 +1,12 @@
+## Version 6.0.3 (May 14, 2021)
+
+- Allow the keyword argument `fix_entities` as a deprecated alias for
+  `unescape_html`, raising a warning.
+
+- `ftfy.formatting` functions now disregard ANSI terminal escapes when
+  calculating text width.
+
+
 ## Version 6.0.2 (May 4, 2021)
 
 This version is purely a cosmetic change, updating the maintainer's e-mail
