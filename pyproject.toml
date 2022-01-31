@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "ftfy"
+version = "6.1.0"
+description = "Fixes mojibake and other problems with Unicode, after the fact"
+authors = ["Robyn Speer <rspeer@arborelia.net>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = ">=3.7"
+wcwidth = ">=0.2.5"
+
+[tool.poetry.dev-dependencies]
+Sphinx = "^4.4.0"
+furo = ">=2022.1.2"
+pytest = "^6.2.5"
+black = ">=21"
+mypy = "^0.931"
+ipython = ">=7.0"
+flake8 = ">=3.0"
+
+[tool.poetry.scripts]
+ftfy = "ftfy.cli:main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

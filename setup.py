@@ -21,7 +21,7 @@ DESCRIPTION = open('README.md', encoding='utf-8').read()
 
 setup(
     name="ftfy",
-    version='6.0.2',
+    version='6.1.0',
     maintainer='Robyn Speer',
     maintainer_email='rspeer@arborelia.net',
     license="MIT",
