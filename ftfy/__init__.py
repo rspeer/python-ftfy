@@ -7,7 +7,7 @@ for more information.
 
 import unicodedata
 import warnings
-from typing import List, NamedTuple, Optional, Tuple, Union
+from typing import List, NamedTuple, Optional, Tuple, Union, no_type_check
 
 from ftfy import bad_codecs
 from ftfy import chardata, fixes
@@ -172,7 +172,7 @@ class TextFixerConfig(NamedTuple):
     explain: bool = True
 
 
-def _config_from_kwargs(config: TextFixerConfig, kwargs: dict):
+def _config_from_kwargs(config: TextFixerConfig, kwargs: dict) -> TextFixerConfig:
     """
     Handle parameters provided as keyword arguments to ftfy's top-level
     functions, converting them into a TextFixerConfig.
@@ -350,7 +350,8 @@ def fix_and_explain(
                 text = fix_encoding(text)
             else:
                 text, encoding_steps = fix_encoding_and_explain(text, config)
-                steps.extend(encoding_steps)
+                if encoding_steps is not None:
+                    steps.extend(encoding_steps)
 
         for fixer in [
             "fix_c1_controls",
@@ -412,7 +413,8 @@ def fix_encoding_and_explain(
     while True:
         prevtext = text
         text, plan = _fix_encoding_one_step_and_explain(text, config)
-        plan_so_far.extend(plan)
+        if plan is not None:
+            plan_so_far.extend(plan)
         if text == prevtext:
             return ExplainedText(text, plan_so_far)
 
@@ -655,6 +657,7 @@ def guess_bytes(bstring):
     return bstring.decode("sloppy-windows-1252"), "sloppy-windows-1252"
 
 
+@no_type_check
 def apply_plan(text: str, plan: List[Tuple[str, str]]):
     """
     Apply a plan for fixing the encoding of text.
