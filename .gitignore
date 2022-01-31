@@ -10,3 +10,4 @@ twitterlogs
 .pytest_cache
 .tox
 specimens
+.vscode
