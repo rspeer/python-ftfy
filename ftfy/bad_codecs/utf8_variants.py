@@ -221,28 +221,22 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
 IncrementalEncoder = UTF8IncrementalEncoder
 
 
-# Everything below here is boilerplate that matches the modules in the
-# built-in `encodings` package.
-def encode(input, errors='strict'):
-    return IncrementalEncoder(errors).encode(input, final=True), len(input)
-
-
-def decode(input, errors='strict'):
-    return IncrementalDecoder(errors).decode(input, final=True), len(input)
-
-
 class StreamWriter(codecs.StreamWriter):
-    encode = encode
+    @staticmethod
+    def encode(input: str, errors: str = 'strict') -> Tuple[bytes, int]:
+        return IncrementalEncoder(errors).encode(input, final=True), len(input)
 
 
 class StreamReader(codecs.StreamReader):
-    decode = decode
+    @staticmethod
+    def decode(input: bytes, errors: str = 'strict') -> Tuple[str, int]:
+        return IncrementalDecoder(errors).decode(input, final=True), len(input)
 
 
 CODEC_INFO = codecs.CodecInfo(
     name=NAME,
-    encode=encode,
-    decode=decode,
+    encode=StreamWriter.encode,
+    decode=StreamReader.decode,
     incrementalencoder=IncrementalEncoder,
     incrementaldecoder=IncrementalDecoder,
     streamreader=StreamReader,
