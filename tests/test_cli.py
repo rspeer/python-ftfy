@@ -3,8 +3,7 @@ import os
 import pytest
 
 
-# Get the filename of 'halibote.txt', which contains some mojibake about
-# Harry Potter in Chinese
+# Get the filename of 'halibote.txt', an example of mojibake
 THIS_DIR = os.path.dirname(__file__)
 TEST_FILENAME = os.path.join(THIS_DIR, 'halibote.txt')
 CORRECT_OUTPUT = os.linesep.join(['【更新】《哈利波特》石堧卜才新婚娶初戀今痠逝', ''])

@@ -11,16 +11,15 @@
 The full documentation of ftfy is available at [ftfy.readthedocs.org](https://ftfy.readthedocs.org). The documentation covers a lot more than this README, so here are
 some links into it:
 
-- [Fixing problems and getting explanations](https://ftfy.readthedocs.io/en/v6.0/explain.html)
-- [Configuring ftfy](https://ftfy.readthedocs.io/en/v6.0/config.html)
-- [Encodings ftfy can handle](https://ftfy.readthedocs.io/en/v6.0/encodings.html)
-- [“Fixer” functions](https://ftfy.readthedocs.io/en/v6.0/fixes.html)
-- [Is ftfy an encoding detector?](https://ftfy.readthedocs.io/en/v6.0/detect.html)
-- [Heuristics for detecting mojibake](https://ftfy.readthedocs.io/en/v6.0/heuristic.html)
-- [Support for “bad” encodings](https://ftfy.readthedocs.io/en/v6.0/bad_encodings.html)
-- [Command-line usage](https://ftfy.readthedocs.io/en/v6.0/cli.html)
-- [Citing ftfy](https://ftfy.readthedocs.io/en/v6.0/cite.html)
-
+- [Fixing problems and getting explanations](https://ftfy.readthedocs.io/en/latest/explain.html)
+- [Configuring ftfy](https://ftfy.readthedocs.io/en/latest/config.html)
+- [Encodings ftfy can handle](https://ftfy.readthedocs.io/en/latest/encodings.html)
+- [“Fixer” functions](https://ftfy.readthedocs.io/en/latest/fixes.html)
+- [Is ftfy an encoding detector?](https://ftfy.readthedocs.io/en/latest/detect.html)
+- [Heuristics for detecting mojibake](https://ftfy.readthedocs.io/en/latest/heuristic.html)
+- [Support for “bad” encodings](https://ftfy.readthedocs.io/en/latest/bad_encodings.html)
+- [Command-line usage](https://ftfy.readthedocs.io/en/latest/cli.html)
+- [Citing ftfy](https://ftfy.readthedocs.io/en/latest/cite.html)
 
 ## Testimonials
 
@@ -79,7 +78,6 @@ The following text could be encoded in Windows-1252 and decoded in UTF-8, and it
     >>> ftfy.fix_text('IL Y MARQUÉ…')
     'IL Y MARQUÉ…'
 
-
 ## Installing
 
 ftfy is a Python 3 package that can be installed using `pip`:
@@ -92,13 +90,10 @@ installed and `pip` refers to Python 2.)
 You can also clone this Git repository and install it with
 `python setup.py install`.
 
-
 ## Who maintains ftfy?
 
-I'm Robyn Speer. You can find me [on GitHub](https://github.com/rspeer).
-I created ftfy as part of my work at the text understanding company
-[Luminoso](https://luminoso.com), and now maintain it independently.
-
+I'm Robyn Speer, also known as Elia Robyn Lake. You can find me
+[on GitHub](https://github.com/rspeer) or [Twitter](https://twitter.com/r_speer).
 
 ## Citing ftfy
 
@@ -126,4 +121,3 @@ In BibTeX format, the citation is::
       doi          = {10.5281/zenodo.2591652},
       url          = {https://doi.org/10.5281/zenodo.2591652}
     }
-

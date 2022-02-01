@@ -1,5 +1,5 @@
 r"""
-The `ftfy.bad_codecs` module gives Python the ability to decode some common, 
+The `ftfy.bad_codecs` module gives Python the ability to decode some common,
 flawed encodings.
 
 Python does not want you to be sloppy with your text. Its encoders and decoders
