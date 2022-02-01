@@ -339,7 +339,7 @@ BADNESS_RE = re.compile(
     |
     ^[ÃÂ][ ]
     |
-    
+
     # Cases where Â precedes a character as an encoding of exactly the same
     # character, and the character is common enough
     [a-z.,?!{end_punctuation}] Â [ {start_punctuation}{end_punctuation}]
