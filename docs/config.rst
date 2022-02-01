@@ -7,7 +7,7 @@ The main functions of ftfy -- :func:`ftfy.fix_text` and :func:`ftfy.fix_and_expl
 
 All the fixes are on by default, but you can pass in a configuration object or keyword options to turn them off. Check that the default fixes are appropriate for your use case. For example:
 
-- You should set `fix_entities` to False if the output is meant to be interpreted as HTML.
+- You should set `unescape_html` to False if the output is meant to be interpreted as HTML.
 
 - You should set `fix_character_width` to False if you want to preserve the spacing of CJK text.
 

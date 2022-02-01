@@ -1,3 +1,9 @@
+## Version 6.1 (February 1, 2022)
+
+- Updated the heuristic to fix the letter Ñ with more confidence.
+
+- Fixed type annotations and added py.typed.
+
 ## Version 6.0.3 (May 14, 2021)
 
 - Allow the keyword argument `fix_entities` as a deprecated alias for
