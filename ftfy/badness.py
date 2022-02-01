@@ -14,7 +14,6 @@ followed immediately by currency symbols.
 
 import warnings
 import re
-from ftfy import chardata
 
 
 # There are only 403 characters that occur in known UTF-8 mojibake, and we can
@@ -285,7 +284,7 @@ BADNESS_RE = re.compile(
     |
     [{box}] [{end_punctuation}]
     |
-    [{lower_accented}{upper_accented}] [{end_punctuation}] \\w
+    [{lower_accented}{upper_accented}] [{end_punctuation}] \w
     |
 
     # The ligature œ when not followed by an unaccented Latin letter
@@ -293,7 +292,7 @@ BADNESS_RE = re.compile(
     |
 
     # Common Windows-1252 2-character mojibake that isn't covered by the cases above
-    [ÂÃÎÐ][€Šš¢£Ÿž\xa0\xad®©°·»{end_punctuation}–—´]
+    [ÂÃÎÐ][€Šš¢£Ÿž\xa0\xad®©°·»{start_punctuation}{end_punctuation}–—´]
     |
     × [²³]
     |
