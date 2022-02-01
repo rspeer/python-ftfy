@@ -16,7 +16,7 @@ some links into it:
 - [Encodings ftfy can handle](https://ftfy.readthedocs.io/en/v6.0/encodings.html)
 - [“Fixer” functions](https://ftfy.readthedocs.io/en/v6.0/fixes.html)
 - [Is ftfy an encoding detector?](https://ftfy.readthedocs.io/en/v6.0/detect.html)
-- [Heuristics for detecting mojibake](https://ftfy.readthedocs.io/en/v6.0/heuristics.html)
+- [Heuristics for detecting mojibake](https://ftfy.readthedocs.io/en/v6.0/heuristic.html)
 - [Support for “bad” encodings](https://ftfy.readthedocs.io/en/v6.0/bad_encodings.html)
 - [Command-line usage](https://ftfy.readthedocs.io/en/v6.0/cli.html)
 - [Citing ftfy](https://ftfy.readthedocs.io/en/v6.0/cite.html)
