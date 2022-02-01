@@ -302,6 +302,12 @@
         "expect": "pass"
     },
     {
+        "label": "UTF-8 / Windows-1252 mixup in Spanish",
+        "original": "DOS AÃ‘OS",
+        "fixed": "DOS AÑOS",
+        "expect": "pass"
+    },
+    {
         "label": "UTF-8 / Windows-1252 followed by UTF-8 / Windows-1251",
         "original": "a bigger-than-expected Г‚ВЈ5.8bn rights issue to satisfy the new banking regulator",
         "fixed": "a bigger-than-expected £5.8bn rights issue to satisfy the new banking regulator",
@@ -586,7 +592,7 @@
     },
     {
         "label": "Fix 'à' in inconsistent mojibake",
-        "original": "Le barÃ¨me forfaitaire permet l’Ã©valuation des frais de dÃ©placement relatifs Ã l’utilisation", 
+        "original": "Le barÃ¨me forfaitaire permet l’Ã©valuation des frais de dÃ©placement relatifs Ã l’utilisation",
         "fixed-encoding": "Le barème forfaitaire permet l’évaluation des frais de déplacement relatifs à l’utilisation",
         "fixed": "Le barème forfaitaire permet l'évaluation des frais de déplacement relatifs à l'utilisation",
         "expect": "pass"
