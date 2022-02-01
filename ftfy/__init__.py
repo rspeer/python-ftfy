@@ -30,6 +30,7 @@ class ExplainedText(NamedTuple):
     When the 'explain' option is disabled, these functions return the same
     type, but the `explanation` will be None.
     """
+
     text: str
     explanation: Optional[List[Tuple[str, str]]]
 
@@ -177,14 +178,13 @@ def _config_from_kwargs(config: TextFixerConfig, kwargs: dict) -> TextFixerConfi
     Handle parameters provided as keyword arguments to ftfy's top-level
     functions, converting them into a TextFixerConfig.
     """
-    if 'fix_entities' in kwargs:
+    if "fix_entities" in kwargs:
         warnings.warn(
-            "`fix_entities` has been renamed to `unescape_html`",
-            DeprecationWarning
+            "`fix_entities` has been renamed to `unescape_html`", DeprecationWarning
         )
         kwargs = kwargs.copy()
-        kwargs['unescape_html'] = kwargs['fix_entities']
-        del kwargs['fix_entities']
+        kwargs["unescape_html"] = kwargs["fix_entities"]
+        del kwargs["fix_entities"]
     config = config._replace(**kwargs)
     return config
 
@@ -223,6 +223,7 @@ Python Unicode HOWTO:
 
     http://docs.python.org/3/howto/unicode.html
 """
+
 
 def _try_fix(
     fixer_name: str, text: str, config: TextFixerConfig, steps: Optional[list]
