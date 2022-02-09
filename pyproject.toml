@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ftfy"
-version = "6.1.0.post1"
+version = "6.1.1"
 description = "Fixes mojibake and other problems with Unicode, after the fact"
 authors = ["Robyn Speer <rspeer@arborelia.net>"]
 license = "MIT"

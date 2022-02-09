@@ -87,8 +87,12 @@ ftfy is a Python 3 package that can be installed using `pip`:
 (Or use `pip3 install ftfy` on systems where Python 2 and 3 are both globally
 installed and `pip` refers to Python 2.)
 
-You can also clone this Git repository and install it with
-`python setup.py install`.
+### Local development
+
+ftfy is developed using `poetry`. Its `setup.py` is vestigial and is not the
+recommended way to install it.
+
+[Install Poetry](https://python-poetry.org/docs/master/#installing-with-the-official-installer), check out this repository, and run `poetry install` to install ftfy for local development, such as experimenting with the heuristic or running tests.
 
 ## Who maintains ftfy?
 
