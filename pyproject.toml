@@ -1,10 +1,11 @@
 [tool.poetry]
 name = "ftfy"
-version = "6.1.0"
+version = "6.1.0.post1"
 description = "Fixes mojibake and other problems with Unicode, after the fact"
 authors = ["Robyn Speer <rspeer@arborelia.net>"]
 license = "MIT"
 include = ["README.md", "CHANGELOG.md", "tests"]
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">=3.7"
