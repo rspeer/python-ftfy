@@ -21,7 +21,7 @@ DESCRIPTION = open('README.md', encoding='utf-8').read()
 
 setup(
     name="ftfy",
-    version='6.1.0',
+    version='6.1.1',
     maintainer='Robyn Speer',
     maintainer_email='rspeer@arborelia.net',
     license="MIT",
@@ -33,10 +33,9 @@ setup(
     packages=['ftfy', 'ftfy.bad_codecs'],
     install_requires=['wcwidth'],
     tests_require=['pytest'],
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     classifiers=[
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
