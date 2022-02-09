@@ -401,6 +401,13 @@
         "expect": "pass"
     },
     {
+        "label": "sharp S, in isolation, via MacRoman encoding",
+        "comment": "regression reported in issue #186",
+        "original": "wei√ü",
+        "fixed": "weiß",
+        "expect": "pass"
+    },
+    {
         "label": "Negative: 'è' preceded by a non-breaking space is not a small capital Y",
         "original": "Con il corpo e lo spirito ammaccato,\u00a0è come se nel cuore avessi un vetro conficcato.",
         "fixed": "Con il corpo e lo spirito ammaccato,\u00a0è come se nel cuore avessi un vetro conficcato.",

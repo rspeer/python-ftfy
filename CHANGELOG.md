@@ -1,4 +1,9 @@
-## Version 6.1 (February 1, 2022)
+## Version 6.1.1 (February 1, 2022)
+
+- Updated the heuristic to fix the letter ß in UTF-8/MacRoman mojibake,
+  which had regressed since version 5.6.
+
+## Version 6.1 (February 9, 2022)
 
 - Updated the heuristic to fix the letter Ñ with more confidence.
 
