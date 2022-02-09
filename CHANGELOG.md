@@ -1,13 +1,18 @@
-## Version 6.1.1 (February 1, 2022)
+## Version 6.1.1 (February 9, 2022)
 
 - Updated the heuristic to fix the letter ß in UTF-8/MacRoman mojibake,
   which had regressed since version 5.6.
+
+- Packaging fixes to pyproject.toml.
 
 ## Version 6.1 (February 9, 2022)
 
 - Updated the heuristic to fix the letter Ñ with more confidence.
 
 - Fixed type annotations and added py.typed.
+
+- ftfy is packaged using Poetry now, and wheels are created and uploaded to
+  PyPI.
 
 ## Version 6.0.3 (May 14, 2021)
 
