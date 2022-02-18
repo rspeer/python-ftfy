@@ -7,14 +7,23 @@ for more information.
 
 import unicodedata
 import warnings
-from typing import List, NamedTuple, Optional, Tuple, Union, no_type_check
+from typing import (
+    Iterator,
+    List,
+    NamedTuple,
+    Optional,
+    TextIO,
+    Tuple,
+    Union,
+    no_type_check,
+)
 
 from ftfy import bad_codecs
 from ftfy import chardata, fixes
 from ftfy.badness import is_bad
 from ftfy.formatting import display_ljust
 
-__version__ = "6.1.1"
+__version__ = "6.1.2"
 
 
 # Though this function does nothing, it lets linters know that we're using
@@ -559,7 +568,12 @@ def fix_text_segment(text: str, config: TextFixerConfig = None, **kwargs):
     return fixed
 
 
-def fix_file(input_file, encoding=None, config=None, **kwargs):
+def fix_file(
+    input_file: TextIO,
+    encoding: Optional[str] = None,
+    config: Optional[TextFixerConfig] = None,
+    **kwargs
+) -> Iterator[str]:
     """
     Fix text that is found in a file.
 
@@ -587,7 +601,7 @@ def fix_file(input_file, encoding=None, config=None, **kwargs):
         yield fixed_line
 
 
-def guess_bytes(bstring):
+def guess_bytes(bstring: bytes) -> Tuple[str, str]:
     """
     NOTE: Using `guess_bytes` is not the recommended way of using ftfy. ftfy
     is not designed to be an encoding detector.

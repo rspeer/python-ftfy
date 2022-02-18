@@ -1,3 +1,7 @@
+## Version 6.1.2 (February 17, 2022)
+
+- Added type information for `guess_bytes`.
+
 ## Version 6.1.1 (February 9, 2022)
 
 - Updated the heuristic to fix the letter ß in UTF-8/MacRoman mojibake,
