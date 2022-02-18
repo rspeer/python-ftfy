@@ -4,8 +4,11 @@
 [![Docs](https://readthedocs.org/projects/ftfy/badge/?version=latest)](https://ftfy.readthedocs.org/en/latest/)
 
 ```python
+
+>>> from ftfy import fix_encoding
 >>> print(fix_encoding("(à¸‡'âŒ£')à¸‡"))
 (ง'⌣')ง
+
 ```
 
 The full documentation of ftfy is available at [ftfy.readthedocs.org](https://ftfy.readthedocs.org). The documentation covers a lot more than this README, so here are
