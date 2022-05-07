@@ -10,15 +10,15 @@ readme = "README.md"
 [tool.poetry.dependencies]
 # urllib3 insists that it will not work on Python 4, whatever that is, and we have
 # to follow suit or else we get an old vulnerable version of urllib3.
-python = ">=3.7,<4"
+python = ">=3.6.2"
 wcwidth = ">=0.2.5"
 
 [tool.poetry.dev-dependencies]
-Sphinx = "^4.3.2"
+Sphinx = ">=4.3.2"
 furo = ">=2022.1.2"
-pytest = "^6.2.5"
-black = ">=21"
-mypy = "^0.931"
+pytest = ">=6.2.5"
+black = ">=20"
+mypy = ">=0.931"
 flake8 = ">=3.0"
 
 [tool.poetry.scripts]
