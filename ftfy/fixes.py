@@ -27,7 +27,7 @@ from ftfy.chardata import (
     LIGATURES,
     LOSSY_UTF8_RE,
     SINGLE_QUOTE_RE,
-    UTF8_DETECTOR_RE,
+    utf8_detector_sub,
     WIDTH_MAP,
 )
 
@@ -495,8 +495,8 @@ def decode_inconsistent_utf8(text):
             return ftfy.fix_encoding(substr)
         else:
             return substr
-
-    return UTF8_DETECTOR_RE.sub(fix_embedded_mojibake, text)
+    
+    return utf8_detector_sub(fix_embedded_mojibake, text)
 
 
 def _c1_fixer(match):

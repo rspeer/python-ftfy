@@ -302,18 +302,44 @@ UTF8_CLUES = {
 # less efficient. The 'badness' rules that require context, such as a preceding
 # lowercase letter, will prevent some cases of inconsistent UTF-8 from being
 # fixed when they don't see it.
-UTF8_DETECTOR_RE = re.compile(
-    """
-    (?<! [{utf8_continuation_strict}])
+UTF8_DETECTOR_PATTERN = """
     (
         [{utf8_first_of_2}] [{utf8_continuation}]
         |
         [{utf8_first_of_3}] [{utf8_continuation}]{{2}}
         |
         [{utf8_first_of_4}] [{utf8_continuation}]{{3}}
-    )+
-""".format(
-        **UTF8_CLUES
-    ),
-    re.VERBOSE,
-)
+    )+"""
+
+UTF8_DETECTOR_RE = re2.compile(
+    re2.sub(r'\]\s', ']',
+    re2.sub(r'\s\[', '[', 
+    re2.sub(r'\n\s+', '', UTF8_DETECTOR_PATTERN.format(**UTF8_CLUES)))))
+
+UTF8_DETECTOR_EXCLUDES_PATTERN = "[{utf8_continuation_strict}]"
+
+UTF8_DETECTOR_EXCLUDES_RE = re2.compile(UTF8_DETECTOR_EXCLUDES_PATTERN.format(**UTF8_CLUES))
+
+
+def utf8_detector(text):
+    res = UTF8_DETECTOR_RE.search(text)
+    exclude_res = UTF8_DETECTOR_EXCLUDES_RE.search(text)
+    if res == None:
+        return res
+    if exclude_res == None:
+        return res
+    if exclude_res.end(0) == res.start(0):
+        # As we have splitted the regex in 2 components
+        # we have to ignore the result of the main regex
+        # in case where the lookbehind regex detects an unauthorized char before the match of the main.
+        return None
+    return res
+
+
+def utf8_detector_sub(replace, text):
+    match = utf8_detector(text)
+    if not match:
+        return text
+    substr = match.group(0)
+    res = text.replace(substr, replace(match))
+    return res

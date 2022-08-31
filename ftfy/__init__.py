@@ -485,7 +485,7 @@ def _fix_encoding_one_step_and_explain(
                 pass
 
     # Look for a-hat-euro sequences that remain, and fix them in isolation.
-    if config.decode_inconsistent_utf8 and chardata.UTF8_DETECTOR_RE.search(text):
+    if config.decode_inconsistent_utf8 and chardata.utf8_detector(text):
         steps = [("apply", "decode_inconsistent_utf8")]
         fixed = fixes.decode_inconsistent_utf8(text)
         if fixed != text:
