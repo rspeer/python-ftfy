@@ -40,12 +40,17 @@ never.
 """
 
 import re
+import re2
 import codecs
 from typing import Tuple
 from encodings.utf_8 import (
     IncrementalDecoder as UTF8IncrementalDecoder,
     IncrementalEncoder as UTF8IncrementalEncoder,
 )
+
+
+LATIN_OPTIONS = re2.Options()
+LATIN_OPTIONS.encoding = re2.Options.Encoding.LATIN1
 
 NAME = "utf-8-variants"
 
@@ -64,7 +69,7 @@ CESU8_EXPR = (
     b")"
 )
 
-CESU8_RE = re.compile(CESU8_EXPR)
+CESU8_RE = re2.compile(CESU8_EXPR, options=LATIN_OPTIONS)
 
 # This expression matches isolated surrogate characters that aren't
 # CESU-8, which have to be handled carefully on Python 2.
@@ -76,7 +81,7 @@ NULL_EXPR = b"(\xc0(\x80|$))"
 
 # This regex matches cases that we need to decode differently from
 # standard UTF-8.
-SPECIAL_BYTES_RE = re.compile(b"|".join([NULL_EXPR, CESU8_EXPR, SURROGATE_EXPR]))
+SPECIAL_BYTES_RE = re2.compile(b"|".join([NULL_EXPR, CESU8_EXPR, SURROGATE_EXPR]), options=LATIN_OPTIONS)
 
 
 class IncrementalDecoder(UTF8IncrementalDecoder):

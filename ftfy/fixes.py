@@ -414,7 +414,33 @@ def decode_escapes(text):
 # contain it will end up with inserted spaces. We can't do the right thing with
 # every word. The cost is that the mojibake text "fÃ cil" will be interpreted as
 # "fà cil", not "fàcil".
-A_GRAVE_WORD_RE = re.compile(b"\xc3 (?! |quele|quela|quilo|s )")
+A_GRAVE_WORD_RE = re2.compile(b"\xc3 ", options=LATIN_OPTIONS)
+A_GRAVE_WORD_EXCLUDE_RE = re2.compile(" |quele|quela|quilo|s ")
+
+
+def a_grave_match(text):
+    res = A_GRAVE_WORD_RE.search(text)
+    if res == None:
+        return res
+    exclude_res = A_GRAVE_WORD_EXCLUDE_RE.search(text[res.end(0):])
+    if exclude_res == None:
+        return res
+    if exclude_res.start(0) == 0:
+        # As we have splitted the regex in 2 components
+        # we have to ignore the result of the main regex
+        # in case where the lookbehind regex detects an unauthorized char before the match of the main.
+        return None
+    return res
+
+
+def a_grave_sub(replace, text):
+    match = a_grave_match(text)
+    if not match:
+        return text
+    substr = match.group(0)
+    res = text.replace(substr, replace)
+    return res
+
 
 
 def restore_byte_a0(byts):
@@ -431,7 +457,7 @@ def restore_byte_a0(byts):
 
     This is used as a step within `fix_encoding`.
     """
-    byts = A_GRAVE_WORD_RE.sub(b"\xc3\xa0 ", byts)
+    byts = a_grave_sub(b"\xc3\xa0 ", byts)
 
     def replacement(match):
         "The function to apply when this regex matches."

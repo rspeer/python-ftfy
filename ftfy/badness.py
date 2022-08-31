@@ -251,7 +251,7 @@ MOJIBAKE_CATEGORIES = {
 # expression are ones inside character classes (square brackets).
 
 def stripComments(code):
-    return re.sub(r'(?m)^ *#.*\n?', '', code)
+    return re2.sub(r'(?m)^ *#.*\n?', '', code)
 
 BADNESS_PATTERN = r"""
     [{c1}]
