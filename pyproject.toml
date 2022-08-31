@@ -12,6 +12,7 @@ readme = "README.md"
 # to follow suit or else we get an old vulnerable version of urllib3.
 python = ">=3.7,<4"
 wcwidth = ">=0.2.5"
+google-re2 = "^0.2.20220601"
 
 [tool.poetry.dev-dependencies]
 Sphinx = "^4.3.2"

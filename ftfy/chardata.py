@@ -6,8 +6,12 @@ encodings that use them.
 import html
 import itertools
 import re
+import re2
 import unicodedata
 
+
+LATIN_OPTIONS = re2.Options()
+LATIN_OPTIONS.encoding = re2.Options.Encoding.LATIN1
 
 # These are the encodings we will try to fix in ftfy, in the
 # order that they should be tried.
@@ -23,8 +27,8 @@ CHARMAP_ENCODINGS = [
     "cp437",
 ]
 
-SINGLE_QUOTE_RE = re.compile("[\u02bc\u2018-\u201b]")
-DOUBLE_QUOTE_RE = re.compile("[\u201c-\u201f]")
+SINGLE_QUOTE_RE = re2.compile("[\u02bc\u2018-\u201b]")
+DOUBLE_QUOTE_RE = re2.compile("[\u201c-\u201f]")
 
 
 def _build_regexes():
@@ -35,7 +39,7 @@ def _build_regexes():
     are between U+0000 and U+007F.
     """
     # Define a regex that matches ASCII text.
-    encoding_regexes = {"ascii": re.compile("^[\x00-\x7f]*$")}
+    encoding_regexes = {"ascii": re2.compile("^[\x00-\x7f]*$")}
 
     for encoding in CHARMAP_ENCODINGS:
         # Make a sequence of characters that bytes \x80 to \xFF decode to
@@ -50,7 +54,7 @@ def _build_regexes():
         # not worry about escaping regex special characters, because all of
         # them are in the \x1B to \x7F range.
         regex = "^[\x00-\x19\x1b-\x7f{0}]*$".format(charlist)
-        encoding_regexes[encoding] = re.compile(regex)
+        encoding_regexes[encoding] = re2.compile(regex)
     return encoding_regexes
 
 
@@ -77,7 +81,7 @@ def _build_html_entities():
     return entities
 
 
-HTML_ENTITY_RE = re.compile(r"&#?[0-9A-Za-z]{1,24};")
+HTML_ENTITY_RE = re2.compile(r"&#?[0-9A-Za-z]{1,24};")
 HTML_ENTITIES = _build_html_entities()
 
 
@@ -154,13 +158,13 @@ CONTROL_CHARS = _build_control_char_mapping()
 # We should consider checking for b'\x85' being converted to ... in the future.
 # I've seen it once, but the text still wasn't recoverable.
 
-ALTERED_UTF8_RE = re.compile(
+ALTERED_UTF8_RE = re2.compile(
     b"[\xc2\xc3\xc5\xce\xd0\xd9][ ]"
     b"|[\xe2\xe3][ ][\x80-\x84\x86-\x9f\xa1-\xbf]"
     b"|[\xe0-\xe3][\x80-\x84\x86-\x9f\xa1-\xbf][ ]"
     b"|[\xf0][ ][\x80-\xbf][\x80-\xbf]"
     b"|[\xf0][\x80-\xbf][ ][\x80-\xbf]"
-    b"|[\xf0][\x80-\xbf][\x80-\xbf][ ]"
+    b"|[\xf0][\x80-\xbf][\x80-\xbf][ ]", options=LATIN_OPTIONS
 )
 
 
@@ -172,7 +176,7 @@ ALTERED_UTF8_RE = re.compile(
 #
 # In some cases, we allow the ASCII '?' in place of \ufffd, but at most once per
 # sequence.
-LOSSY_UTF8_RE = re.compile(
+LOSSY_UTF8_RE = re2.compile(
     b"[\xc2-\xdf][\x1a]"
     b"|[\xc2-\xc3][?]"
     b"|\xed[\xa0-\xaf][\x1a?]\xed[\xb0-\xbf][\x1a?\x80-\xbf]"
@@ -182,13 +186,13 @@ LOSSY_UTF8_RE = re.compile(
     b"|[\xf0-\xf4][\x1a?][\x1a\x80-\xbf][\x1a\x80-\xbf]"
     b"|[\xf0-\xf4][\x1a\x80-\xbf][\x1a?][\x1a\x80-\xbf]"
     b"|[\xf0-\xf4][\x1a\x80-\xbf][\x1a\x80-\xbf][\x1a?]"
-    b"|\x1a"
+    b"|\x1a", options=LATIN_OPTIONS
 )
 
 
 # This regex matches C1 control characters, which occupy some of the positions
 # in the Latin-1 character map that Windows assigns to other characters instead.
-C1_CONTROL_RE = re.compile(r"[\x80-\x9f]")
+C1_CONTROL_RE = re2.compile(r"[\x80-\x9f]")
 
 
 # A translate mapping that breaks ligatures made of Latin letters. While

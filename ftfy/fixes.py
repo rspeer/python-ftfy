@@ -13,6 +13,7 @@ versions of functions in the Python standard library:
 import codecs
 import html
 import re
+import re2
 import warnings
 
 import ftfy
@@ -31,6 +32,10 @@ from ftfy.chardata import (
 )
 
 from ftfy.badness import is_bad
+
+
+LATIN_OPTIONS = re2.Options()
+LATIN_OPTIONS.encoding = re2.Options.Encoding.LATIN1
 
 
 def fix_encoding_and_explain(text):
@@ -133,7 +138,7 @@ def unescape_html(text):
     return HTML_ENTITY_RE.sub(_unescape_fixup, text)
 
 
-ANSI_RE = re.compile("\033\\[((?:\\d|;)*)([a-zA-Z])")
+ANSI_RE = re2.compile("\033\\[((?:\\d|;)*)([a-zA-Z])")
 
 
 def remove_terminal_escapes(text):
@@ -333,17 +338,19 @@ def remove_bom(text):
 
 
 # Define a regex to match valid escape sequences in Python string literals.
-ESCAPE_SEQUENCE_RE = re.compile(
-    r"""
+ESCAPE_SEQUENCE_PATTERN = r"""
     ( \\U........      # 8-digit hex escapes
     | \\u....          # 4-digit hex escapes
     | \\x..            # 2-digit hex escapes
     | \\[0-7]{1,3}     # Octal escapes
     | \\N\{[^}]+\}     # Unicode characters by name
     | \\[\\'"abfnrtv]  # Single-character escapes
-    )""",
-    re.UNICODE | re.VERBOSE,
-)
+    )"""
+
+
+ESCAPE_SEQUENCE_RE = re2.compile(
+    re2.sub(r'\|\s', '|',
+    re2.sub(r'\n\s+', '', ESCAPE_SEQUENCE_PATTERN)))
 
 
 def decode_escapes(text):

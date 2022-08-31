@@ -23,10 +23,10 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
 [package.extras]
-dev = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "zope.interface", "furo", "sphinx", "sphinx-notfound-page", "pre-commit", "cloudpickle"]
-docs = ["furo", "sphinx", "zope.interface", "sphinx-notfound-page"]
-tests = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "zope.interface", "cloudpickle"]
-tests_no_zope = ["coverage[toml] (>=5.0.2)", "hypothesis", "pympler", "pytest (>=4.3.0)", "six", "mypy", "pytest-mypy-plugins", "cloudpickle"]
+dev = ["cloudpickle", "coverage[toml] (>=5.0.2)", "furo", "hypothesis", "mypy", "pre-commit", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "six", "sphinx", "sphinx-notfound-page", "zope.interface"]
+docs = ["furo", "sphinx", "sphinx-notfound-page", "zope.interface"]
+tests = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "six", "zope.interface"]
+tests_no_zope = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "six"]
 
 [[package]]
 name = "babel"
@@ -152,8 +152,16 @@ pygments = ">=2.7,<3.0"
 sphinx = ">=4.0,<5.0"
 
 [package.extras]
-test = ["pytest", "pytest-cov", "pytest-xdist"]
 doc = ["myst-parser", "sphinx-copybutton", "sphinx-design", "sphinx-inline-tabs"]
+test = ["pytest", "pytest-cov", "pytest-xdist"]
+
+[[package]]
+name = "google-re2"
+version = "0.2.20220601"
+description = "RE2 Python bindings"
+category = "main"
+optional = false
+python-versions = "~=3.7"
 
 [[package]]
 name = "idna"
@@ -184,8 +192,8 @@ typing-extensions = {version = ">=3.6.4", markers = "python_version < \"3.8\""}
 zipp = ">=0.5"
 
 [package.extras]
-docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "packaging", "pep517", "pyfakefs", "flufl.flake8", "pytest-black (>=0.3.7)", "pytest-mypy", "importlib-resources (>=1.3)"]
+docs = ["jaraco.packaging (>=8.2)", "rst.linker (>=1.9)", "sphinx"]
+testing = ["flufl.flake8", "importlib-resources (>=1.3)", "packaging", "pep517", "pyfakefs", "pytest (>=4.6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-flake8", "pytest-mypy"]
 
 [[package]]
 name = "iniconfig"
@@ -432,8 +440,8 @@ sphinxcontrib-serializinghtml = ">=1.1.5"
 
 [package.extras]
 docs = ["sphinxcontrib-websupport"]
-lint = ["flake8 (>=3.5.0)", "isort", "mypy (>=0.920)", "docutils-stubs", "types-typed-ast", "types-pkg-resources", "types-requests"]
-test = ["pytest", "pytest-cov", "html5lib", "cython", "typed-ast"]
+lint = ["docutils-stubs", "flake8 (>=3.5.0)", "isort", "mypy (>=0.920)", "types-pkg-resources", "types-requests", "types-typed-ast"]
+test = ["cython", "html5lib", "pytest", "pytest-cov", "typed-ast"]
 
 [[package]]
 name = "sphinxcontrib-applehelp"
@@ -444,7 +452,7 @@ optional = false
 python-versions = ">=3.5"
 
 [package.extras]
-lint = ["flake8", "mypy", "docutils-stubs"]
+lint = ["docutils-stubs", "flake8", "mypy"]
 test = ["pytest"]
 
 [[package]]
@@ -456,7 +464,7 @@ optional = false
 python-versions = ">=3.5"
 
 [package.extras]
-lint = ["flake8", "mypy", "docutils-stubs"]
+lint = ["docutils-stubs", "flake8", "mypy"]
 test = ["pytest"]
 
 [[package]]
@@ -468,8 +476,8 @@ optional = false
 python-versions = ">=3.6"
 
 [package.extras]
-lint = ["flake8", "mypy", "docutils-stubs"]
-test = ["pytest", "html5lib"]
+lint = ["docutils-stubs", "flake8", "mypy"]
+test = ["html5lib", "pytest"]
 
 [[package]]
 name = "sphinxcontrib-jsmath"
@@ -480,7 +488,7 @@ optional = false
 python-versions = ">=3.5"
 
 [package.extras]
-test = ["pytest", "flake8", "mypy"]
+test = ["flake8", "mypy", "pytest"]
 
 [[package]]
 name = "sphinxcontrib-qthelp"
@@ -491,7 +499,7 @@ optional = false
 python-versions = ">=3.5"
 
 [package.extras]
-lint = ["flake8", "mypy", "docutils-stubs"]
+lint = ["docutils-stubs", "flake8", "mypy"]
 test = ["pytest"]
 
 [[package]]
@@ -503,7 +511,7 @@ optional = false
 python-versions = ">=3.5"
 
 [package.extras]
-lint = ["flake8", "mypy", "docutils-stubs"]
+lint = ["docutils-stubs", "flake8", "mypy"]
 test = ["pytest"]
 
 [[package]]
@@ -548,7 +556,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, <4"
 
 [package.extras]
 brotli = ["brotlipy (>=0.6.0)"]
-secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "certifi", "ipaddress"]
+secure = ["certifi", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "ipaddress", "pyOpenSSL (>=0.14)"]
 socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
@@ -568,13 +576,13 @@ optional = false
 python-versions = ">=3.7"
 
 [package.extras]
-docs = ["sphinx", "jaraco.packaging (>=8.2)", "rst.linker (>=1.9)"]
-testing = ["pytest (>=6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytest-cov", "pytest-enabler (>=1.0.1)", "jaraco.itertools", "func-timeout", "pytest-black (>=0.3.7)", "pytest-mypy"]
+docs = ["jaraco.packaging (>=8.2)", "rst.linker (>=1.9)", "sphinx"]
+testing = ["func-timeout", "jaraco.itertools", "pytest (>=6)", "pytest-black (>=0.3.7)", "pytest-checkdocs (>=2.4)", "pytest-cov", "pytest-enabler (>=1.0.1)", "pytest-flake8", "pytest-mypy"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<4"
-content-hash = "0dde64ee44a87f6697be5d289f29249252f38973f4c115917529efc6e9e1e3fb"
+content-hash = "9e1d78f95142ecfeff8577a396d1201a69994cead220ff7997e8d8478c27cd9f"
 
 [metadata.files]
 alabaster = [
@@ -649,6 +657,25 @@ flake8 = [
 furo = [
     {file = "furo-2022.1.2-py3-none-any.whl", hash = "sha256:958016bfe1387c1e8ddf5b9d71696b69c4eaa5cd8afc9492abfb008aba2d300c"},
     {file = "furo-2022.1.2.tar.gz", hash = "sha256:b217f218cbcd423ffbfe69baa79389d4ecebf2d86f0d593c44ef31da7b5aed30"},
+]
+google-re2 = [
+    {file = "google-re2-0.2.20220601.tar.gz", hash = "sha256:cc10983dcaa0b3260a4cd1c07c7adc1fa6967dbcfacc9c1a8f11e4c118c77905"},
+    {file = "google_re2-0.2.20220601-cp310-cp310-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3c2b6915862766612bff321b42e19c1145637c494804bb25bf41e48b8374b299"},
+    {file = "google_re2-0.2.20220601-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:177197f1563f3c485233f7939d2607c9fd48f30cbdcbdb0ac3a8d0434b8886aa"},
+    {file = "google_re2-0.2.20220601-cp310-cp310-manylinux_2_24_aarch64.whl", hash = "sha256:353959408a751a4050c6e58c0a7a0a9fa4248b0dab800c262a518b9ee1a1b814"},
+    {file = "google_re2-0.2.20220601-cp310-cp310-manylinux_2_24_x86_64.whl", hash = "sha256:0798c7f369f23d07913075a1a1456eeeb44dd0ce562154f7af86d07201543871"},
+    {file = "google_re2-0.2.20220601-cp37-cp37m-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:ef3f9b1c1b806fd45641c4ec017befeea647c5c7a6c8017440f5aed2bb7597aa"},
+    {file = "google_re2-0.2.20220601-cp37-cp37m-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a6b76d4338738d303f9bab3984fb69c7417e282e86fffe2f5d6e147b4f6654cd"},
+    {file = "google_re2-0.2.20220601-cp37-cp37m-manylinux_2_24_aarch64.whl", hash = "sha256:49f0ea0182f79e0a7078e23b5fc2b138db98dc2786ab8b9ad2631ea44117ce05"},
+    {file = "google_re2-0.2.20220601-cp37-cp37m-manylinux_2_24_x86_64.whl", hash = "sha256:36fa536d09a83a0cc279990fb940ffbe9d5dadf4008e4887c104b72fa7dcedb0"},
+    {file = "google_re2-0.2.20220601-cp38-cp38-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:e849e389bbe5bf7dab7dd2c0c1acee36d148e7eff8d00ba38df7d0b0e49943f4"},
+    {file = "google_re2-0.2.20220601-cp38-cp38-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:574858c13d7cb56e01af9339ef2feac685ac90590976475edec36fb3a138eb09"},
+    {file = "google_re2-0.2.20220601-cp38-cp38-manylinux_2_24_aarch64.whl", hash = "sha256:338d47cdc3c056e4acf00fbf4ed3a792c462cfa6a6b868c59c06f52782a21501"},
+    {file = "google_re2-0.2.20220601-cp38-cp38-manylinux_2_24_x86_64.whl", hash = "sha256:01943c12fc86bcc2e6360ad4f11fcf47c10f6a0a254245fa8a5940e83cfd353d"},
+    {file = "google_re2-0.2.20220601-cp39-cp39-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:0c49a119b2480ecfece07e99a50ebabd81a0ddbc13453371d5089b473d575cf3"},
+    {file = "google_re2-0.2.20220601-cp39-cp39-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:92456118e6925d6f51869561ee9c6c015995b3d5b73607a56faff1ab345c3cd2"},
+    {file = "google_re2-0.2.20220601-cp39-cp39-manylinux_2_24_aarch64.whl", hash = "sha256:2a8272543c8cf654cce3687d03048e4f856f3336b9a69f73f0327999672676b5"},
+    {file = "google_re2-0.2.20220601-cp39-cp39-manylinux_2_24_x86_64.whl", hash = "sha256:1208784a9de76677936730b339d7e53781ce37872d8a7afce72e31324439a988"},
 ]
 idna = [
     {file = "idna-3.3-py3-none-any.whl", hash = "sha256:84d9dd047ffa80596e0f246e2eab0b391788b0503584e8945f2368256d2735ff"},

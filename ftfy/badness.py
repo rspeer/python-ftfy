@@ -14,6 +14,7 @@ followed immediately by currency symbols.
 
 import warnings
 import re
+import re2
 
 
 # There are only 403 characters that occur in known UTF-8 mojibake, and we can
@@ -249,8 +250,10 @@ MOJIBAKE_CATEGORIES = {
 # readability. Remember that the only spaces that count as literal spaces in this
 # expression are ones inside character classes (square brackets).
 
-BADNESS_RE = re.compile(
-    r"""
+def stripComments(code):
+    return re.sub(r'(?m)^ *#.*\n?', '', code)
+
+BADNESS_PATTERN = r"""
     [{c1}]
     |
     [{bad}{lower_accented}{upper_accented}{box}{start_punctuation}{end_punctuation}{currency}{numeric}] [{bad}]
@@ -352,12 +355,12 @@ BADNESS_RE = re.compile(
 
     # Windows-1253 mojibake of Latin-1 characters and/or the Greek alphabet
     [ΒΓΞΟ][{c1}{bad}{start_punctuation}{end_punctuation}{currency}°][ΒΓΞΟ]
-""".format(
-        **MOJIBAKE_CATEGORIES
-    ),
-    re.VERBOSE,
-)
+"""
 
+BADNESS_RE = re2.compile(
+    re2.sub(r'\]\s', ']',
+    re2.sub(r'\s\[', '[', 
+    re2.sub(r'\n\s+', '', stripComments(BADNESS_PATTERN).format(**MOJIBAKE_CATEGORIES)))))
 
 def sequence_weirdness(text):
     """
