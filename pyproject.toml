@@ -16,7 +16,7 @@ wcwidth = ">=0.2.5"
 [tool.poetry.dev-dependencies]
 Sphinx = "^4.3.2"
 furo = ">=2022.1.2"
-pytest = "^6.2.5"
+pytest = "^7.2.0"
 black = ">=21"
 mypy = "^0.931"
 flake8 = ">=3.0"
