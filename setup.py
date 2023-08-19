@@ -55,5 +55,7 @@ setup(
     },
     project_urls={
         'Documentation': 'http://ftfy.readthedocs.io',
+        "Source Code": "https://github.com/rspeer/python-ftfy",
+        "Issue Tracker": "https://github.com/rspeer/python-ftfy/issues",
     }
 )
