@@ -4,11 +4,12 @@ ftfy: fixes text for you
 This is a module for making text less broken. See the `fix_text` function
 for more information.
 """
-
+from __future__ import annotations
 import unicodedata
 import warnings
 from typing import (
     Any,
+    BinaryIO,
     Dict,
     Iterator,
     List,
@@ -611,10 +612,10 @@ def fix_text_segment(text: str, config: Optional[TextFixerConfig] = None, **kwar
 
 
 def fix_file(
-    input_file: TextIO,
+    input_file: TextIO | BinaryIO,
     encoding: Optional[str] = None,
     config: Optional[TextFixerConfig] = None,
-    **kwargs
+    **kwargs,
 ) -> Iterator[str]:
     """
     Fix text that is found in a file.
