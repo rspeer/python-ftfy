@@ -1,3 +1,9 @@
+## Version 6.1.3 (November 21, 2023)
+
+- Updated wcwidth.
+- Switched to the Apache 2.0 license.
+- Dropped support for Python 3.7.
+
 ## Version 6.1.2 (February 17, 2022)
 
 - Added type information for `guess_bytes`.
