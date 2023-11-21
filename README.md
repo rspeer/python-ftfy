@@ -100,7 +100,7 @@ recommended way to install it.
 ## Who maintains ftfy?
 
 I'm Robyn Speer, also known as Elia Robyn Lake. You can find me
-[on GitHub](https://github.com/rspeer) or [Twitter](https://twitter.com/r_speer).
+[on GitHub](https://github.com/rspeer) or [Cohost](https://cohost.org/arborelia).
 
 ## Citing ftfy
 
