@@ -1,28 +1,29 @@
 [tool.poetry]
 name = "ftfy"
-version = "6.1.2"
+version = "6.2.0"
 description = "Fixes mojibake and other problems with Unicode, after the fact"
 authors = ["Robyn Speer <rspeer@arborelia.net>"]
-license = "MIT"
+license = "Apache-2.0"
 include = ["README.md", "CHANGELOG.md", "tests"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
 # urllib3 insists that it will not work on Python 4, whatever that is, and we have
 # to follow suit or else we get an old vulnerable version of urllib3.
-python = ">=3.7,<4"
-wcwidth = ">=0.2.5"
+python = ">=3.8,<4"
+wcwidth = "^0.2.12"
 
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.7.0"
 Sphinx = "^4.3.2"
 furo = ">=2022.1.2"
 pytest = "^7.2.0"
 black = ">=21"
-mypy = "^0.931"
 flake8 = ">=3.0"
 
 [tool.poetry.scripts]
 ftfy = "ftfy.cli:main"
+
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
