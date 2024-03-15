@@ -4,6 +4,7 @@ ftfy: fixes text for you
 This is a module for making text less broken. See the `fix_text` function
 for more information.
 """
+
 from __future__ import annotations
 import unicodedata
 import warnings
@@ -27,7 +28,7 @@ from ftfy import chardata, fixes
 from ftfy.badness import is_bad
 from ftfy.formatting import display_ljust
 
-__version__ = "6.1.2"
+__version__ = "6.2.0"
 
 
 # Though this function does nothing, it lets linters know that we're using
@@ -211,6 +212,7 @@ class TextFixerConfig(NamedTuple):
       Functions that accept TextFixerConfig and don't return an explanation
       will automatically set `explain` to False.
     """
+
     unescape_html: Union[str, bool] = "auto"
     remove_terminal_escapes: bool = True
     fix_encoding: bool = True
@@ -503,8 +505,13 @@ def _fix_encoding_one_step_and_explain(
                 decoding = "utf-8"
                 # Check encoded_bytes for sequences that would be UTF-8,
                 # except they have b' ' where b'\xa0' would belong.
-                if config.restore_byte_a0 and chardata.ALTERED_UTF8_RE.search(
-                    encoded_bytes
+                #
+                # Don't do this in the macroman encoding, where it would match
+                # an en dash followed by a space, leading to false positives.
+                if (
+                    config.restore_byte_a0
+                    and encoding != "macroman"
+                    and chardata.ALTERED_UTF8_RE.search(encoded_bytes)
                 ):
                     replaced_bytes = fixes.restore_byte_a0(encoded_bytes)
                     if replaced_bytes != encoded_bytes:

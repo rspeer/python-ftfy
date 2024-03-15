@@ -408,6 +408,13 @@
         "expect": "pass"
     },
     {
+        "label": "Sort of negative: this inconsistent mojibake could be Latin-1 or MacRoman, and it was meant to be Latin-1, but it's safest to not decode it as either",
+        "comment": "issue #202",
+        "original": "Bremer/Mccoy – DrÃ¥ber",
+        "fixed": "Bremer/Mccoy – DrÃ¥ber",
+        "expect": "pass"
+    },
+    {
         "label": "Negative: 'è' preceded by a non-breaking space is not a small capital Y",
         "original": "Con il corpo e lo spirito ammaccato,\u00a0è come se nel cuore avessi un vetro conficcato.",
         "fixed": "Con il corpo e lo spirito ammaccato,\u00a0è come se nel cuore avessi un vetro conficcato.",

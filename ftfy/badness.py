@@ -263,8 +263,6 @@ BADNESS_RE = re.compile(
     |
     [{box}{end_punctuation}{currency}{numeric}] [{lower_accented}]
     |
-    # leave out [upper_accented][currency] without further info, because it's used in some
-    # fancy leetspeak-esque writing
     [{lower_accented}{box}{end_punctuation}] [{currency}]
     |
     \s [{upper_accented}] [{currency}]

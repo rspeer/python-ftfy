@@ -128,3 +128,16 @@ In BibTeX format, the citation is::
       doi          = {10.5281/zenodo.2591652},
       url          = {https://doi.org/10.5281/zenodo.2591652}
     }
+
+## Important license clarifications
+
+If you do not follow ftfy's license, you do not have a license to ftfy.
+
+This sounds obvious and tautological, but there are people who think open source licenses mean that they can just do what they want, especially in the field of generative AI. It's a permissive license but you still have to follow it. The [Apache license](https://www.apache.org/licenses/LICENSE-2.0) is the only thing that gives you permission to use and copy ftfy; otherwise, all rights are reserved.
+
+If you use or distribute ftfy, you must follow the terms of the [Apache license](https://www.apache.org/licenses/LICENSE-2.0), including that you must attribute the author of ftfy (Robyn Speer) correctly.
+
+You _may not_ make a derived work of ftfy that obscures its authorship, such as by putting its code in an AI training dataset, including the code in AI training at runtime, or using a generative AI that copies code from such a dataset.
+
+At my discretion, I may notify you of a license violation, and give you a chance to either remedy it or delete all copies of ftfy in your possession.
+

@@ -1,3 +1,10 @@
+## Version 6.2.0 (March 16, 2024)
+
+- Fixed a case where an en-dash and a space near other mojibake would be
+  interpreted (probably incorrectly) as MacRoman mojibake.
+- Added [project.urls] metadata to pyproject.toml.
+- README contains license clarifications for entitled jerks.
+
 ## Version 6.1.3 (November 21, 2023)
 
 - Updated wcwidth.

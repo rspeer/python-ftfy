@@ -2,6 +2,7 @@
 This gives other modules access to the gritty details about characters and the
 encodings that use them.
 """
+
 from __future__ import annotations
 import html
 import itertools
