@@ -1,4 +1,4 @@
-## Version 6.2.0 (March 16, 2024)
+## Version 6.2.0 (March 15, 2024)
 
 - Fixed a case where an en-dash and a space near other mojibake would be
   interpreted (probably incorrectly) as MacRoman mojibake.
