@@ -87,13 +87,13 @@ ftfy is a Python 3 package that can be installed using `pip`:
 
     pip install ftfy
 
-(Or use `pip3 install ftfy` on systems where Python 2 and 3 are both globally
-installed and `pip` refers to Python 2.)
+(Or use `pip3 install ftfy` on systems where Python 2 and 3 are both globally installed and `pip` refers to Python 2.)
+
+If you use `poetry`, you can use ftfy as a dependency in the usual way (such as `poetry add ftfy`).
 
 ### Local development
 
-ftfy is developed using `poetry`. Its `setup.py` is vestigial and is not the
-recommended way to install it.
+ftfy is developed using `poetry`. Its `setup.py` is vestigial and is not the recommended way to install it.
 
 [Install Poetry](https://python-poetry.org/docs/master/#installing-with-the-official-installer), check out this repository, and run `poetry install` to install ftfy for local development, such as experimenting with the heuristic or running tests.
 
@@ -106,10 +106,7 @@ I'm Robyn Speer, also known as Elia Robyn Lake. You can find me
 
 ftfy has been used as a crucial data processing step in major NLP research.
 
-It's important to give credit appropriately to everyone whose work you build on
-in research. This includes software, not just high-status contributions such as
-mathematical models. All I ask when you use ftfy for research is that you cite
-it.
+It's important to give credit appropriately to everyone whose work you build on in research. This includes software, not just high-status contributions such as mathematical models. All I ask when you use ftfy for research is that you cite it.
 
 ftfy has a citable record [on Zenodo](https://zenodo.org/record/2591652).
 A citation of ftfy may look like this:

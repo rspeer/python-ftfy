@@ -1,6 +1,7 @@
 ## Version 6.2.1 (August 5, 2024)
 
 - Updated setup.py and tox.ini to indicate support for Python 3.8 through 3.13.
+- Replaced the text file used in CLI tests with a better one that tests the same issue.
 - Packaging and test fixes by Michał Górny.
 
 ## Version 6.2.0 (March 15, 2024)
