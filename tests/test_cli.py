@@ -1,7 +1,7 @@
-import subprocess
 import os
-import pytest
+import subprocess
 
+import pytest
 
 # Get the filename of 'face.txt', an example of mojibake
 THIS_DIR = os.path.dirname(__file__)

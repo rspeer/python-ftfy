@@ -39,13 +39,15 @@ never.
    ftfy instead.
 """
 
-import re
 import codecs
-from typing import Tuple
+import re
 from encodings.utf_8 import (
     IncrementalDecoder as UTF8IncrementalDecoder,
+)
+from encodings.utf_8 import (
     IncrementalEncoder as UTF8IncrementalEncoder,
 )
+from typing import Tuple
 
 NAME = "utf-8-variants"
 

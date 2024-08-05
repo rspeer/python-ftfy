@@ -4,11 +4,11 @@ encodings that use them.
 """
 
 from __future__ import annotations
+
 import html
 import itertools
 import re
 import unicodedata
-
 
 # These are the encodings we will try to fix in ftfy, in the
 # order that they should be tried.

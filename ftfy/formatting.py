@@ -9,6 +9,7 @@ the 'wcwidth' library.
 from unicodedata import normalize
 
 from wcwidth import wcswidth, wcwidth
+
 from ftfy.fixes import remove_terminal_escapes
 
 

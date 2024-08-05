@@ -36,5 +36,10 @@ Changelog = "https://github.com/rspeer/python-ftfy/blob/main/CHANGELOG.md"
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[tool.black]
-exclude = "badness.py"
+[tool.ruff]
+exclude = ["badness.py"]
+line-length = 100
+target-version = "py38"
+
+[tool.ruff.lint]
+select = ["B", "F", "I", "N"]

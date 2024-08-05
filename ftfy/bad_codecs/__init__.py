@@ -30,8 +30,8 @@ A quick example of decoding text that's encoded in CESU-8:
     😍
 """
 
-from encodings import normalize_encoding
 import codecs
+from encodings import normalize_encoding
 from typing import Dict
 
 _CACHE: Dict[str, codecs.CodecInfo] = {}

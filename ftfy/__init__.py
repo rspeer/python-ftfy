@@ -6,6 +6,7 @@ for more information.
 """
 
 from __future__ import annotations
+
 import unicodedata
 import warnings
 from typing import (
@@ -23,8 +24,7 @@ from typing import (
     no_type_check,
 )
 
-from ftfy import bad_codecs
-from ftfy import chardata, fixes
+from ftfy import bad_codecs, chardata, fixes
 from ftfy.badness import is_bad
 from ftfy.formatting import display_ljust
 
@@ -240,7 +240,9 @@ def _config_from_kwargs(
     """
     if "fix_entities" in kwargs:
         warnings.warn(
-            "`fix_entities` has been renamed to `unescape_html`", DeprecationWarning
+            "`fix_entities` has been renamed to `unescape_html`",
+            DeprecationWarning,
+            stacklevel=2,
         )
         kwargs = kwargs.copy()
         kwargs["unescape_html"] = kwargs["fix_entities"]

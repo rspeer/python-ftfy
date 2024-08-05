@@ -1,7 +1,7 @@
+import pytest
+
 from ftfy import fix_text, fix_text_segment
 from ftfy.fixes import unescape_html
-
-import pytest
 
 
 def test_entities():

@@ -1,5 +1,6 @@
-from setuptools import setup
 import sys
+
+from setuptools import setup
 
 # Before we get to the rest of setup, with dependencies on setuptools and the
 # Python 3 standard library, let's make sure we're not on Python 2 and provide

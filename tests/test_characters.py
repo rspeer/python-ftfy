@@ -1,10 +1,10 @@
 from ftfy import (
+    fix_and_explain,
     fix_encoding,
     fix_text,
-    fix_and_explain,
 )
-from ftfy.fixes import remove_control_chars, fix_surrogates
 from ftfy.chardata import possible_encoding
+from ftfy.fixes import fix_surrogates, remove_control_chars
 
 
 def test_possible_encoding():

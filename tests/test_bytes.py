@@ -1,7 +1,7 @@
-from ftfy import guess_bytes
-from ftfy.bad_codecs.utf8_variants import IncrementalDecoder
 import pytest
 
+from ftfy import guess_bytes
+from ftfy.bad_codecs.utf8_variants import IncrementalDecoder
 
 TEST_ENCODINGS = ["utf-16", "utf-8", "sloppy-windows-1252"]
 

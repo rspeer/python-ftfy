@@ -24,11 +24,12 @@ There are also two optional fields:
 - "comment": possibly-enlightening commentary on the test case.
 """
 
-from ftfy import fix_text, fix_and_explain, fix_encoding_and_explain, apply_plan
 import json
 import os
+
 import pytest
 
+from ftfy import apply_plan, fix_and_explain, fix_encoding_and_explain, fix_text
 
 THIS_DIR = os.path.dirname(__file__)
 TEST_FILENAME = os.path.join(THIS_DIR, "test_cases.json")

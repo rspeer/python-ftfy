@@ -73,9 +73,10 @@ sloppy-windows-1252 merges Windows-1252 with Latin-1:
 """
 
 from __future__ import annotations
+
 import codecs
-from encodings import normalize_encoding
 import sys
+from encodings import normalize_encoding
 
 REPLACEMENT_CHAR = "\ufffd"
 PY26 = sys.version_info[:2] == (2, 6)

@@ -6,7 +6,7 @@ import os
 import sys
 from typing import Union
 
-from ftfy import __version__, fix_file, TextFixerConfig
+from ftfy import TextFixerConfig, __version__, fix_file
 
 ENCODE_ERROR_TEXT_UNIX = """ftfy error:
 Unfortunately, this output stream does not support Unicode.

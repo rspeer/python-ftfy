@@ -16,6 +16,7 @@ import re
 import warnings
 
 import ftfy
+from ftfy.badness import is_bad
 from ftfy.chardata import (
     ALTERED_UTF8_RE,
     C1_CONTROL_RE,
@@ -30,8 +31,6 @@ from ftfy.chardata import (
     WIDTH_MAP,
 )
 
-from ftfy.badness import is_bad
-
 
 def fix_encoding_and_explain(text):
     """
@@ -40,6 +39,7 @@ def fix_encoding_and_explain(text):
     warnings.warn(
         "`fix_encoding_and_explain()` has moved to the main module of ftfy.",
         DeprecationWarning,
+        stacklevel=2,
     )
     return ftfy.fix_encoding_and_explain(text)
 
@@ -49,7 +49,9 @@ def fix_encoding(text):
     Deprecated copy of `ftfy.fix_encoding()`.
     """
     warnings.warn(
-        "`fix_encoding()` has moved to the main module of ftfy.", DeprecationWarning
+        "`fix_encoding()` has moved to the main module of ftfy.",
+        DeprecationWarning,
+        stacklevel=2,
     )
     return ftfy.fix_encoding(text)
 
@@ -59,7 +61,9 @@ def apply_plan(text, plan):
     Deprecated copy of `ftfy.apply_plan()`.
     """
     warnings.warn(
-        "`apply_plan()` has moved to the main module of ftfy.", DeprecationWarning
+        "`apply_plan()` has moved to the main module of ftfy.",
+        DeprecationWarning,
+        stacklevel=2,
     )
     return ftfy.apply_plan(text, plan)
 
