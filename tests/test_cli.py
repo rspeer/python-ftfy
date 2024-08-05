@@ -23,9 +23,9 @@ FAILED_OUTPUT = os.linesep.join(
 
 
 def get_command_output(args, stdin=None):
-    return subprocess.check_output(
-        args, stdin=stdin, stderr=subprocess.STDOUT, timeout=5
-    ).decode("utf-8")
+    return subprocess.check_output(args, stdin=stdin, stderr=subprocess.STDOUT, timeout=5).decode(
+        "utf-8"
+    )
 
 
 def test_basic():

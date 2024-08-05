@@ -9,6 +9,7 @@ import html
 import itertools
 import re
 import unicodedata
+from typing import Dict
 
 # These are the encodings we will try to fix in ftfy, in the
 # order that they should be tried.
@@ -28,7 +29,7 @@ SINGLE_QUOTE_RE = re.compile("[\u02bc\u2018-\u201b]")
 DOUBLE_QUOTE_RE = re.compile("[\u201c-\u201f]")
 
 
-def _build_regexes():
+def _build_regexes() -> Dict[str, re.Pattern[str]]:
     """
     ENCODING_REGEXES contain reasonably fast ways to detect if we
     could represent a given string in a given encoding. The simplest one is
@@ -58,7 +59,7 @@ def _build_regexes():
 ENCODING_REGEXES = _build_regexes()
 
 
-def _build_html_entities():
+def _build_html_entities() -> Dict[str, str]:
     entities = {}
     # Create a dictionary based on the built-in HTML5 entity dictionary.
     # Add a limited set of HTML entities that we'll also decode if they've
@@ -82,7 +83,7 @@ HTML_ENTITY_RE = re.compile(r"&#?[0-9A-Za-z]{1,24};")
 HTML_ENTITIES = _build_html_entities()
 
 
-def possible_encoding(text, encoding):
+def possible_encoding(text: str, encoding: str) -> bool:
     """
     Given text and a single-byte encoding, check whether that text could have
     been decoded from that single-byte encoding.
@@ -93,13 +94,13 @@ def possible_encoding(text, encoding):
     return bool(ENCODING_REGEXES[encoding].match(text))
 
 
-def _build_control_char_mapping():
+def _build_control_char_mapping() -> Dict[int, None]:
     """
     Build a translate mapping that strips likely-unintended control characters.
     See :func:`ftfy.fixes.remove_control_chars` for a description of these
     codepoint ranges and why they should be removed.
     """
-    control_chars: dict[int, None] = {}
+    control_chars: Dict[int, None] = {}
 
     for i in itertools.chain(
         range(0x00, 0x09),
@@ -229,7 +230,7 @@ LIGATURES = {
 }
 
 
-def _build_width_map():
+def _build_width_map() -> Dict[int, str]:
     """
     Build a translate mapping that replaces halfwidth and fullwidth forms
     with their standard-width forms.
@@ -309,6 +310,8 @@ UTF8_DETECTOR_RE = re.compile(
         |
         [{utf8_first_of_4}] [{utf8_continuation}]{{3}}
     )+
-""".format(**UTF8_CLUES),
+""".format(
+        **UTF8_CLUES
+    ),
     re.VERBOSE,
 )

@@ -14,6 +14,7 @@ import codecs
 import html
 import re
 import warnings
+from typing import Any, List, Match, Tuple
 
 import ftfy
 from ftfy.badness import is_bad
@@ -32,7 +33,7 @@ from ftfy.chardata import (
 )
 
 
-def fix_encoding_and_explain(text):
+def fix_encoding_and_explain(text: str) -> Any:
     """
     Deprecated copy of `ftfy.fix_encoding_and_explain()`.
     """
@@ -44,7 +45,7 @@ def fix_encoding_and_explain(text):
     return ftfy.fix_encoding_and_explain(text)
 
 
-def fix_encoding(text):
+def fix_encoding(text: str) -> str:
     """
     Deprecated copy of `ftfy.fix_encoding()`.
     """
@@ -56,7 +57,7 @@ def fix_encoding(text):
     return ftfy.fix_encoding(text)
 
 
-def apply_plan(text, plan):
+def apply_plan(text: str, plan: List[Tuple[str, str]]) -> str:
     """
     Deprecated copy of `ftfy.apply_plan()`.
     """
@@ -68,7 +69,7 @@ def apply_plan(text, plan):
     return ftfy.apply_plan(text, plan)
 
 
-def _unescape_fixup(match):
+def _unescape_fixup(match: Match[str]) -> str:
     """
     Replace one matched HTML entity with the character it represents,
     if possible.
@@ -77,7 +78,7 @@ def _unescape_fixup(match):
     if text in HTML_ENTITIES:
         return HTML_ENTITIES[text]
     elif text.startswith("&#"):
-        unescaped = html.unescape(text)
+        unescaped: str = html.unescape(text)
 
         # If html.unescape only decoded part of the string, that's not what
         # we want. The semicolon should be consumed.
@@ -89,7 +90,7 @@ def _unescape_fixup(match):
         return text
 
 
-def unescape_html(text):
+def unescape_html(text: str) -> str:
     """
     Decode HTML entities and character references, including some nonstandard
     ones written in all-caps.
@@ -140,7 +141,7 @@ def unescape_html(text):
 ANSI_RE = re.compile("\033\\[((?:\\d|;)*)([a-zA-Z])")
 
 
-def remove_terminal_escapes(text):
+def remove_terminal_escapes(text: str) -> str:
     r"""
     Strip out "ANSI" terminal escape sequences, such as those that produce
     colored text on Unix.
@@ -153,7 +154,7 @@ def remove_terminal_escapes(text):
     return ANSI_RE.sub("", text)
 
 
-def uncurl_quotes(text):
+def uncurl_quotes(text: str) -> str:
     r"""
     Replace curly quotation marks with straight equivalents.
 
@@ -163,7 +164,7 @@ def uncurl_quotes(text):
     return SINGLE_QUOTE_RE.sub("'", DOUBLE_QUOTE_RE.sub('"', text))
 
 
-def fix_latin_ligatures(text):
+def fix_latin_ligatures(text: str) -> str:
     """
     Replace single-character ligatures of Latin letters, such as 'ﬁ', with the
     characters that they contain, as in 'fi'. Latin ligatures are usually not
@@ -181,7 +182,7 @@ def fix_latin_ligatures(text):
     return text.translate(LIGATURES)
 
 
-def fix_character_width(text):
+def fix_character_width(text: str) -> str:
     """
     The ASCII characters, katakana, and Hangul characters have alternate
     "halfwidth" or "fullwidth" forms that help text line up in a grid.
@@ -201,7 +202,7 @@ def fix_character_width(text):
     return text.translate(WIDTH_MAP)
 
 
-def fix_line_breaks(text):
+def fix_line_breaks(text: str) -> str:
     r"""
     Convert all line breaks to Unix style.
 
@@ -257,7 +258,7 @@ SURROGATE_RE = re.compile("[\ud800-\udfff]")
 SURROGATE_PAIR_RE = re.compile("[\ud800-\udbff][\udc00-\udfff]")
 
 
-def convert_surrogate_pair(match):
+def convert_surrogate_pair(match: Match[str]) -> str:
     """
     Convert a surrogate pair to the single codepoint it represents.
 
@@ -269,7 +270,7 @@ def convert_surrogate_pair(match):
     return chr(codept)
 
 
-def fix_surrogates(text):
+def fix_surrogates(text: str) -> str:
     """
     Replace 16-bit surrogate codepoints with the characters they represent
     (when properly paired), or with \ufffd otherwise.
@@ -292,7 +293,7 @@ def fix_surrogates(text):
     return text
 
 
-def remove_control_chars(text):
+def remove_control_chars(text: str) -> str:
     """
     Remove various control characters that you probably didn't intend to be in
     your text. Many of these characters appear in the table of "Characters not
@@ -325,7 +326,7 @@ def remove_control_chars(text):
     return text.translate(CONTROL_CHARS)
 
 
-def remove_bom(text):
+def remove_bom(text: str) -> str:
     r"""
     Remove a byte-order mark that was accidentally decoded as if it were part
     of the text.
@@ -350,7 +351,7 @@ ESCAPE_SEQUENCE_RE = re.compile(
 )
 
 
-def decode_escapes(text):
+def decode_escapes(text: str) -> str:
     r"""
     Decode backslashed escape sequences, including \\x, \\u, and \\U character
     references, even in the presence of other Unicode.
@@ -381,7 +382,7 @@ def decode_escapes(text):
     "unicode-escape" to work correctly.
     """
 
-    def decode_match(match):
+    def decode_match(match: Match[str]) -> str:
         "Given a regex match, decode the escape sequence it contains."
         return codecs.decode(match.group(0), "unicode-escape")
 
@@ -414,7 +415,7 @@ def decode_escapes(text):
 A_GRAVE_WORD_RE = re.compile(b"\xc3 (?! |quele|quela|quilo|s )")
 
 
-def restore_byte_a0(byts):
+def restore_byte_a0(byts: bytes) -> bytes:
     """
     Some mojibake has been additionally altered by a process that said "hmm,
     byte A0, that's basically a space!" and replaced it with an ASCII space.
@@ -430,14 +431,14 @@ def restore_byte_a0(byts):
     """
     byts = A_GRAVE_WORD_RE.sub(b"\xc3\xa0 ", byts)
 
-    def replacement(match):
+    def replacement(match: Match[bytes]) -> bytes:
         "The function to apply when this regex matches."
         return match.group(0).replace(b"\x20", b"\xa0")
 
     return ALTERED_UTF8_RE.sub(replacement, byts)
 
 
-def replace_lossy_sequences(byts):
+def replace_lossy_sequences(byts: bytes) -> bytes:
     """
     This function identifies sequences where information has been lost in
     a "sloppy" codec, indicated by byte 1A, and if they would otherwise look
@@ -476,7 +477,7 @@ def replace_lossy_sequences(byts):
     return LOSSY_UTF8_RE.sub("\ufffd".encode("utf-8"), byts)
 
 
-def decode_inconsistent_utf8(text):
+def decode_inconsistent_utf8(text: str) -> str:
     """
     Sometimes, text from one encoding ends up embedded within text from a
     different one. This is common enough that we need to be able to fix it.
@@ -484,7 +485,7 @@ def decode_inconsistent_utf8(text):
     This is used as a transcoder within `fix_encoding`.
     """
 
-    def fix_embedded_mojibake(match):
+    def fix_embedded_mojibake(match: Match[str]) -> str:
         substr = match.group(0)
 
         # Require the match to be shorter, so that this doesn't recurse infinitely
@@ -496,11 +497,11 @@ def decode_inconsistent_utf8(text):
     return UTF8_DETECTOR_RE.sub(fix_embedded_mojibake, text)
 
 
-def _c1_fixer(match):
+def _c1_fixer(match: Match[str]) -> str:
     return match.group(0).encode("latin-1").decode("sloppy-windows-1252")
 
 
-def fix_c1_controls(text):
+def fix_c1_controls(text: str) -> str:
     """
     If text still contains C1 control characters, treat them as their
     Windows-1252 equivalents. This matches what Web browsers do.

@@ -41,7 +41,7 @@ Can't read and write the same file. Please output to a new file instead.
 """
 
 
-def main():
+def main() -> None:
     """
     Run ftfy as a command-line utility.
     """

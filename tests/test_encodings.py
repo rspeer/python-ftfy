@@ -7,7 +7,7 @@ def test_cesu8():
     assert cls1 == cls2
 
     test_bytes = (
-        b"\xed\xa6\x9d\xed\xbd\xb7 is an unassigned character, " b"and \xc0\x80 is null"
+        b"\xed\xa6\x9d\xed\xbd\xb7 is an unassigned character, and \xc0\x80 is null"
     )
     test_text = "\U00077777 is an unassigned character, and \x00 is null"
     assert test_bytes.decode("cesu8") == test_text

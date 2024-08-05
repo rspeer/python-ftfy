@@ -42,4 +42,8 @@ line-length = 100
 target-version = "py38"
 
 [tool.ruff.lint]
-select = ["B", "F", "I", "N"]
+select = ["B", "F", "I", "N", "ANN"]
+ignore = ["ANN101", "ANN401"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["ANN"]
