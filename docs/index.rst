@@ -1,7 +1,7 @@
 ftfy: fixes text for you
 ========================
 
-*Version 6.0.1*
+*Version 6.2*
 
 **ftfy** fixes Unicode that's broken in various ways.
 

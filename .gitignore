@@ -11,3 +11,4 @@ twitterlogs
 .tox
 specimens
 .vscode
+.python-version
