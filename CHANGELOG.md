@@ -1,3 +1,8 @@
+## Version 6.2.1 (August 5, 2024)
+
+- Updated setup.py and tox.ini to indicate support for Python 3.8 through 3.13.
+- Packaging and test fixes by Michał Górny.
+
 ## Version 6.2.0 (March 15, 2024)
 
 - Fixed a case where an en-dash and a space near other mojibake would be
