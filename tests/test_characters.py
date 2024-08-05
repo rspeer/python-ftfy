@@ -1,5 +1,9 @@
 from ftfy import (
-    fix_encoding, fix_encoding_and_explain, fix_text, fix_and_explain, apply_plan
+    fix_encoding,
+    fix_encoding_and_explain,
+    fix_text,
+    fix_and_explain,
+    apply_plan,
 )
 from ftfy.fixes import remove_control_chars, fix_surrogates
 from ftfy.chardata import possible_encoding
@@ -11,11 +15,11 @@ import sys
 def test_possible_encoding():
     for codept in range(256):
         char = chr(codept)
-        assert possible_encoding(char, 'latin-1')
+        assert possible_encoding(char, "latin-1")
 
 
 def test_byte_order_mark():
-    assert fix_encoding('ï»¿') == '\ufeff'
+    assert fix_encoding("ï»¿") == "\ufeff"
 
 
 def test_control_chars():
@@ -43,8 +47,8 @@ def test_ohio_flag():
 
 
 def test_surrogates():
-    assert fix_surrogates('\udbff\udfff') == '\U0010ffff'
-    assert fix_surrogates('\ud800\udc00') == '\U00010000'
+    assert fix_surrogates("\udbff\udfff") == "\U0010ffff"
+    assert fix_surrogates("\ud800\udc00") == "\U00010000"
 
 
 def test_color_escapes():
@@ -53,5 +57,5 @@ def test_color_escapes():
     assert fixed == "foo"
     assert plan == [
         ("apply", "remove_terminal_escapes"),
-        ("apply", "remove_control_chars")
+        ("apply", "remove_control_chars"),
     ]

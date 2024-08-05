@@ -3,13 +3,14 @@ from ftfy.bad_codecs.utf8_variants import IncrementalDecoder
 import pytest
 
 
-TEST_ENCODINGS = [
-    'utf-16', 'utf-8', 'sloppy-windows-1252'
-]
+TEST_ENCODINGS = ["utf-16", "utf-8", "sloppy-windows-1252"]
 
 TEST_STRINGS = [
-    'Renée\nFleming', 'Noël\nCoward', 'Señor\nCardgage',
-    '€ • £ • ¥', '¿Qué?'
+    "Renée\nFleming",
+    "Noël\nCoward",
+    "Señor\nCardgage",
+    "€ • £ • ¥",
+    "¿Qué?",
 ]
 
 
@@ -20,22 +21,22 @@ def test_guess_bytes(string):
         assert result_str == string
         assert result_encoding == encoding
 
-    if '\n' in string:
-        old_mac_bytes = string.replace('\n', '\r').encode('macroman')
+    if "\n" in string:
+        old_mac_bytes = string.replace("\n", "\r").encode("macroman")
         result_str, result_encoding = guess_bytes(old_mac_bytes)
-        assert result_str == string.replace('\n', '\r')
+        assert result_str == string.replace("\n", "\r")
 
 
 def test_guess_bytes_null():
-    bowdlerized_null = b'null\xc0\x80separated'
+    bowdlerized_null = b"null\xc0\x80separated"
     result_str, result_encoding = guess_bytes(bowdlerized_null)
-    assert result_str == 'null\x00separated'
-    assert result_encoding == 'utf-8-variants'
+    assert result_str == "null\x00separated"
+    assert result_encoding == "utf-8-variants"
 
 
 def test_incomplete_sequences():
-    test_bytes = b'surrogates: \xed\xa0\x80\xed\xb0\x80 / null: \xc0\x80'
-    test_string = 'surrogates: \U00010000 / null: \x00'
+    test_bytes = b"surrogates: \xed\xa0\x80\xed\xb0\x80 / null: \xc0\x80"
+    test_string = "surrogates: \U00010000 / null: \x00"
 
     # Test that we can feed this string to decode() in multiple pieces, and no
     # matter where the break between those pieces is, we get the same result.
@@ -47,4 +48,3 @@ def test_incomplete_sequences():
         got = decoder.decode(left, final=False)
         got += decoder.decode(right)
         assert got == test_string
-

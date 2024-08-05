@@ -350,9 +350,7 @@ BADNESS_RE = re.compile(
 
     # Windows-1253 mojibake of Latin-1 characters and/or the Greek alphabet
     [ΒΓΞΟ][{c1}{bad}{start_punctuation}{end_punctuation}{currency}°][ΒΓΞΟ]
-""".format(
-        **MOJIBAKE_CATEGORIES
-    ),
+""".format(**MOJIBAKE_CATEGORIES),
     re.VERBOSE,
 )
 

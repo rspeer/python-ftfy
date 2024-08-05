@@ -71,6 +71,7 @@ sloppy-windows-1252 merges Windows-1252 with Latin-1:
     U+0081  \x81    [Cc] <unknown>
     U+201A  ‚       [Ps] SINGLE LOW-9 QUOTATION MARK
 """
+
 from __future__ import annotations
 import codecs
 from encodings import normalize_encoding
