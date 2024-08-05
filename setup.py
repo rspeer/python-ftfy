@@ -1,3 +1,4 @@
+from setuptools import setup
 import sys
 
 # Before we get to the rest of setup, with dependencies on setuptools and the
@@ -14,8 +15,6 @@ if sys.version_info[0] < 3:
     print("Python is running from: %r" % sys.executable)
     sys.exit(1)
 
-
-from setuptools import setup
 
 DESCRIPTION = open("README.md", encoding="utf-8").read()
 
