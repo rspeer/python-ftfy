@@ -1,8 +1,10 @@
 """
 A command-line utility for fixing text found in a file.
 """
+
 import os
 import sys
+from typing import Union
 
 from ftfy import __version__, fix_file, TextFixerConfig
 
@@ -117,7 +119,7 @@ def main():
     if normalization.lower() == "none":
         normalization = None
 
-    unescape_html: str | bool
+    unescape_html: Union[str, bool]
     if args.preserve_entities:
         unescape_html = False
     else:

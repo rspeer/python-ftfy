@@ -1,27 +1,27 @@
 [tool.poetry]
 name = "ftfy"
-version = "6.2.0"
+version = "6.2.1"
 description = "Fixes mojibake and other problems with Unicode, after the fact"
 authors = ["Robyn Speer <rspeer@arborelia.net>"]
 license = "Apache-2.0"
 include = [
-    {path = "README.md", format = "sdist"},
-    {path = "CHANGELOG.md", format = "sdist"},
-    {path = "tests", format = "sdist"},
+    { path = "README.md", format = "sdist" },
+    { path = "CHANGELOG.md", format = "sdist" },
+    { path = "tests", format = "sdist" },
 ]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">=3.8,<4"
+python = ">=3.8.1,<4"
 wcwidth = "^0.2.12"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.7.0"
-Sphinx = "^4.3.2"
-furo = ">=2021"
-pytest = "^7.2.0"
-black = ">=21"
-flake8 = ">=3.0"
+Sphinx = ">=7, <8"
+furo = ">=2024.7.18"
+pytest = "^8.3.2"
+black = ">=24.8.0"
+flake8 = ">=7.1.1"
 
 [tool.poetry.scripts]
 ftfy = "ftfy.cli:main"
