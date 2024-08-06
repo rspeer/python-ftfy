@@ -7,12 +7,9 @@ build:
   tools:
     python: "3.12"
 
-sphinx:
-  configuration: docs/conf.py
-
 python:
   install:
-  - method: pip
-    path: .
-    extra_requirements:
-      - docs
+    - method: pip
+      path: .
+      extra_requirements:
+        - docs
