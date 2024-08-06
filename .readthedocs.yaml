@@ -1,15 +1,24 @@
-version: 2
-sphinx:
-  configuration: docs/conf.py
+# .readthedocs.yaml
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
 
+# Required
+version: 2
+
+# Set the version of Python and other tools you might need
 build:
   os: ubuntu-24.04
   tools:
-    python: "3.12"
-
-python:
-  install:
-    - method: pip
-      path: .
-      extra_requirements:
-        - docs
+    python: "3.11"
+  jobs:
+    post_create_environment:
+      # Install poetry
+      # https://python-poetry.org/docs/#installing-manually
+      - python -m pip install poetry
+    post_install:
+      # Install only dependencies
+      # https://python-poetry.org/docs/managing-dependencies/#dependency-groups
+      - VIRTUAL_ENV=$READTHEDOCS_VIRTUALENV_PATH poetry install
+# Build documentation in the docs/ directory with Sphinx
+sphinx:
+  configuration: docs/conf.py
