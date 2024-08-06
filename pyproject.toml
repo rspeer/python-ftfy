@@ -1,7 +1,10 @@
 [tool.poetry]
 name = "ftfy"
-version = "6.2.2"
+version = "6.2.3"
 description = "Fixes mojibake and other problems with Unicode, after the fact"
+homepage = "https://ftfy.readthedocs.io/en/latest/"
+documentation = "https://ftfy.readthedocs.io/en/latest/"
+repository = "https://github.com/rspeer/python-ftfy"
 authors = ["Robyn Speer <rspeer@arborelia.net>"]
 license = "Apache-2.0"
 include = [
@@ -25,12 +28,10 @@ ruff = "^0.5.6"
 [tool.poetry.scripts]
 ftfy = "ftfy.cli:main"
 
-[project.urls]
-Homepage = "https://ftfy.readthedocs.io/en/latest/"
-Documentation = "https://ftfy.readthedocs.io/en/latest/"
-Repository = "https://github.com/rspeer/python-ftfy"
+[tool.poetry.urls]
 Issues = "https://github.com/rspeer/python-ftfy/issues/"
 Changelog = "https://github.com/rspeer/python-ftfy/blob/main/CHANGELOG.md"
+Cohost = "https://cohost.org/arborelia"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

@@ -1,3 +1,7 @@
+## Version 6.2.3 (August 5, 2024)
+
+- Updated PyPI metadata.
+
 ## Version 6.2.2 (August 5, 2024)
 
 - Updated Read the Docs config so that docs might build again.
