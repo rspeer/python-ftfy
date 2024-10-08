@@ -32,7 +32,10 @@ build-backend = "hatchling.build"
 
 [tool.uv]
 dev-dependencies = [
-    "pytest",
+    "Sphinx >=7, <8",
+    "furo >= 2024.7.18",
+    "pytest >= 8.3.2, < 9",
+    "ruff"
 ]
 
 [tool.ruff]
