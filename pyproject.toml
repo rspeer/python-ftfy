@@ -32,7 +32,8 @@ build-backend = "hatchling.build"
 
 [tool.uv]
 dev-dependencies = [
-    "pytest"
+    "pytest",
+    "tox"
 ]
 
 [tool.ruff]
