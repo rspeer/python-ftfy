@@ -37,7 +37,7 @@ dev-dependencies = [
 ]
 
 [tool.ruff]
-exclude = ["badness.py"]
+exclude = ["badness.py", "notebook"]
 line-length = 100
 target-version = "py39"
 
