@@ -33,7 +33,6 @@ build-backend = "hatchling.build"
 [tool.uv]
 dev-dependencies = [
     "pytest",
-    "tox"
 ]
 
 [tool.ruff]
@@ -42,7 +41,7 @@ line-length = 100
 target-version = "py39"
 
 [tool.ruff.lint]
-select = ["B", "F", "I", "N", "ANN"]
+select = ["B", "F", "I", "N", "ANN", "UP"]
 ignore = ["ANN101", "ANN401"]
 
 [tool.ruff.lint.per-file-ignores]
