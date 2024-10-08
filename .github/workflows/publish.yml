@@ -14,8 +14,8 @@ jobs:
           python-version: 3.11
 
       - run: |
-          pip install poetry
-          poetry build
+          pip install hatchling
+          hatchling build
 
       - uses: actions/upload-artifact@v3
         with:

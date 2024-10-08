@@ -11,8 +11,7 @@
 
 ```
 
-The full documentation of ftfy is available at [ftfy.readthedocs.org](https://ftfy.readthedocs.org). The documentation covers a lot more than this README, so here are
-some links into it:
+The full documentation of ftfy is available at [ftfy.readthedocs.org](https://ftfy.readthedocs.org). The documentation covers a lot more than this README, so here are some links into it:
 
 - [Fixing problems and getting explanations](https://ftfy.readthedocs.io/en/latest/explain.html)
 - [Configuring ftfy](https://ftfy.readthedocs.io/en/latest/config.html)
@@ -36,8 +35,6 @@ some links into it:
   — Brennan Young
 - “I have no idea when I’m gonna need this, but I’m definitely bookmarking it.”
   — [/u/ocrow](https://reddit.com/u/ocrow)
-- “9.2/10”
-  — [pylint](https://bitbucket.org/logilab/pylint/)
 
 ## What it does
 
@@ -93,14 +90,12 @@ If you use `poetry`, you can use ftfy as a dependency in the usual way (such as 
 
 ### Local development
 
-ftfy is developed using `poetry`. Its `setup.py` is vestigial and is not the recommended way to install it.
-
-[Install Poetry](https://python-poetry.org/docs/master/#installing-with-the-official-installer), check out this repository, and run `poetry install` to install ftfy for local development, such as experimenting with the heuristic or running tests.
+ftfy is developed using [uv](https://github.com/astral-sh/uv). You can build a virtual environment with its local dependencies by running `uv venv`, and test it with `uv run pytest`.
 
 ## Who maintains ftfy?
 
-I'm Robyn Speer, also known as Elia Robyn Lake. You can find me
-[on GitHub](https://github.com/rspeer) or [Cohost](https://cohost.org/arborelia).
+I'm Robyn Speer, also known as Elia Robyn Lake. You can find my projects
+[on GitHub](https://github.com/rspeer) and my posts on [my own blog](https://posts.arborelia.net).
 
 ## Citing ftfy
 
@@ -108,8 +103,7 @@ ftfy has been used as a crucial data processing step in major NLP research.
 
 It's important to give credit appropriately to everyone whose work you build on in research. This includes software, not just high-status contributions such as mathematical models. All I ask when you use ftfy for research is that you cite it.
 
-ftfy has a citable record [on Zenodo](https://zenodo.org/record/2591652).
-A citation of ftfy may look like this:
+ftfy has a citable record [on Zenodo](https://zenodo.org/record/2591652). A citation of ftfy may look like this:
 
     Robyn Speer. (2019). ftfy (Version 5.5). Zenodo.
     http://doi.org/10.5281/zenodo.2591652

@@ -1,7 +1,12 @@
 ftfy: fixes text for you
 ========================
 
-*Version 6.2*
+*Version 6.3*
+
+“Assume all external input is the result of (a series of) bugs.”
+— `RFC 9225`_: Software Defects Considered Harmful
+
+.. _`RFC 9225`: https://www.rfc-editor.org/rfc/rfc9225.html#confirmed
 
 **ftfy** fixes Unicode that's broken in various ways.
 
