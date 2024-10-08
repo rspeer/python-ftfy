@@ -9,7 +9,6 @@ import html
 import itertools
 import re
 import unicodedata
-from typing import Dict
 
 # These are the encodings we will try to fix in ftfy, in the
 # order that they should be tried.
@@ -29,7 +28,7 @@ SINGLE_QUOTE_RE = re.compile("[\u02bc\u2018-\u201b]")
 DOUBLE_QUOTE_RE = re.compile("[\u201c-\u201f]")
 
 
-def _build_regexes() -> Dict[str, re.Pattern[str]]:
+def _build_regexes() -> dict[str, re.Pattern[str]]:
     """
     ENCODING_REGEXES contain reasonably fast ways to detect if we
     could represent a given string in a given encoding. The simplest one is
@@ -51,7 +50,7 @@ def _build_regexes() -> Dict[str, re.Pattern[str]]:
         # support, so we can just include them as ranges. This also lets us
         # not worry about escaping regex special characters, because all of
         # them are in the \x1B to \x7F range.
-        regex = "^[\x00-\x19\x1b-\x7f{0}]*$".format(charlist)
+        regex = f"^[\x00-\x19\x1b-\x7f{charlist}]*$"
         encoding_regexes[encoding] = re.compile(regex)
     return encoding_regexes
 
@@ -59,7 +58,7 @@ def _build_regexes() -> Dict[str, re.Pattern[str]]:
 ENCODING_REGEXES = _build_regexes()
 
 
-def _build_html_entities() -> Dict[str, str]:
+def _build_html_entities() -> dict[str, str]:
     entities = {}
     # Create a dictionary based on the built-in HTML5 entity dictionary.
     # Add a limited set of HTML entities that we'll also decode if they've
@@ -94,13 +93,13 @@ def possible_encoding(text: str, encoding: str) -> bool:
     return bool(ENCODING_REGEXES[encoding].match(text))
 
 
-def _build_control_char_mapping() -> Dict[int, None]:
+def _build_control_char_mapping() -> dict[int, None]:
     """
     Build a translate mapping that strips likely-unintended control characters.
     See :func:`ftfy.fixes.remove_control_chars` for a description of these
     codepoint ranges and why they should be removed.
     """
-    control_chars: Dict[int, None] = {}
+    control_chars: dict[int, None] = {}
 
     for i in itertools.chain(
         range(0x00, 0x09),
@@ -230,7 +229,7 @@ LIGATURES = {
 }
 
 
-def _build_width_map() -> Dict[int, str]:
+def _build_width_map() -> dict[int, str]:
     """
     Build a translate mapping that replaces halfwidth and fullwidth forms
     with their standard-width forms.

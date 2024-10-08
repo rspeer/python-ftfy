@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 #
 # ftfy documentation build configuration file, created by
 # sphinx-quickstart on Wed Aug 28 03:18:27 2013.

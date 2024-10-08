@@ -48,7 +48,7 @@ def main() -> None:
     import argparse
 
     parser = argparse.ArgumentParser(
-        description="ftfy (fixes text for you), version %s" % __version__
+        description=f"ftfy (fixes text for you), version {__version__}"
     )
     parser.add_argument(
         "filename",
