@@ -121,14 +121,10 @@ def make_sloppy_codec(encoding: str) -> codecs.CodecInfo:
     # `encodings.cp1252` for comparison; this is almost exactly the same,
     # except I made it follow pep8.
     class Codec(codecs.Codec):
-        def encode(
-            self, input: str, errors: Optional[str] = "strict"
-        ) -> Tuple[bytes, int]:
+        def encode(self, input: str, errors: Optional[str] = "strict") -> Tuple[bytes, int]:
             return codecs.charmap_encode(input, errors, encoding_table)
 
-        def decode(
-            self, input: bytes, errors: Optional[str] = "strict"
-        ) -> Tuple[str, int]:
+        def decode(self, input: bytes, errors: Optional[str] = "strict") -> Tuple[str, int]:
             return codecs.charmap_decode(input, errors, decoding_table)  # type: ignore[arg-type]
 
     class IncrementalEncoder(codecs.IncrementalEncoder):

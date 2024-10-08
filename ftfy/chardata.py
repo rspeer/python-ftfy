@@ -310,8 +310,6 @@ UTF8_DETECTOR_RE = re.compile(
         |
         [{utf8_first_of_4}] [{utf8_continuation}]{{3}}
     )+
-""".format(
-        **UTF8_CLUES
-    ),
+""".format(**UTF8_CLUES),
     re.VERBOSE,
 )

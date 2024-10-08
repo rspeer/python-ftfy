@@ -137,9 +137,7 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
         return "".join(decoded_segments), position
 
     @staticmethod
-    def _buffer_decode_step(
-        input: bytes, errors: Optional[str], final: bool
-    ) -> Tuple[str, int]:
+    def _buffer_decode_step(input: bytes, errors: Optional[str], final: bool) -> Tuple[str, int]:
         """
         There are three possibilities for each decoding step:
 
@@ -178,9 +176,7 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
                     return "", 0
         else:
             # Decode a possible six-byte sequence starting with 0xed.
-            return IncrementalDecoder._buffer_decode_surrogates(
-                sup, input, errors, final
-            )
+            return IncrementalDecoder._buffer_decode_surrogates(sup, input, errors, final)
 
     @staticmethod
     def _buffer_decode_surrogates(
