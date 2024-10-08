@@ -1,3 +1,8 @@
+## Version 6.3.0 (Octuber 8, 2024)
+
+- Switched packaging from poetry to uv.
+- Uses modern Python packaging exclusively (no setup.py).
+
 ## Version 6.2.3 (August 5, 2024)
 
 - Updated PyPI metadata.
