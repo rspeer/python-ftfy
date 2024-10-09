@@ -314,7 +314,7 @@ BADNESS_RE = re.compile(
     |
 
     # Common Windows-1252 2-character mojibake that isn't covered by the cases above
-    [ÂÃÎÐ][€Šš¢£Ÿž\xa0\xad®©°·»{start_punctuation}{end_punctuation}–—´]
+    [ÂÃÎÐ][€œŠš¢£Ÿž\xa0\xad®©°·»{start_punctuation}{end_punctuation}–—´]
     |
     × [²³]
     |

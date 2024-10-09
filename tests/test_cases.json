@@ -173,6 +173,12 @@
         "expect": "pass"
     },
     {
+        "label": "Latin-1 / Windows-1252 mixup in German (issue #188)",
+        "original": "RUF MICH ZURÃœCK",
+        "fixed": "RUF MICH ZURÜCK",
+        "expect": "pass"
+    },
+    {
         "label": "Latin-1 / Windows-1252 mixup in Rīga (issue #192)",
         "original": "RÄ«ga",
         "fixed": "Rīga",
