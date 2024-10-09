@@ -756,7 +756,7 @@
     },
     {
         "label": "Latvian UTF-8 / Windows-1257 mojibake",
-        "original": "Å-veices baÅ†Ä·ieri gaida konkrÄ“tus investÄ«ciju projektus",
+        "original": "Å veices baÅ†Ä·ieri gaida konkrÄ“tus investÄ«ciju projektus",
         "fixed": "Šveices baņķieri gaida konkrētus investīciju projektus",
         "expect": "pass"
     },
