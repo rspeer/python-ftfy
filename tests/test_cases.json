@@ -755,6 +755,12 @@
         "expect": "fail"
     },
     {
+        "label": "Latvian UTF-8 / Windows-1257 mojibake",
+        "original": "Å-veices baÅ†Ä·ieri gaida konkrÄ“tus investÄ«ciju projektus",
+        "fixed": "Šveices baņķieri gaida konkrētus investīciju projektus",
+        "expect": "pass"
+    },
+    {
         "label": "Hebrew UTF-8 / Windows-1252 mojibake",
         "comment": "reported by SuperIRabbit as issue #158",
         "original": "×‘×”×•×“×¢×”",
