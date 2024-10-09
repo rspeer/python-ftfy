@@ -24,7 +24,7 @@ from ftfy import bad_codecs, chardata, fixes
 from ftfy.badness import is_bad
 from ftfy.formatting import display_ljust
 
-__version__ = "6.2.3"
+__version__ = "6.3.0"
 
 
 # Though this function does nothing, it lets linters know that we're using

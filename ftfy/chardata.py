@@ -19,6 +19,7 @@ CHARMAP_ENCODINGS = [
     "sloppy-windows-1250",
     "sloppy-windows-1253",
     "sloppy-windows-1254",
+    "sloppy-windows-1257",
     "iso-8859-2",
     "macroman",
     "cp437",
@@ -255,18 +256,20 @@ UTF8_CLUES = {
     # Letters that decode to 0xC2 - 0xDF in a Latin-1-like encoding
     "utf8_first_of_2": (
         "ÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßĂĆČĎĐĘĚĞİĹŃŇŐŘŞŢŮŰ"
+        "ĀĒŹĖĢĶĪĻŠŅŌŲŁŚŪŻŽ"
         "ΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩΪΫάέήίВГДЕЖЗИЙКЛМНОПРСТУФХЦЧШЩЪЫЬЭЮЯ"
     ),
     # Letters that decode to 0xE0 - 0xEF in a Latin-1-like encoding
-    "utf8_first_of_3": ("àáâãäåæçèéêëìíîïăćčďęěĺŕΰαβγδεζηθικλμνξοабвгдежзийклмноп"),
+    "utf8_first_of_3": ("àáâãäåæçèéêëìíîïăćčďęěĺŕąįāęēźėģķīļΰαβγδεζηθικλμνξοабвгдежзийклмноп"),
     # Letters that decode to 0xF0 or 0xF3 in a Latin-1-like encoding.
     # (Other leading bytes correspond only to unassigned codepoints)
-    "utf8_first_of_4": ("ðóđğπσру"),
+    "utf8_first_of_4": ("ðóđğπσруš"),
     # Letters that decode to 0x80 - 0xBF in a Latin-1-like encoding,
     # including a space standing in for 0xA0
     "utf8_continuation": (
         "\x80-\xbf"
         "ĄąĽľŁłŒœŚśŞşŠšŤťŸŹźŻżŽžƒˆˇ˘˛˜˝΄΅"
+        "ØŖÆøŗæ"
         "ΆΈΉΊΌΎΏЁЂЃЄЅІЇЈЉЊЋЌЎЏёђѓєѕіїјљњћќўџҐґ"
         "–—―‘’‚“”„†‡•…‰‹›€№™"
         " "
@@ -277,6 +280,7 @@ UTF8_CLUES = {
     "utf8_continuation_strict": (
         "\x80-\xbf"
         "ĄąĽľŁłŒœŚśŞşŠšŤťŸŹźŻżŽžƒˆˇ˘˛˜˝΄΅"
+        "ØŖÆøŗæ"
         "ΆΈΉΊΌΎΏЁЂЃЄЅІЇЈЉЊЋЌЎЏёђѓєѕіїјљњћќўџҐґ"
         "†‡•‰‹›€№™"
     ),

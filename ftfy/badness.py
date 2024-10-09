@@ -16,7 +16,7 @@ import warnings
 import re
 
 
-# There are only 403 characters that occur in known UTF-8 mojibake, and we can
+# There are only a few hundred characters that occur in known UTF-8 mojibake, and we can
 # characterize them:
 
 MOJIBAKE_CATEGORIES = {
@@ -132,6 +132,9 @@ MOJIBAKE_CATEGORIES = {
         "ò-ö"
         "ø-ü"
         "\N{LATIN CAPITAL LETTER O WITH DOUBLE ACUTE}"
+        "\N{LATIN CAPITAL LETTER O WITH MACRON}"
+        "\N{LATIN CAPITAL LETTER U WITH MACRON}"
+        "\N{LATIN CAPITAL LETTER U WITH OGONEK}"
         "\N{DEGREE SIGN}"
     ),
     "upper_accented": (
@@ -143,6 +146,7 @@ MOJIBAKE_CATEGORIES = {
         "\N{LATIN CAPITAL LETTER U WITH DIAERESIS}"
         "\N{LATIN CAPITAL LETTER Y WITH ACUTE}"
         "\N{LATIN CAPITAL LETTER A WITH BREVE}"
+        "\N{LATIN CAPITAL LETTER A WITH MACRON}"
         "\N{LATIN CAPITAL LETTER A WITH OGONEK}"
         "\N{LATIN CAPITAL LETTER C WITH ACUTE}"
         "\N{LATIN CAPITAL LETTER C WITH CARON}"
@@ -150,13 +154,20 @@ MOJIBAKE_CATEGORIES = {
         "\N{LATIN CAPITAL LETTER D WITH STROKE}"
         "\N{LATIN CAPITAL LETTER E WITH OGONEK}"
         "\N{LATIN CAPITAL LETTER E WITH CARON}"
+        "\N{LATIN CAPITAL LETTER E WITH MACRON}"
+        "\N{LATIN CAPITAL LETTER E WITH DOT ABOVE}"
         "\N{LATIN CAPITAL LETTER G WITH BREVE}"
+        "\N{LATIN CAPITAL LETTER G WITH CEDILLA}"
         "\N{LATIN CAPITAL LETTER I WITH DOT ABOVE}"
+        "\N{LATIN CAPITAL LETTER I WITH MACRON}"
+        "\N{LATIN CAPITAL LETTER K WITH CEDILLA}"
         "\N{LATIN CAPITAL LETTER L WITH ACUTE}"
         "\N{LATIN CAPITAL LETTER L WITH CARON}"
         "\N{LATIN CAPITAL LETTER L WITH STROKE}"
+        "\N{LATIN CAPITAL LETTER L WITH CEDILLA}"
         "\N{LATIN CAPITAL LETTER N WITH ACUTE}"
         "\N{LATIN CAPITAL LETTER N WITH CARON}"
+        "\N{LATIN CAPITAL LETTER N WITH CEDILLA}"
         "\N{LATIN CAPITAL LIGATURE OE}"
         "\N{LATIN CAPITAL LETTER R WITH CARON}"
         "\N{LATIN CAPITAL LETTER S WITH ACUTE}"
@@ -179,16 +190,24 @@ MOJIBAKE_CATEGORIES = {
         # skip o's and u's that could be used in kaomoji
         "\N{LATIN SMALL LETTER A WITH BREVE}"
         "\N{LATIN SMALL LETTER A WITH OGONEK}"
+        "\N{LATIN SMALL LETTER A WITH MACRON}"
         "\N{LATIN SMALL LETTER C WITH ACUTE}"
         "\N{LATIN SMALL LETTER C WITH CARON}"
         "\N{LATIN SMALL LETTER D WITH CARON}"
         "\N{LATIN SMALL LETTER D WITH STROKE}"
         "\N{LATIN SMALL LETTER E WITH OGONEK}"
         "\N{LATIN SMALL LETTER E WITH CARON}"
+        "\N{LATIN SMALL LETTER E WITH MACRON}"
+        "\N{LATIN SMALL LETTER E WITH DOT ABOVE}"
         "\N{LATIN SMALL LETTER G WITH BREVE}"
+        "\N{LATIN SMALL LETTER G WITH CEDILLA}"
+        "\N{LATIN SMALL LETTER I WITH OGONEK}"
+        "\N{LATIN SMALL LETTER I WITH MACRON}"
+        "\N{LATIN SMALL LETTER K WITH CEDILLA}"
         "\N{LATIN SMALL LETTER L WITH ACUTE}"
         "\N{LATIN SMALL LETTER L WITH CARON}"
         "\N{LATIN SMALL LETTER L WITH STROKE}"
+        "\N{LATIN SMALL LETTER L WITH CEDILLA}"
         "\N{LATIN SMALL LIGATURE OE}"
         "\N{LATIN SMALL LETTER R WITH ACUTE}"
         "\N{LATIN SMALL LETTER S WITH ACUTE}"
@@ -350,7 +369,13 @@ BADNESS_RE = re.compile(
 
     # Windows-1253 mojibake of Latin-1 characters and/or the Greek alphabet
     [ΒΓΞΟ][{c1}{bad}{start_punctuation}{end_punctuation}{currency}°][ΒΓΞΟ]
-""".format(**MOJIBAKE_CATEGORIES),
+    |
+
+    # Windows-1257 mojibake of characters in the U+2000 range
+    ā€
+    """.format(
+        **MOJIBAKE_CATEGORIES
+    ),
     re.VERBOSE,
 )
 

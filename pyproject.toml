@@ -24,7 +24,7 @@ ftfy = "ftfy.cli:main"
 [project.urls]
 Issues = "https://github.com/rspeer/python-ftfy/issues/"
 Changelog = "https://github.com/rspeer/python-ftfy/blob/main/CHANGELOG.md"
-Cohost = "https://cohost.org/arborelia"
+Blog = "https://posts.arborelia.net"
 
 [build-system]
 requires = ["hatchling"]

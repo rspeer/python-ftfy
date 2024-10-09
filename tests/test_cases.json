@@ -561,6 +561,13 @@
         "expect": "pass"
     },
     {
+        "label": "Negative: it looks like Windows-1257 mojibake but someone writes their name this way",
+        "comment": "Should not become a cedilla",
+        "original": "Connect with Āø on Facebook",
+        "fixed": "Connect with Āø on Facebook",
+        "expect": "pass"
+    },
+    {
         "label": "Mostly negative: we only need to fix C1 control characters",
         "comment": "We should not decode 'é\u0085 ' as '酠'",
         "original": "C'est vrai que nous n'en avons pas encore beaucoup parlé\u0085 Tu sais, ça fait de nombreuses années",
@@ -925,6 +932,26 @@
         "comment": "We would change 'DATÃ™' to 'DATÙ' if it passed the badness heuristic",
         "original": "NICIODATĂ™",
         "fixed": "NICIODATĂ™",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: Lithuanian word before a trademark sign",
+        "comment": "Similar to the above example. Shouldn't turn into U+0619 ARABIC SMALL DAMMA",
+        "original": "TRANSFORMATORIŲ™",
+        "fixed": "TRANSFORMATORIŲ™",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: Norwegian capitalized sentence",
+        "comment": "We're shouting that the island of Håøya is gullible. It should not turn into 'HŨYA ER BLŨYD'.",
+        "original": "HÅØYA ER BLÅØYD",
+        "fixed": "HÅØYA ER BLÅØYD",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: raised eyebrow kaomoji",
+        "original": "Ō¬o",
+        "fixed": "Ō¬o",
         "expect": "pass"
     },
     {
