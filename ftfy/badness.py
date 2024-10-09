@@ -302,11 +302,15 @@ BADNESS_RE = re.compile(
     |
     [{box}] [{end_punctuation}]
     |
-    [{lower_accented}{upper_accented}] [{end_punctuation}] \w
+    [{lower_accented}{upper_accented}] [{start_punctuation}{end_punctuation}] \w
     |
 
     # The ligature œ when not followed by an unaccented Latin letter
     [Œœ][^A-Za-z]
+    |
+
+    # Degree signs after capital letters
+    [{upper_accented}]°
     |
 
     # Common Windows-1252 2-character mojibake that isn't covered by the cases above

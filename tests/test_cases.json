@@ -167,6 +167,18 @@
         "expect": "pass"
     },
     {
+        "label": "Latin-1 / Windows-1252 mixup in İstanbul (issue #192)",
+        "original": "Ä°stanbul",
+        "fixed": "İstanbul",
+        "expect": "pass"
+    },
+    {
+        "label": "Latin-1 / Windows-1252 mixup in Rīga (issue #192)",
+        "original": "RÄ«ga",
+        "fixed": "Rīga",
+        "expect": "pass"
+    },
+    {
         "label": "UTF-8 / Windows-1251 mixed up twice in Russian",
         "original": "Р С—РЎР‚Р С‘РЎРЏРЎвЂљР Р…Р С•РЎРѓРЎвЂљР С‘. РІСњВ¤",
         "fixed": "приятности. ❤",
