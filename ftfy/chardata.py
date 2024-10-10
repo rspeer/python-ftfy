@@ -650,7 +650,6 @@ UTF8_CLUES: dict[str, str] = {
         "\N{CYRILLIC SMALL LETTER GHE WITH UPTURN}"  # windows-1251:B4
         "\N{DAGGER}"  # windows-1252:86
         "\N{DOUBLE DAGGER}"  # windows-1252:87
-        "\N{BULLET}"  # windows-1252:95
         "\N{PER MILLE SIGN}"  # windows-1252:89
         "\N{SINGLE LEFT-POINTING ANGLE QUOTATION MARK}"  # windows-1252:8B
         "\N{SINGLE RIGHT-POINTING ANGLE QUOTATION MARK}"  # windows-1252:9B
