@@ -1,6 +1,11 @@
-from ftfy.chardata import UTF8_CLUES
-from dataclasses import dataclass
+"""
+Used to regenerate character tables in ftfy/chardata.py with explanatory comments.
+"""
+
 import unicodedata
+from dataclasses import dataclass
+
+from ftfy.chardata import UTF8_CLUES
 
 
 @dataclass
