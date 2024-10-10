@@ -42,8 +42,6 @@ MOJIBAKE_CATEGORIES = {
         "\N{DIAERESIS}"
         "\N{NOT SIGN}"
         "\N{MACRON}"
-        "\N{PILCROW SIGN}"
-        "\N{SECTION SIGN}"
         "\N{CEDILLA}"
         "\N{LATIN SMALL LETTER F WITH HOOK}"
         "\N{MODIFIER LETTER CIRCUMFLEX ACCENT}"  # it's not a modifier
@@ -61,6 +59,11 @@ MOJIBAKE_CATEGORIES = {
         # co-occur with other mojibake characters, it's not really ambiguous
         "\N{FEMININE ORDINAL INDICATOR}"
         "\N{MASCULINE ORDINAL INDICATOR}"
+    ),
+    # Characters used in legalese
+    "law": (
+        "\N{PILCROW SIGN}"
+        "\N{SECTION SIGN}"
     ),
     "currency": (
         "\N{CENT SIGN}"
@@ -272,11 +275,11 @@ BADNESS_RE = re.compile(
     r"""
     [{c1}]
     |
-    [{bad}{lower_accented}{upper_accented}{box}{start_punctuation}{end_punctuation}{currency}{numeric}] [{bad}]
+    [{bad}{lower_accented}{upper_accented}{box}{start_punctuation}{end_punctuation}{currency}{numeric}{law}] [{bad}]
     |
     [a-zA-Z] [{lower_common}{upper_common}] [{bad}]
     |
-    [{bad}] [{lower_accented}{upper_accented}{box}{start_punctuation}{end_punctuation}{currency}{numeric}]
+    [{bad}] [{lower_accented}{upper_accented}{box}{start_punctuation}{end_punctuation}{currency}{numeric}{law}]
     |
     [{lower_accented}{lower_common}{box}{end_punctuation}{currency}{numeric}] [{upper_accented}]
     |
@@ -286,11 +289,11 @@ BADNESS_RE = re.compile(
     |
     \s [{upper_accented}] [{currency}]
     |
-    [{upper_accented}{box}] [{numeric}]
+    [{upper_accented}{box}] [{numeric}{law}]
     |
     [{lower_accented}{upper_accented}{box}{currency}{end_punctuation}] [{start_punctuation}] [{numeric}]
     |
-    [{lower_accented}{upper_accented}{currency}{numeric}{box}] [{end_punctuation}] [{start_punctuation}]
+    [{lower_accented}{upper_accented}{currency}{numeric}{box}{law}] [{end_punctuation}] [{start_punctuation}]
     |
     [{currency}{numeric}{box}] [{start_punctuation}]
     |
@@ -298,7 +301,7 @@ BADNESS_RE = re.compile(
     |
     [{box}] [{kaomoji}]
     |
-    [{lower_accented}{upper_accented}{currency}{numeric}{start_punctuation}{end_punctuation}] [{box}]
+    [{lower_accented}{upper_accented}{currency}{numeric}{start_punctuation}{end_punctuation}{law}] [{box}]
     |
     [{box}] [{end_punctuation}]
     |

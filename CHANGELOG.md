@@ -1,7 +1,13 @@
-## Version 6.3.0 (Octuber 8, 2024)
+## Version 6.3.0 (October 8, 2024)
 
 - Switched packaging from poetry to uv.
 - Uses modern Python packaging exclusively (no setup.py).
+- Added support for mojibake in Windows-1257 (Baltic) and codepage 850 (MS-DOS in Western Europe).
+- Detects mojibake for "Ü" in an uppercase word, such as "ZURÜCK".
+- Expanded a heuristic that notices improbable punctuation.
+- Fixed a false positive involving two concatenated strings, one of which began with the § sign.
+- Rewrote `chardata.py` to be more human-readable and debuggable, instead of being full of
+  keysmash-like character sets.
 
 ## Version 6.2.3 (August 5, 2024)
 

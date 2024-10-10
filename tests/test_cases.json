@@ -312,6 +312,13 @@
         "expect": "pass"
     },
     {
+        "label": "UTF-8 / ISO-8859-2 mixup in Czech",
+        "comment": "This says 'I've had enough of the third millennium', which is great because it involves software decisions made in the second",
+        "original": "MĂĄm dost tĹ\u0099etĂ\u00adho tisĂ\u00adciletĂ\u00ad",
+        "fixed": "Mám dost třetího tisíciletí",
+        "expect": "pass"
+    },
+    {
         "label": "UTF-8 / Windows-1252 mixup in mixed French and Arabic",
         "comment": "A difficult test case that can depend on the order that steps are applied",
         "original": "Ã€ tous mes frÃ¨res et soeurs dans la syriennetÃ© comme dans l’humanitÃ©, sans discrimination aucune, je vous souhaite bonne fÃªte Ø¹ÙŠØ¯ Ø³Ø¹ÙŠØ¯.Que la paix, la libertÃ©, l’Ã©galitÃ©, la fraternitÃ© et la dignitÃ© soient avec vous.Pardonnez ce ton un peu ecclÃ©siastique.",
@@ -760,6 +767,20 @@
         "expect": "pass"
     },
     {
+        "label": "HTML entity on top of UTF-8 / Latin-1",
+        "original": "10Î&frac14;s",
+        "fixed-encoding": "10Î&frac14;s",
+        "fixed": "10μs",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: Two concatenated strings",
+        "comment": "Should not turn into 'fratarak᧠141'",
+        "original": "Oborzos, per. Vahbarz, frataraká§ 141",
+        "fixed": "Oborzos, per. Vahbarz, frataraká§ 141",
+        "expect": "pass"
+    },
+    {
         "label": "Negative: Indonesian leetspeak",
         "original": "MÄ£ÄM ÌÑÌ Q £ÄGÌ GÄLÄW ÑÍCH SÖÄ£ ÑÝÄ $ÚÄMÌ Q £ÄGÌ GÄK ÉÑÄK BÄDÄÑ....?????????,                     ......JÄDÍ...",
         "fixed": "MÄ£ÄM ÌÑÌ Q £ÄGÌ GÄLÄW ÑÍCH SÖÄ£ ÑÝÄ $ÚÄMÌ Q £ÄGÌ GÄK ÉÑÄK BÄDÄÑ....?????????,                     ......JÄDÍ...",
@@ -798,10 +819,35 @@
         "expect": "pass"
     },
     {
+        "label": "Latvian UTF-8 / MacRoman mojibake",
+        "original": "SaeimƒÅ ievƒìlƒìtƒÅs partijas \"Progresƒ´vie\" lƒ´dzvadƒ´tƒÅja Anto≈Üina ≈Öena≈°eva atbild uz ≈æurnƒÅlistu jautƒÅjumiem pƒìc partijas tik≈°anƒÅs ar Valsts prezidentu Rƒ´gas pilƒ´,",
+        "fixed": "Saeimā ievēlētās partijas \"Progresīvie\" līdzvadītāja Antoņina Ņenaševa atbild uz žurnālistu jautājumiem pēc partijas tikšanās ar Valsts prezidentu Rīgas pilī,",
+        "expect": "pass"
+    },
+    {
+        "label": "Lithuanian UTF-8 / Windows-1257 mojibake",
+        "original": "Å iaip ÄÆdomu, kaip ÄÆsivaizduoji. VisÅ³ pirma tam reikia laiko.",
+        "fixed": "Šiaip įdomu, kaip įsivaizduoji. Visų pirma tam reikia laiko.",
+        "expect": "pass"
+    },
+    {
+        "label": "Lithuanian UTF-8 / Windows-1250 mojibake",
+        "original": "Lietuva pagrÄŻstai gali paklausti: Ĺ˝inoma, kad ne.",
+        "fixed": "Lietuva pagrįstai gali paklausti: Žinoma, kad ne.",
+        "expect": "pass"
+    },
+    {
         "label": "Hebrew UTF-8 / Windows-1252 mojibake",
         "comment": "reported by SuperIRabbit as issue #158",
         "original": "×‘×”×•×“×¢×”",
         "fixed": "בהודעה",
+        "expect": "pass"
+    },
+    {
+        "label": "Wide comma in UTF-8 / Windows-1252",
+        "original": "Ningboï¼ŒChina",
+        "fixed-encoding": "Ningbo，China",
+        "fixed": "Ningbo,China",
         "expect": "pass"
     },
     {
