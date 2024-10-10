@@ -14,7 +14,8 @@ ftfy can understand text that was decoded as any of these single-byte encodings:
 - Windows-1257 (cp1257 -- used in Microsoft products in Baltic countries)
 - ISO-8859-2 (which is not quite the same as Windows-1250)
 - MacRoman (used on Mac OS 9 and earlier)
-- cp437 (used in MS-DOS and some versions of the Windows command prompt)
+- cp437 (used in MS-DOS, and some versions of the Windows command prompt, in the Americas)
+- cp850 (used in MS-DOS, and some versions of the Windows command prompt, in Western Europe)
 
 when it was actually intended to be decoded as one of these variable-length encodings:
 

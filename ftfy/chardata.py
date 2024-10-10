@@ -23,6 +23,7 @@ CHARMAP_ENCODINGS = [
     "iso-8859-2",
     "macroman",
     "cp437",
+    "cp850",
 ]
 
 SINGLE_QUOTE_RE = re.compile("[\u02bc\u2018-\u201b]")
@@ -570,7 +571,7 @@ UTF8_CLUES: dict[str, str] = {
     ),
     # Letters that decode to 0x80 - 0xBF in a Latin-1-like encoding,
     # and don't usually stand for themselves when adjacent to mojibake.
-    # This excludes spaces, dashes, quotation marks, and ellipses.
+    # This excludes spaces, dashes, 'bullet', quotation marks, and ellipses.
     "utf8_continuation_strict": (
         "\x80-\xbf"
         "\N{LATIN CAPITAL LETTER A WITH OGONEK}"  # windows-1250:A5

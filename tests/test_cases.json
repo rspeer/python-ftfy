@@ -112,7 +112,26 @@
         "expect": "pass"
     },
     {
+        "label": "Synthetic: Messy language name in cp850: Czech",
+        "original": "─îe┼ítina",
+        "fixed": "Čeština",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: Messy language name in cp850: Vietnamese",
+        "original": "Tiß║┐ng Viß╗çt",
+        "fixed": "Tiếng Việt",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: Messy language name in cp850: Japanese",
+        "original": "µùÑµ£¼Þ¬×",
+        "fixed": "日本語",
+        "expect": "pass"
+    },
+    {
         "label": "Low-codepoint emoji",
+        "comment": "From the ancient era before widespread emoji support on Twitter",
         "original": "He's Justinâ\u009d¤",
         "fixed": "He's Justin❤",
         "expect": "pass"
