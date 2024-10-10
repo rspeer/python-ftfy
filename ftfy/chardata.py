@@ -23,7 +23,6 @@ CHARMAP_ENCODINGS = [
     "iso-8859-2",
     "macroman",
     "cp437",
-    "cp850",
 ]
 
 SINGLE_QUOTE_RE = re.compile("[\u02bc\u2018-\u201b]")

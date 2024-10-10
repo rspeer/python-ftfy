@@ -112,21 +112,15 @@
         "expect": "pass"
     },
     {
-        "label": "Synthetic: Messy language name in cp850: Czech",
+        "label": "Synthetic: Messy language name in cp437: Czech",
         "original": "─îe┼ítina",
         "fixed": "Čeština",
         "expect": "pass"
     },
     {
-        "label": "Synthetic: Messy language name in cp850: Vietnamese",
+        "label": "Synthetic: Messy language name in cp437: Vietnamese",
         "original": "Tiß║┐ng Viß╗çt",
         "fixed": "Tiếng Việt",
-        "expect": "pass"
-    },
-    {
-        "label": "Synthetic: Messy language name in cp850: Japanese",
-        "original": "µùÑµ£¼Þ¬×",
-        "fixed": "日本語",
         "expect": "pass"
     },
     {

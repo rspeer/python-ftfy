@@ -2,7 +2,7 @@
 
 - Switched packaging from poetry to uv.
 - Uses modern Python packaging exclusively (no setup.py).
-- Added support for mojibake in Windows-1257 (Baltic) and codepage 850 (MS-DOS in Western Europe).
+- Added support for mojibake in Windows-1257 (Baltic).
 - Detects mojibake for "Ü" in an uppercase word, such as "ZURÜCK".
 - Expanded a heuristic that notices improbable punctuation.
 - Fixed a false positive involving two concatenated strings, one of which began with the § sign.

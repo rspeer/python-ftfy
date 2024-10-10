@@ -14,8 +14,7 @@ ftfy can understand text that was decoded as any of these single-byte encodings:
 - Windows-1257 (cp1257 -- used in Microsoft products in Baltic countries)
 - ISO-8859-2 (which is not quite the same as Windows-1250)
 - MacRoman (used on Mac OS 9 and earlier)
-- cp437 (used in MS-DOS, and some versions of the Windows command prompt, in the Americas)
-- cp850 (used in MS-DOS, and some versions of the Windows command prompt, in Western Europe)
+- cp437 (it's the "text mode" in your video card firmware)
 
 when it was actually intended to be decoded as one of these variable-length encodings:
 
@@ -27,6 +26,8 @@ It can also understand text that was intended as Windows-1252 but decoded as Lat
 However, ftfy cannot understand other mixups between single-byte encodings, because it is extremely difficult to detect which mixup in particular is the one that happened.
 
 We also can't handle the legacy encodings used for Chinese, Japanese, and Korean, such as ``shift-jis`` and ``gb18030``.  See `issue #34`_ for why this is so hard.
+
+I tried adding support for cp850, the cp437-workalike that supported European languages, but I couldn't find any real examples that it fixed, and it introduced some false positives.
 
 .. _`issue #34`: https://github.com/rspeer/python-ftfy/issues/34
 

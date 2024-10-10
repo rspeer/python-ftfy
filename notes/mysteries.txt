@@ -1,0 +1,10 @@
+on https://www.nipette.com/article-6358031.html, a comment is signed 'MÃ\x83Â©Ã\x82Â¬Ã\x82Â¡nie'.
+This happens to be triple-UTF-8 for 'M鬡nie', but that's probably not the name they meant.
+
+What exactly did https://www.horoskopy-horoskop.cz/clanek/431-numerologicky-vyznam-jmena-jaromir
+mean when they said 'TadeÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¡ÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂÃÂ¡' ?
+
+https://mtlurb.com/tags/arbres/
+'montrã©al' probably isn't in cp850, but what is it?
+
+
