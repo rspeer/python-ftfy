@@ -6,7 +6,7 @@ ftfy: fixes text for you
 “Assume all external input is the result of (a series of) bugs.”
 — `RFC 9225`_: Software Defects Considered Harmful
 
-.. _`RFC 9225`: https://www.rfc-editor.org/rfc/rfc9225.html#confirmed
+.. _`RFC 9225`: https://www.rfc-editor.org/rfc/rfc9225.html
 
 **ftfy** fixes Unicode that's broken in various ways.
 
