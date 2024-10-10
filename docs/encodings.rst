@@ -6,11 +6,12 @@ ftfy can't fix all possible mix-ups. Its goal is to cover the most common encodi
 ftfy can understand text that was decoded as any of these single-byte encodings:
 
 - Latin-1 (ISO-8859-1)
-- Windows-1252 (cp1252 -- used in Microsoft products)
-- Windows-1251 (cp1251 -- the Russian version of cp1252)
-- Windows-1250 (cp1250 -- the Eastern European version of cp1252)
-- Windows-1253 (cp1253 -- the Greek version of cp1252)
-- Windows-1254 (cp1254 -- the Turkish version of cp1252)
+- Windows-1250 (cp1250 -- used in Microsoft products in Eastern Europe)
+- Windows-1251 (cp1251 -- used in Microsoft products in Russia)
+- Windows-1252 (cp1252 -- used in Microsoft products in Western Europe and the Americas)
+- Windows-1253 (cp1253 -- used in Microsoft products in Greece)
+- Windows-1254 (cp1254 -- used in Microsoft products in Türkiye)
+- Windows-1257 (cp1257 -- used in Microsoft products in Baltic countries)
 - ISO-8859-2 (which is not quite the same as Windows-1250)
 - MacRoman (used on Mac OS 9 and earlier)
 - cp437 (used in MS-DOS and some versions of the Windows command prompt)
@@ -26,6 +27,6 @@ However, ftfy cannot understand other mixups between single-byte encodings, beca
 
 We also can't handle the legacy encodings used for Chinese, Japanese, and Korean, such as ``shift-jis`` and ``gb18030``.  See `issue #34`_ for why this is so hard.
 
-.. _`issue #34`: https://github.com/LuminosoInsight/python-ftfy/issues/34
+.. _`issue #34`: https://github.com/rspeer/python-ftfy/issues/34
 
 Remember that the input to ftfy is Unicode, so it handles actual CJK *text* just fine. It just can't discover that a CJK *encoding* introduced mojibake into the text.
