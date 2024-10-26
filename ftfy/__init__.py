@@ -227,9 +227,7 @@ class TextFixerConfig(NamedTuple):
     explain: bool = True
 
 
-def _config_from_kwargs(
-    config: TextFixerConfig, kwargs: dict[str, Any]
-) -> TextFixerConfig:
+def _config_from_kwargs(config: TextFixerConfig, kwargs: dict[str, Any]) -> TextFixerConfig:
     """
     Handle parameters provided as keyword arguments to ftfy's top-level
     functions, converting them into a TextFixerConfig.
@@ -465,9 +463,7 @@ def fix_encoding_and_explain(
             return ExplainedText(text, plan_so_far)
 
 
-def _fix_encoding_one_step_and_explain(
-    text: str, config: TextFixerConfig
-) -> ExplainedText:
+def _fix_encoding_one_step_and_explain(text: str, config: TextFixerConfig) -> ExplainedText:
     """
     Perform one step of fixing the encoding of text.
     """
@@ -513,9 +509,7 @@ def _fix_encoding_one_step_and_explain(
                 ):
                     replaced_bytes = fixes.restore_byte_a0(encoded_bytes)
                     if replaced_bytes != encoded_bytes:
-                        transcode_steps.append(
-                            ExplanationStep("transcode", "restore_byte_a0")
-                        )
+                        transcode_steps.append(ExplanationStep("transcode", "restore_byte_a0"))
                         encoded_bytes = replaced_bytes
 
                 # Replace sequences where information has been lost
@@ -583,9 +577,7 @@ def _fix_encoding_one_step_and_explain(
     return ExplainedText(text, [])
 
 
-def fix_encoding(
-    text: str, config: TextFixerConfig | None = None, **kwargs: Any
-) -> str:
+def fix_encoding(text: str, config: TextFixerConfig | None = None, **kwargs: Any) -> str:
     """
     Apply just the encoding-fixing steps of ftfy to this text. Returns the
     fixed text, discarding the explanation.
@@ -606,9 +598,7 @@ def fix_encoding(
 ftfy = fix_text
 
 
-def fix_text_segment(
-    text: str, config: TextFixerConfig | None = None, **kwargs: Any
-) -> str:
+def fix_text_segment(text: str, config: TextFixerConfig | None = None, **kwargs: Any) -> str:
     """
     Fix text as a single segment, with a consistent sequence of steps that
     are applied to fix the text. Discard the explanation.

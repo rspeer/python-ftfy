@@ -143,7 +143,7 @@ def make_sloppy_codec(encoding: str) -> codecs.CodecInfo:
     return codecs.CodecInfo(
         name="sloppy-" + encoding,
         encode=Codec().encode,
-        decode=Codec().decode,
+        decode=Codec().decode,  # type: ignore[arg-type]
         incrementalencoder=IncrementalEncoder,
         incrementaldecoder=IncrementalDecoder,
         streamreader=StreamReader,
