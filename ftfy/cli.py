@@ -4,6 +4,7 @@ A command-line utility for fixing text found in a file.
 
 import os
 import sys
+from pathlib import Path
 from typing import Union
 
 from ftfy import TextFixerConfig, __version__, fix_file
@@ -101,7 +102,7 @@ def main() -> None:
         # whatever encoding is necessary.
         file = sys.stdin.buffer
     else:
-        file = open(args.filename, "rb")
+        file = Path(args.filename).open("rb")
 
     if args.output == "-":
         outfile = sys.stdout
@@ -109,17 +110,14 @@ def main() -> None:
         if os.path.realpath(args.output) == os.path.realpath(args.filename):
             sys.stderr.write(SAME_FILE_ERROR_TEXT)
             sys.exit(1)
-        outfile = open(args.output, "w", encoding="utf-8")
+        outfile = Path(args.output).open("w", encoding="utf-8")
 
     normalization = args.normalization
     if normalization.lower() == "none":
         normalization = None
 
     unescape_html: Union[str, bool]
-    if args.preserve_entities:
-        unescape_html = False
-    else:
-        unescape_html = "auto"
+    unescape_html = False if args.preserve_entities else "auto"
 
     config = TextFixerConfig(unescape_html=unescape_html, normalization=normalization)
 

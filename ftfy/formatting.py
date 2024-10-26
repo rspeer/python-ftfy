@@ -99,7 +99,8 @@ def display_ljust(text: str, width: int, fillchar: str = " ") -> str:
     correct if you're viewing this code or documentation in a Web browser.
     """
     if character_width(fillchar) != 1:
-        raise ValueError("The padding character must have display width 1")
+        msg = "The padding character must have display width 1"
+        raise ValueError(msg)
 
     text_width = monospaced_width(text)
     if text_width == -1:
@@ -129,7 +130,8 @@ def display_rjust(text: str, width: int, fillchar: str = " ") -> str:
     ▒▒▒▒▒▒▒▒ちゃぶ台返し
     """
     if character_width(fillchar) != 1:
-        raise ValueError("The padding character must have display width 1")
+        msg = "The padding character must have display width 1"
+        raise ValueError(msg)
 
     text_width = monospaced_width(text)
     if text_width == -1:
@@ -154,7 +156,8 @@ def display_center(text: str, width: int, fillchar: str = " ") -> str:
     ▒▒▒▒ちゃぶ台返し▒▒▒▒
     """
     if character_width(fillchar) != 1:
-        raise ValueError("The padding character must have display width 1")
+        msg = "The padding character must have display width 1"
+        raise ValueError(msg)
 
     text_width = monospaced_width(text)
     if text_width == -1:

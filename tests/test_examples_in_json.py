@@ -25,15 +25,15 @@ There are also two optional fields:
 """
 
 import json
-import os
+from pathlib import Path
 
 import pytest
 
 from ftfy import apply_plan, fix_and_explain, fix_encoding_and_explain, fix_text
 
-THIS_DIR = os.path.dirname(__file__)
-TEST_FILENAME = os.path.join(THIS_DIR, "test_cases.json")
-TEST_DATA = json.load(open(TEST_FILENAME, encoding="utf-8"))
+THIS_DIR = Path(__file__).parent
+TEST_FILENAME = THIS_DIR / "test_cases.json"
+TEST_DATA = json.load(TEST_FILENAME.open(encoding="utf-8"))
 
 TESTS_THAT_PASS = [test for test in TEST_DATA if test["expect"] == "pass"]
 TESTS_THAT_FAIL = [test for test in TEST_DATA if test["expect"] == "fail"]
