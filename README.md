@@ -80,7 +80,7 @@ The following text could be encoded in Windows-1252 and decoded in UTF-8, and it
 
 ## Installing
 
-ftfy is a Python 3 package that can be installed using `pip`:
+ftfy is a Python 3 package that can be installed using `pip` or `uv pip`:
 
     pip install ftfy
 
