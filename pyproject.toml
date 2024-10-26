@@ -40,8 +40,13 @@ line-length = 100
 target-version = "py39"
 
 [tool.ruff.lint]
-select = ["B", "F", "I", "N", "ANN", "UP"]
-ignore = ["ANN101", "ANN401"]
+select = ["B", "F", "I", "N", "ANN", "UP", "RUF"]
+ignore = [
+    "ANN101",
+    "ANN401",
+    "RUF001", # complains about Unicode characters that belong in my docstrings
+    "RUF002", # complains about Unicode characters that belong in my docstrings
+]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["ANN"]

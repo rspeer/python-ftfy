@@ -531,7 +531,7 @@ def _fix_encoding_one_step_and_explain(
                     decoding = "utf-8-variants"
 
                 decode_step = ExplanationStep("decode", decoding)
-                steps = [encode_step] + transcode_steps + [decode_step]
+                steps = [encode_step, *transcode_steps, decode_step]
                 fixed = encoded_bytes.decode(decoding)
                 return ExplainedText(fixed, steps)
 
