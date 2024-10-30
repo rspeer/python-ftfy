@@ -1,11 +1,12 @@
 import os
 import subprocess
+from pathlib import Path
 
 import pytest
 
 # Get the filename of 'face.txt', an example of mojibake
-THIS_DIR = os.path.dirname(__file__)
-TEST_FILENAME = os.path.join(THIS_DIR, "face.txt")
+THIS_DIR = Path(__file__).parent
+TEST_FILENAME = THIS_DIR / "face.txt"
 CORRECT_OUTPUT = os.linesep.join(["┒(⌣˛⌣)┎", ""])
 FAILED_OUTPUT = os.linesep.join(
     [
@@ -61,6 +62,6 @@ def test_same_file():
 
 
 def test_stdin():
-    with open(TEST_FILENAME, "rb") as infile:
+    with TEST_FILENAME.open("rb") as infile:
         output = get_command_output(["ftfy"], stdin=infile)
         assert output == CORRECT_OUTPUT

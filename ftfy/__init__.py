@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import unicodedata
 import warnings
-from collections.abc import Iterator
 from typing import (
+    TYPE_CHECKING,
     Any,
     BinaryIO,
     Callable,
@@ -23,6 +23,9 @@ from typing import (
 from ftfy import bad_codecs, chardata, fixes
 from ftfy.badness import is_bad
 from ftfy.formatting import display_ljust
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 __version__ = "6.3.1"
 
@@ -241,8 +244,7 @@ def _config_from_kwargs(config: TextFixerConfig, kwargs: dict[str, Any]) -> Text
         kwargs = kwargs.copy()
         kwargs["unescape_html"] = kwargs["fix_entities"]
         del kwargs["fix_entities"]
-    config = config._replace(**kwargs)
-    return config
+    return config._replace(**kwargs)
 
 
 BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
@@ -669,12 +671,13 @@ def guess_bytes(bstring: bytes) -> tuple[str, str]:
       single-byte encoding.
     """
     if isinstance(bstring, str):
-        raise UnicodeError(
+        msg = (
             "This string was already decoded as Unicode. You should pass "
             "bytes to guess_bytes, not Unicode."
         )
+        raise UnicodeError(msg)
 
-    if bstring.startswith(b"\xfe\xff") or bstring.startswith(b"\xff\xfe"):
+    if bstring.startswith((b"\xfe\xff", b"\xff\xfe")):
         return bstring.decode("utf-16"), "utf-16"
 
     byteset = set(bstring)
@@ -748,9 +751,11 @@ def apply_plan(text: str, plan: list[tuple[str, str]]) -> str:
             if encoding in FIXERS:
                 obj = FIXERS[encoding](obj)
             else:
-                raise ValueError(f"Unknown function to apply: {encoding}")
+                msg = f"Unknown function to apply: {encoding}"
+                raise ValueError(msg)
         else:
-            raise ValueError(f"Unknown plan step: {operation}")
+            msg = f"Unknown plan step: {operation}"
+            raise ValueError(msg)
 
     return obj
 

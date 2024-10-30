@@ -166,17 +166,14 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
             if len(input) > 1:
                 # Decode the two-byte sequence 0xc0 0x80.
                 return "\u0000", 2
-            else:
-                if final:
-                    # We hit the end of the stream. Let the superclass method
-                    # handle it.
-                    return sup(input, errors, True)
-                else:
-                    # Wait to see another byte.
-                    return "", 0
-        else:
-            # Decode a possible six-byte sequence starting with 0xed.
-            return IncrementalDecoder._buffer_decode_surrogates(sup, input, errors, final)
+            if final:
+                # We hit the end of the stream. Let the superclass method
+                # handle it.
+                return sup(input, errors, True)
+            # Wait to see another byte.
+            return "", 0
+        # Decode a possible six-byte sequence starting with 0xed.
+        return IncrementalDecoder._buffer_decode_surrogates(sup, input, errors, final)
 
     @staticmethod
     def _buffer_decode_surrogates(
@@ -205,28 +202,25 @@ class IncrementalDecoder(UTF8IncrementalDecoder):
                 # handle it as normal UTF-8. It might be a Hangul character
                 # or an error.
                 return sup(input, errors, final)
-            else:
-                # We found a surrogate, the stream isn't over yet, and we don't
-                # know enough of the following bytes to decode anything, so
-                # consume zero bytes and wait.
-                return "", 0
-        else:
-            if CESU8_RE.match(input):
-                # Given this is a CESU-8 sequence, do some math to pull out
-                # the intended 20-bit value, and consume six bytes.
-                codepoint = (
-                    ((input[1] & 0x0F) << 16)
-                    + ((input[2] & 0x3F) << 10)
-                    + ((input[4] & 0x0F) << 6)
-                    + (input[5] & 0x3F)
-                    + 0x10000
-                )
-                return chr(codepoint), 6
-            else:
-                # This looked like a CESU-8 sequence, but it wasn't one.
-                # 0xed indicates the start of a three-byte sequence, so give
-                # three bytes to the superclass to decode as usual.
-                return sup(input[:3], errors, False)
+            # We found a surrogate, the stream isn't over yet, and we don't
+            # know enough of the following bytes to decode anything, so
+            # consume zero bytes and wait.
+            return "", 0
+        if CESU8_RE.match(input):
+            # Given this is a CESU-8 sequence, do some math to pull out
+            # the intended 20-bit value, and consume six bytes.
+            codepoint = (
+                ((input[1] & 0x0F) << 16)
+                + ((input[2] & 0x3F) << 10)
+                + ((input[4] & 0x0F) << 6)
+                + (input[5] & 0x3F)
+                + 0x10000
+            )
+            return chr(codepoint), 6
+        # This looked like a CESU-8 sequence, but it wasn't one.
+        # 0xed indicates the start of a three-byte sequence, so give
+        # three bytes to the superclass to decode as usual.
+        return sup(input[:3], errors, False)
 
 
 # The encoder is identical to UTF-8.

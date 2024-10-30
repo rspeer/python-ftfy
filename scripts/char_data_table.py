@@ -17,8 +17,7 @@ class CharData:
     def sort_key(self) -> tuple[int, str, int]:
         if self.name.startswith("LATIN "):
             return (0, self.name, self.codept)
-        else:
-            return (1, "", self.codept)
+        return (1, "", self.codept)
 
 
 SAFE_ENCODINGS = [
@@ -56,10 +55,7 @@ def show_char_table(chars: str, byte_min: int = 0, byte_max: int = 0xFF) -> None
             if byte_min <= byte <= byte_max:
                 info_str = f"{encoding}:{byte:X}"
                 encoding_info.append(info_str)
-        if encoding_info:
-            encoding_explanation = encoding_info[0]
-        else:
-            encoding_explanation = "???"
+        encoding_explanation = encoding_info[0] if encoding_info else "???"
         print(f'        "\\N{{{cd.name}}}"  # {encoding_explanation}')
 
 
