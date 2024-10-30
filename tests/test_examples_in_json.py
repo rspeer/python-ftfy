@@ -32,8 +32,17 @@ import pytest
 from ftfy import apply_plan, fix_and_explain, fix_encoding_and_explain, fix_text
 
 THIS_DIR = Path(__file__).parent
-TEST_FILENAME = THIS_DIR / "test_cases.json"
-TEST_DATA = json.load(TEST_FILENAME.open(encoding="utf-8"))
+TEST_CASE_DIR = THIS_DIR / "test-cases"
+
+
+def load_test_data() -> list[dict]:
+    test_data = []
+    for filepath in TEST_CASE_DIR.glob("*.json"):
+        test_data.extend(json.load(filepath.open()))
+    return test_data
+
+
+TEST_DATA = load_test_data()
 
 TESTS_THAT_PASS = [test for test in TEST_DATA if test["expect"] == "pass"]
 TESTS_THAT_FAIL = [test for test in TEST_DATA if test["expect"] == "fail"]
