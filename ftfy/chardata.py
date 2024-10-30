@@ -43,7 +43,7 @@ def _build_regexes() -> dict[str, re.Pattern[str]]:
         # Make a sequence of characters that bytes \x80 to \xFF decode to
         # in each encoding, as well as byte \x1A, which is used to represent
         # the replacement character � in the sloppy-* encodings.
-        byte_range = bytes(list(range(0x80, 0x100)) + [0x1A])
+        byte_range = bytes([*range(0x80, 0x100), 0x1A])
         charlist = byte_range.decode(encoding)
 
         # The rest of the ASCII bytes -- bytes \x00 to \x19 and \x1B

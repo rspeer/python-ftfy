@@ -248,7 +248,7 @@ class StreamReader(codecs.StreamReader):
 CODEC_INFO = codecs.CodecInfo(
     name=NAME,
     encode=StreamWriter.encode,
-    decode=StreamReader.decode,
+    decode=StreamReader.decode,  # type: ignore[arg-type]
     incrementalencoder=IncrementalEncoder,
     incrementaldecoder=IncrementalDecoder,
     streamreader=StreamReader,

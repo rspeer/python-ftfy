@@ -1,3 +1,8 @@
+## Version 6.3.1 (October 25, 2024)
+
+- Fixed `license` metadata field in pyproject.toml.
+- Removed extraneous files from the `hatchling` sdist output.
+
 ## Version 6.3.0 (October 8, 2024)
 
 - Switched packaging from poetry to uv.

@@ -24,7 +24,7 @@ from ftfy import bad_codecs, chardata, fixes
 from ftfy.badness import is_bad
 from ftfy.formatting import display_ljust
 
-__version__ = "6.3.0"
+__version__ = "6.3.1"
 
 
 # Though this function does nothing, it lets linters know that we're using
@@ -525,7 +525,7 @@ def _fix_encoding_one_step_and_explain(text: str, config: TextFixerConfig) -> Ex
                     decoding = "utf-8-variants"
 
                 decode_step = ExplanationStep("decode", decoding)
-                steps = [encode_step] + transcode_steps + [decode_step]
+                steps = [encode_step, *transcode_steps, decode_step]
                 fixed = encoded_bytes.decode(decoding)
                 return ExplainedText(fixed, steps)
 
