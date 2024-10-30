@@ -1,0 +1,208 @@
+[
+    {
+        "label": "Synthetic: we can recognize Ã in some cases when it's the only mojibake",
+        "comment": "Examples in this file were made up to test something, instead of found in the wild",
+        "original": "voilÃ  le travail",
+        "fixed": "voilà le travail",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: we can recognize Ã at the end of a word when it absorbs a following space",
+        "original": "voilÃ le travail",
+        "fixed": "voilà le travail",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: Hebrew UTF-8 / Windows-1250 mojibake",
+        "original": "×‘×”×•×“×˘×”",
+        "fixed": "בהודעה",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: Hebrew UTF-8 / MacRoman mojibake",
+        "original": "◊ë◊î◊ï◊ì◊¢◊î",
+        "fixed": "בהודעה",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: Hebrew UTF-8 / Latin-1 mojibake",
+        "comment": "This example uses low-numbered codepoints to spell 'ABBA' in Hebrew, so that it falls into the range where Latin-1 is different from Windows-1252. As a bonus, this example looks right even if your RTL text rendering isn't working.",
+        "original": "×\u0090×\u0091×\u0091×\u0090",
+        "fixed": "אבבא",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: Arabic UTF-8 / Windows-1252 mojibake",
+        "original": "Ø±Ø³Ø§Ù„Ø©",
+        "fixed": "رسالة",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: Arabic UTF-8 / Windows-1250 mojibake",
+        "original": "Ř±ŘłŘ§Ů„Ř©",
+        "fixed": "رسالة",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: Arabic UTF-8 / MacRoman mojibake",
+        "original": "ÿ±ÿ≥ÿßŸÑÿ©",
+        "fixed": "رسالة",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: Brontë's name does not end with a Korean syllable",
+        "comment": "The original example of why ftfy needs heuristics",
+        "original": "I'm not such a fan of Charlotte Brontë…”",
+        "fixed-encoding": "I'm not such a fan of Charlotte Brontë…”",
+        "fixed": "I'm not such a fan of Charlotte Brontë…\"",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: hypothetical Swedish product name",
+        "comment": "This used to be a constructed example of a false positive, until you added another symbol",
+        "original": "AHÅ™, the new sofa from IKEA",
+        "fixed": "AHÅ™, the new sofa from IKEA",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: Ukrainian capital letters",
+        "comment": "We need to fix Windows-1251 conservatively, or else this decodes as '²ʲ'",
+        "original": "ВІКІ is Ukrainian for WIKI",
+        "fixed": "ВІКІ is Ukrainian for WIKI",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: don't leak our internal use of byte 0x1A",
+        "comment": "We use byte 0x1A internally as an encoding of U+FFFD, but literal occurrences of U+1A are just ASCII control characters",
+        "original": "These control characters \u001a are apparently intentional \u0081",
+        "fixed-encoding": "These control characters \u001a are apparently intentional \u0081",
+        "fixed": "These control characters  are apparently intentional \u0081",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: U+1A on its own",
+        "comment": "We use byte 0x1A internally as an encoding of U+FFFD, but literal occurrences of U+1A are just ASCII control characters",
+        "original": "Here's a control character: \u001a",
+        "fixed-encoding": "Here's a control character: \u001a",
+        "fixed": "Here's a control character: ",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: A-with-circle as an Angstrom sign",
+        "comment": "Should not turn into '10 ŗ'",
+        "original": "a radius of 10 Å—",
+        "fixed": "a radius of 10 Å—",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: Spanish with exclamation points on the wrong sides",
+        "original": "!YO SÉ¡",
+        "fixed": "!YO SÉ¡",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: fix text with backslashes in it",
+        "comment": "Tests for a regression on a long-ago bug",
+        "original": "<40\\% vs \u00e2\u0089\u00a540\\%",
+        "fixed": "<40\\% vs ≥40\\%",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: curly quotes with mismatched encoding glitches in Latin-1",
+        "original": "\u00e2\u0080\u009cmismatched quotes\u0085\u0094",
+        "fixed-encoding": "“mismatched quotes…”",
+        "fixed": "\"mismatched quotes…\"",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: curly quotes with mismatched encoding glitches in Windows-1252",
+        "original": "â€œmismatched quotesâ€¦”",
+        "fixed-encoding": "“mismatched quotes…”",
+        "fixed": "\"mismatched quotes…\"",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: lossy decoding in sloppy-windows-1252",
+        "original": "â€œlossy decodingâ€�",
+        "fixed-encoding": "“lossy decoding�",
+        "fixed": "\"lossy decoding�",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: French word for August in windows-1252",
+        "original": "aoÃ»t",
+        "fixed-encoding": "août",
+        "fixed": "août",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: French word for hotel in all-caps windows-1252",
+        "original": "HÃ”TEL",
+        "fixed-encoding": "HÔTEL",
+        "fixed": "HÔTEL",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: Scottish Gaelic word for 'subject' in all-caps windows-1252",
+        "original": "CÃ™IS",
+        "fixed-encoding": "CÙIS",
+        "fixed": "CÙIS",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: Romanian word before a non-breaking space",
+        "comment": "The word literally means 'not even once', which might be a good recommendation about fixing Romanian mojibake",
+        "original": "NICIODATĂ\u00a0",
+        "fixed": "NICIODATĂ\u00a0",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: Be careful around curly apostrophes",
+        "comment": "It shouldn't end up saying 'a lot of Òs'",
+        "original": "There are a lot of Ã’s in mojibake text",
+        "fixed-encoding": "There are a lot of Ã’s in mojibake text",
+        "fixed": "There are a lot of Ã's in mojibake text",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: Romanian word before a trademark sign",
+        "comment": "We would change 'DATÃ™' to 'DATÙ' if it passed the badness heuristic",
+        "original": "NICIODATĂ™",
+        "fixed": "NICIODATĂ™",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: Lithuanian word before a trademark sign",
+        "comment": "Similar to the above example. Shouldn't turn into U+0619 ARABIC SMALL DAMMA",
+        "original": "TRANSFORMATORIŲ™",
+        "fixed": "TRANSFORMATORIŲ™",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: Norwegian capitalized nonsense",
+        "comment": "We're shouting that the island of Håøya is gullible. It should not turn into 'HŨYA ER BLŨYD'.",
+        "original": "HÅØYA ER BLÅØYD",
+        "fixed": "HÅØYA ER BLÅØYD",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: raised eyebrow kaomoji",
+        "original": "Ō¬o",
+        "fixed": "Ō¬o",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic, negative: Camel-cased Serbian that looks like a UTF-8 / Windows-1251 mixup",
+        "comment": "I made this text up, but it seems like it means 'HelloDevil'. Could be a username or something.",
+        "original": "ПоздравЂаво",
+        "fixed": "ПоздравЂаво",
+        "expect": "pass"
+    },
+    {
+        "label": "Synthetic: mojibake with trademark sign at the end of a word",
+        "comment": "I recall the correct version of this text from a sign in the movie Amélie. Now we can help her twin AmÃ©lie, who makes mojibaked signs.",
+        "original": "OÃ™ ET QUAND?",
+        "fixed": "OÙ ET QUAND?",
+        "expect": "pass"
+    }
+]

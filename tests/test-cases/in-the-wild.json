@@ -1,0 +1,451 @@
+[
+    {
+        "label": "Low-codepoint emoji",
+        "comment": "From the ancient era before widespread emoji support on Twitter",
+        "original": "He's Justinâ\u009d¤",
+        "fixed": "He's Justin❤",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / MacRoman mix-up about smurfs",
+        "original": "Le Schtroumpf Docteur conseille g√¢teaux et baies schtroumpfantes pour un r√©gime √©quilibr√©.",
+        "fixed": "Le Schtroumpf Docteur conseille gâteaux et baies schtroumpfantes pour un régime équilibré.",
+        "expect": "pass"
+    },
+    {
+        "label": "Checkmark that almost looks okay as mojibake",
+        "original": "âœ” No problems",
+        "fixed": "✔ No problems",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Windows-1251 Russian mixup about futbol",
+        "original": "РґРѕСЂРѕРіРµ Р\u0098Р·-РїРѕРґ #С„СѓС‚Р±РѕР»",
+        "fixed": "дороге Из-под #футбол",
+        "expect": "pass"
+    },
+    {
+        "label": "Latin-1 / Windows-1252 mixup in German",
+        "original": "\u0084Handwerk bringt dich überall hin\u0093: Von der YOU bis nach Monaco",
+        "fixed-encoding": "„Handwerk bringt dich überall hin“: Von der YOU bis nach Monaco",
+        "fixed": "\"Handwerk bringt dich überall hin\": Von der YOU bis nach Monaco",
+        "expect": "pass"
+    },
+    {
+        "label": "Latin-1 / Windows-1252 mixup of the replacement character",
+        "original": "Some comments may be republished on the website or in the newspaper ï¿½ email addresses will not be published.",
+        "fixed": "Some comments may be republished on the website or in the newspaper � email addresses will not be published.",
+        "expect": "pass"
+    },
+    {
+        "label": "CESU-8 / Windows-1252 emoji",
+        "original": "Hi guys í ½í¸\u008d",
+        "fixed": "Hi guys 😍",
+        "expect": "pass"
+    },
+    {
+        "label": "CESU-8 / Latin-1 emoji",
+        "original": "hihi RT username: â\u0098ºí ½í¸\u0098",
+        "fixed": "hihi RT username: ☺😘",
+        "expect": "pass"
+    },
+    {
+        "label": "Latin-1 / Windows-1252 mixup in Turkish",
+        "original": "Beta Haber: HÄ±rsÄ±zÄ± BÃ¼yÃ¼ Korkuttu",
+        "fixed": "Beta Haber: Hırsızı Büyü Korkuttu",
+        "expect": "pass"
+    },
+    {
+        "label": "Latin-1 / Windows-1252 mixup in İstanbul (issue #192)",
+        "original": "Ä°stanbul",
+        "fixed": "İstanbul",
+        "expect": "pass"
+    },
+    {
+        "label": "Latin-1 / Windows-1252 mixup in German (issue #188)",
+        "original": "RUF MICH ZURÃœCK",
+        "fixed": "RUF MICH ZURÜCK",
+        "expect": "pass"
+    },
+    {
+        "label": "Latin-1 / Windows-1252 mixup in Rīga (issue #192)",
+        "original": "RÄ«ga",
+        "fixed": "Rīga",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Windows-1251 mixed up twice in Russian",
+        "original": "Р С—РЎР‚Р С‘РЎРЏРЎвЂљР Р…Р С•РЎРѓРЎвЂљР С‘. РІСњВ¤",
+        "fixed": "приятности. ❤",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Windows-1252 mixed up twice in Malay",
+        "original": "Kayanya laptopku error deh, soalnya tiap mau ngetik deket-deket kamu font yg keluar selalu Times New Ã¢â‚¬Å“ RomanceÃ¢â‚¬Â\u009d.",
+        "fixed-encoding": "Kayanya laptopku error deh, soalnya tiap mau ngetik deket-deket kamu font yg keluar selalu Times New “ Romance”.",
+        "fixed": "Kayanya laptopku error deh, soalnya tiap mau ngetik deket-deket kamu font yg keluar selalu Times New \" Romance\".",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Windows-1252 mixed up twice in naming Iggy Pop",
+        "original": "Iggy Pop (nÃƒÂ© Jim Osterberg)",
+        "fixed": "Iggy Pop (né Jim Osterberg)",
+        "expect": "pass"
+    },
+    {
+        "label": "Left quote is UTF-8, right quote is Latin-1, both encoded in Windows-1252",
+        "original": "Direzione Pd, ok â\u0080\u009csenza modifiche\u0094 all'Italicum.",
+        "fixed-encoding": "Direzione Pd, ok “senza modifiche” all'Italicum.",
+        "fixed": "Direzione Pd, ok \"senza modifiche\" all'Italicum.",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / sloppy Windows-1252 mixed up twice in a triumphant emoticon",
+        "original": "selamat berpuasa sob (Ã\u00a0Â¸â€¡'ÃŒâ‚¬Ã¢Å’Â£'ÃŒÂ\u0081)Ã\u00a0Â¸â€¡",
+        "fixed": "selamat berpuasa sob (ง'̀⌣'́)ง",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Windows-1252 mixed up three times",
+        "original": "The Mona Lisa doesnÃƒÂ¢Ã¢â€šÂ¬Ã¢â€žÂ¢t have eyebrows.",
+        "fixed-encoding": "The Mona Lisa doesn’t have eyebrows.",
+        "fixed": "The Mona Lisa doesn't have eyebrows.",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Codepage 437 mixup in Russian",
+        "original": "#╨┐╤Ç╨░╨▓╨╕╨╗╤î╨╜╨╛╨╡╨┐╨╕╤é╨░╨╜╨╕╨╡",
+        "fixed": "#правильноепитание",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Windows-1252 mixup in French",
+        "original": "HÃ´tel de Police",
+        "fixed": "Hôtel de Police",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Windows-1250 mixup in French",
+        "original": "LiĂ¨ge Avenue de l'HĂ´pital",
+        "fixed": "Liège Avenue de l'Hôpital",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Windows-1252 mixup in Vietnamese",
+        "original": "Táº¡i sao giÃ¡ háº¡t sáº§u riÃªng láº¡i lÃªn giÃ¡?",
+        "fixed": "Tại sao giá hạt sầu riêng lại lên giá?",
+        "expect": "pass"
+    },
+    {
+        "label": "Science! Mid-word Greek letter gets fixed correctly",
+        "original": "Humanized HLA-DR4.RagKO.IL2RÎ³cKO.NOD (DRAG) mice sustain the complex vertebrate life cycle of Plasmodium falciparum malaria.",
+        "fixed": "Humanized HLA-DR4.RagKO.IL2RγcKO.NOD (DRAG) mice sustain the complex vertebrate life cycle of Plasmodium falciparum malaria.",
+        "expect": "pass"
+    },
+    {
+        "label": "For goodness' sake. We can come close to fixing this, but fail in the last step",
+        "original": "ItÃ?Â¢â?¬â?¢s classic. ItÃ?Â¢â?¬â?¢s epic. ItÃ?Â¢â?¬â?¢s ELIZABETH BENNET for goodnessÃ?Â¢â?¬â?¢ sake!",
+        "fixed": "It�¢��s classic. It�¢��s epic. It�¢��s ELIZABETH BENNET for goodness�¢�� sake!",
+        "expect": "pass"
+    },
+    {
+        "label": "lossy UTF-8 / Windows-1250 mixup in Spanish",
+        "original": "Europa, Asia, Ă�frica, Norte, AmĂ©rica Central y del Sur, Australia y OceanĂ­a",
+        "fixed": "Europa, Asia, �frica, Norte, América Central y del Sur, Australia y Oceanía",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / sloppy Windows-1250 mixup in English",
+        "original": "It was namedÂ â€žscarsÂ´ stonesâ€ś after the rock-climbers who got hurt while climbing on it.",
+        "fixed-encoding": "It was named\u00a0„scars´ stones“ after the rock-climbers who got hurt while climbing on it.",
+        "fixed": "It was named\u00a0\"scars´ stones\" after the rock-climbers who got hurt while climbing on it.",
+        "expect": "pass"
+    },
+    {
+        "label": "The same text as above, but as a UTF-8 / ISO-8859-2 mixup",
+        "original": "It was namedÂ\u00a0â\u0080\u009escarsÂ´ stonesâ\u0080\u009c after the rock-climbers who got hurt while climbing on it.",
+        "fixed-encoding": "It was named\u00a0„scars´ stones“ after the rock-climbers who got hurt while climbing on it.",
+        "fixed": "It was named\u00a0\"scars´ stones\" after the rock-climbers who got hurt while climbing on it.",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / ISO-8859-2 mixup in Czech",
+        "comment": "This says 'I've had enough of the third millennium', which is great because it involves software decisions made in the second",
+        "original": "MĂĄm dost tĹ\u0099etĂ\u00adho tisĂ\u00adciletĂ\u00ad",
+        "fixed": "Mám dost třetího tisíciletí",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Windows-1252 mixup in mixed French and Arabic",
+        "comment": "A difficult test case that can depend on the order that steps are applied",
+        "original": "Ã€ tous mes frÃ¨res et soeurs dans la syriennetÃ© comme dans l’humanitÃ©, sans discrimination aucune, je vous souhaite bonne fÃªte Ø¹ÙŠØ¯ Ø³Ø¹ÙŠØ¯.Que la paix, la libertÃ©, l’Ã©galitÃ©, la fraternitÃ© et la dignitÃ© soient avec vous.Pardonnez ce ton un peu ecclÃ©siastique.",
+        "fixed-encoding": "À tous mes frères et soeurs dans la syrienneté comme dans l’humanité, sans discrimination aucune, je vous souhaite bonne fête عيد سعيد.Que la paix, la liberté, l’égalité, la fraternité et la dignité soient avec vous.Pardonnez ce ton un peu ecclésiastique.",
+        "fixed": "À tous mes frères et soeurs dans la syrienneté comme dans l'humanité, sans discrimination aucune, je vous souhaite bonne fête عيد سعيد.Que la paix, la liberté, l'égalité, la fraternité et la dignité soient avec vous.Pardonnez ce ton un peu ecclésiastique.",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / sloppy Windows-1250 mixup in Romanian",
+        "original": "vedere Ă®nceĹŁoĹźatÄ\u0083",
+        "fixed": "vedere înceţoşată",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Windows-1250 mixup in Slovak",
+        "original": "NapĂ\u00adĹˇte nĂˇm !",
+        "fixed": "Napíšte nám !",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Windows-1252 mixup in Spanish",
+        "original": "DOS AÃ‘OS",
+        "fixed": "DOS AÑOS",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Windows-1252 followed by UTF-8 / Windows-1251",
+        "original": "a bigger-than-expected Г‚ВЈ5.8bn rights issue to satisfy the new banking regulator",
+        "fixed": "a bigger-than-expected £5.8bn rights issue to satisfy the new banking regulator",
+        "expect": "pass"
+    },
+    {
+        "label": "fancy Unicode crossing-out, but mojibaked",
+        "original": "hotel $49 $Ì¶6Ì¶3Ì¶ updated 2018",
+        "fixed": "hotel $49 $̶6̶3̶ updated 2018",
+        "expect": "pass"
+    },
+    {
+        "label": "A face with UTF-8 / sloppy Windows-1252 mixed up twice",
+        "original": "Ã¢â€\u009dâ€™(Ã¢Å’Â£Ã‹â€ºÃ¢Å’Â£)Ã¢â€\u009dÅ½",
+        "fixed": "┒(⌣˛⌣)┎",
+        "expect": "pass"
+    },
+    {
+        "label": "We can mostly decode the face above when we lose the character U+009D",
+        "original": "Ã¢â€�â€™(Ã¢Å’Â£Ã‹â€ºÃ¢Å’Â£)Ã¢â€�Å½",
+        "fixed": "�(⌣˛⌣)�",
+        "expect": "pass"
+    },
+    {
+        "label": "Lossy decoding can have plain ASCII question marks, as well",
+        "original": "The ICR has been upgraded to â€œbb+â€? from â€œbbâ€?",
+        "fixed-encoding": "The ICR has been upgraded to “bb+� from “bb�",
+        "fixed": "The ICR has been upgraded to \"bb+� from \"bb�",
+        "expect": "pass"
+    },
+    {
+        "label": "CESU-8 / Latin-1 mixup over several emoji",
+        "comment": "You tried",
+        "original": "I just figured out how to tweet emojis! â\u009a½í\u00a0½í¸\u0080í\u00a0½í¸\u0081í\u00a0½í¸\u0082í\u00a0½í¸\u0086í\u00a0½í¸\u008eí\u00a0½í¸\u008eí\u00a0½í¸\u008eí\u00a0½í¸\u008e",
+        "fixed": "I just figured out how to tweet emojis! ⚽😀😁😂😆😎😎😎😎",
+        "expect": "pass"
+    },
+    {
+        "label": "An absolutely hopeless garble",
+        "comment": "If we try too hard to decode this, we'll recursively apply `decode_inconsistent_utf8` until the characters turn into random Han and katakana characters.",
+        "original": "ã†â€™ãƒâ€ ã¢â‚¬â„¢ãƒæ’ã‚â¢ãƒâ¢ã¢â‚¬å¡ã‚â¬ãƒâ€šã‚â",
+        "fixed-encoding": "ã†â€™ãƒâ€ ã¢â‚¬â„¢ãƒæ’ã‚â¢ãƒâ¢ã¢â‚¬å¡ã‚â¬ãƒâ€šã‚â",
+        "fixed": "ã†â€™ãƒâ€ ã¢â'¬â\"¢ãƒæ'ã'â¢ãƒâ¢ã¢â'¬å¡ã'â¬ãƒâ€šã'â",
+        "expect": "pass"
+    },
+    {
+        "label": "Inconsistent UTF-8 / Latin-1 mojibake",
+        "original": "Ecuadorâ\u0080\u0099s â\u0080\u0098purely political decision on Assangeâ\u0080\u0099 is likely result of â\u0080\u0098US pressureâ\u0080\u0099\u0085",
+        "fixed-encoding": "Ecuador’s ‘purely political decision on Assange’ is likely result of ‘US pressure’…",
+        "fixed": "Ecuador's 'purely political decision on Assange' is likely result of 'US pressure'…",
+        "expect": "pass"
+    },
+    {
+        "label": "Inconsistent UTF-8 / Latin-1 mojibake with an ellipsis from the Windows-1252 character set",
+        "original": "Ecuadorâ\u0080\u0099s â\u0080\u0098purely political decision on Assangeâ\u0080\u0099 is likely result of â\u0080\u0098US pressureâ\u0080\u0099…",
+        "fixed-encoding": "Ecuador’s ‘purely political decision on Assange’ is likely result of ‘US pressure’…",
+        "fixed": "Ecuador's 'purely political decision on Assange' is likely result of 'US pressure'…",
+        "expect": "pass"
+    },
+    {
+        "label": "Inconsistent mojibake in Portuguese",
+        "original": "Campeonatos > III DivisÃ£o - SÃ©rie F > Jornadas Classificação",
+        "fixed": "Campeonatos > III Divisão - Série F > Jornadas Classificação",
+        "expect": "pass"
+    },
+    {
+        "label": "Handle Afrikaans 'n character",
+        "original": "ŉ Chloroplas is ŉ organel wat in fotosinterende plante voorkom.",
+        "fixed-encoding": "ŉ Chloroplas is ŉ organel wat in fotosinterende plante voorkom.",
+        "fixed": "'n Chloroplas is 'n organel wat in fotosinterende plante voorkom.",
+        "expect": "pass"
+    },
+    {
+        "label": "Handle Croatian single-codepoint digraphs",
+        "original": "izum „bootstrap load“ koji je korišteǌem polisilicijskog sloja proizveo dovoǉno dobre kondenzatore na čipu",
+        "fixed-encoding": "izum „bootstrap load“ koji je korišteǌem polisilicijskog sloja proizveo dovoǉno dobre kondenzatore na čipu",
+        "fixed": "izum \"bootstrap load\" koji je korištenjem polisilicijskog sloja proizveo dovoljno dobre kondenzatore na čipu",
+        "expect": "pass"
+    },
+    {
+        "label": "A with an acute accent, in isolation",
+        "original": "NicolÃ¡s",
+        "fixed": "Nicolás",
+        "expect": "pass"
+    },
+    {
+        "label": "sharp S, in isolation, via MacRoman encoding",
+        "comment": "regression reported in issue #186",
+        "original": "wei√ü",
+        "fixed": "weiß",
+        "expect": "pass"
+    },
+    {
+        "label": "French example containing non-breaking spaces",
+        "original": "ART TRIP Ã\u00a0 l'office de tourisme",
+        "fixed": "ART TRIP à l'office de tourisme",
+        "expect": "pass"
+    },
+    {
+        "label": "English example in UTF-8 / Windows-1251 with a ligature",
+        "original": "This is signiп¬Ѓcantly lower than the respective share",
+        "fixed-encoding": "This is signiﬁcantly lower than the respective share",
+        "fixed": "This is significantly lower than the respective share",
+        "expect": "pass"
+    },
+    {
+        "label": "'à' remains its own word, even if spaces after it get coalesced into one",
+        "original": "Ã perturber la rÃ©flexion des thÃ©ologiens jusqu'Ã nos jours",
+        "fixed": "à perturber la réflexion des théologiens jusqu'à nos jours",
+        "expect": "pass"
+    },
+    {
+        "label": "Fix 'à' in inconsistent mojibake",
+        "original": "Le barÃ¨me forfaitaire permet l’Ã©valuation des frais de dÃ©placement relatifs Ã l’utilisation",
+        "fixed-encoding": "Le barème forfaitaire permet l’évaluation des frais de déplacement relatifs à l’utilisation",
+        "fixed": "Le barème forfaitaire permet l'évaluation des frais de déplacement relatifs à l'utilisation",
+        "expect": "pass"
+    },
+    {
+        "label": "The Portuguese word 'às' does not become 'à s' due to the French fix",
+        "original": "com especial atenÃ§Ã£o Ã s crianÃ§as",
+        "fixed": "com especial atenção às crianças",
+        "expect": "pass"
+    },
+    {
+        "label": "This is why we require a space after the 's' in 'às'",
+        "original": "TroisiÃ¨me Ã©dition pour ce festival qui persiste et signe Ã s'Ã©loigner des grands axes pour prendre les contre-allÃ©es en 16 concerts dans 7 villes de 2 pays voisins.",
+        "fixed": "Troisième édition pour ce festival qui persiste et signe à s'éloigner des grands axes pour prendre les contre-allées en 16 concerts dans 7 villes de 2 pays voisins.",
+        "expect": "pass"
+    },
+    {
+        "label": "We can fix 'à' in windows-1251 sometimes as well",
+        "original": "La rГ©gion de Dnepropetrovsk se trouve Г lвЂ™ouest de lвЂ™Ukraine",
+        "fixed-encoding": "La région de Dnepropetrovsk se trouve à l’ouest de l’Ukraine",
+        "fixed": "La région de Dnepropetrovsk se trouve à l'ouest de l'Ukraine",
+        "expect": "pass"
+    },
+    {
+        "label": "'Ã quele' is the Portuguese word 'àquele', not 'à quele'",
+        "original": "eliminado o antÃ­geno e mantidos os nÃ­veis de anticorpos, surgem as condiÃ§Ãµes necessÃ¡rias ao estabelecimento do granuloma, semelhante Ã quele observado nas lesÃµes por imunocomplexo em excesso de anticorpos",
+        "fixed": "eliminado o antígeno e mantidos os níveis de anticorpos, surgem as condições necessárias ao estabelecimento do granuloma, semelhante àquele observado nas lesões por imunocomplexo em excesso de anticorpos",
+        "expect": "pass"
+    },
+    {
+        "label": "A complex, lossy pile-up of mojibake in Portuguese",
+        "original": "â € ðŸ“�Â Regulamento: â € âš ï¸� As pessoas que marcarem nos comentÃ¡rios perfis empresariais e/ou de marcas, personalidades ou fake serÃ£o desclassificadas. âš ï¸� Podem participar pessoas residentes em Petrolina/PE ou Juazeiro/BA, desde que se comprometam a retirar o prÃªmio em nosso endereÃ§o. FuncionÃ¡rios estÃ£o vetados. âš ï¸� SerÃ£o vÃ¡lidos os comentÃ¡rios postados atÃ© 16h, do dia 31/03/2018. E o resultado serÃ¡ divulgado atÃ© Ã s 19h do mesmo dia em uma nova publicaÃ§Ã£o em nosso instagram. â € Boa sorte!!!Â ðŸ˜€ðŸ�°",
+        "fixed": "⠀ �\u00a0Regulamento: ⠀ ⚠� As pessoas que marcarem nos comentários perfis empresariais e/ou de marcas, personalidades ou fake serão desclassificadas. ⚠� Podem participar pessoas residentes em Petrolina/PE ou Juazeiro/BA, desde que se comprometam a retirar o prêmio em nosso endereço. Funcionários estão vetados. ⚠� Serão válidos os comentários postados até 16h, do dia 31/03/2018. E o resultado será divulgado até às 19h do mesmo dia em uma nova publicação em nosso instagram. ⠀ Boa sorte!!!\u00a0😀�",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Windows-1252 mixup in Gaelic involving non-breaking spaces",
+        "original": "CÃ\u00a0nan nan GÃ\u00a0idheal",
+        "fixed": "Cànan nan Gàidheal",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Windows-1251 mixup in tweet spam",
+        "original": "Blog Traffic Tip 2 вЂ“ Broadcast Email Your Blog",
+        "fixed": "Blog Traffic Tip 2 – Broadcast Email Your Blog",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / Windows-1251 mixup",
+        "original": "S&P Confirms UkrsotsbankвЂ™s вЂњB-вЂњ Rating",
+        "fixed-encoding": "S&P Confirms Ukrsotsbank’s “B-“ Rating",
+        "fixed": "S&P Confirms Ukrsotsbank's \"B-\" Rating",
+        "expect": "pass"
+    },
+    {
+        "label": "Dutch example with ë",
+        "comment": "from issue reported by MicroJackson",
+        "original": "ongeÃ«venaard",
+        "fixed-encoding": "ongeëvenaard",
+        "fixed": "ongeëvenaard",
+        "expect": "pass"
+    },
+    {
+        "label": "HTML entity on top of UTF-8 / Latin-1",
+        "original": "10Î&frac14;s",
+        "fixed-encoding": "10Î&frac14;s",
+        "fixed": "10μs",
+        "expect": "pass"
+    },
+    {
+        "label": "Three layers of UTF-8 / MacRoman mixup in French",
+        "comment": "You're welcome",
+        "original": "Merci de t‚Äö√†√∂¬¨¬©l‚Äö√†√∂¬¨¬©charger le plug-in Flash Player 8",
+        "fixed": "Merci de télécharger le plug-in Flash Player 8",
+        "expect": "pass"
+    },
+    {
+        "label": "UTF-8 / MacRoman mixup in French",
+        "original": "Merci de bien vouloir activiter le Javascript dans votre navigateur web afin d'en profiter‚Ä¶",
+        "fixed": "Merci de bien vouloir activiter le Javascript dans votre navigateur web afin d'en profiter…",
+        "expect": "pass"
+    },
+    {
+        "label": "Italian UTF-8 / MacRoman example with ò",
+        "original": "Le Vigne di Zam√≤",
+        "fixed": "Le Vigne di Zamò",
+        "expect": "pass"
+    },
+    {
+        "label": "Punctuation pile-up should actually be musical notes",
+        "original": "Engkau masih yg terindah, indah di dalam hatikuâ™«~",
+        "fixed": "Engkau masih yg terindah, indah di dalam hatiku♫~",
+        "expect": "pass"
+    },
+    {
+        "label": "Latvian UTF-8 / Windows-1257 mojibake",
+        "original": "Å veices baÅ†Ä·ieri gaida konkrÄ“tus investÄ«ciju projektus",
+        "fixed": "Šveices baņķieri gaida konkrētus investīciju projektus",
+        "expect": "pass"
+    },
+    {
+        "label": "Latvian UTF-8 / MacRoman mojibake",
+        "original": "SaeimƒÅ ievƒìlƒìtƒÅs partijas \"Progresƒ´vie\" lƒ´dzvadƒ´tƒÅja Anto≈Üina ≈Öena≈°eva atbild uz ≈æurnƒÅlistu jautƒÅjumiem pƒìc partijas tik≈°anƒÅs ar Valsts prezidentu Rƒ´gas pilƒ´,",
+        "fixed": "Saeimā ievēlētās partijas \"Progresīvie\" līdzvadītāja Antoņina Ņenaševa atbild uz žurnālistu jautājumiem pēc partijas tikšanās ar Valsts prezidentu Rīgas pilī,",
+        "expect": "pass"
+    },
+    {
+        "label": "Lithuanian UTF-8 / Windows-1257 mojibake",
+        "original": "Å iaip ÄÆdomu, kaip ÄÆsivaizduoji. VisÅ³ pirma tam reikia laiko.",
+        "fixed": "Šiaip įdomu, kaip įsivaizduoji. Visų pirma tam reikia laiko.",
+        "expect": "pass"
+    },
+    {
+        "label": "Lithuanian UTF-8 / Windows-1250 mojibake",
+        "original": "Lietuva pagrÄŻstai gali paklausti: Ĺ˝inoma, kad ne.",
+        "fixed": "Lietuva pagrįstai gali paklausti: Žinoma, kad ne.",
+        "expect": "pass"
+    },
+    {
+        "label": "Hebrew UTF-8 / Windows-1252 mojibake",
+        "comment": "reported by SuperIRabbit as issue #158",
+        "original": "×‘×”×•×“×¢×”",
+        "fixed": "בהודעה",
+        "expect": "pass"
+    },
+    {
+        "label": "Wide comma in UTF-8 / Windows-1252",
+        "original": "Ningboï¼ŒChina",
+        "fixed-encoding": "Ningbo，China",
+        "fixed": "Ningbo,China",
+        "expect": "pass"
+    }
+]

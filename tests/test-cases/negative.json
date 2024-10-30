@@ -1,0 +1,216 @@
+[
+    {
+        "label": "Negative: Using diaereses as quotation marks in Greek",
+        "comment": "Examples in this file might be detected as mojibake-like, but should not be changed",
+        "original": "Η ¨ανατροφή¨ δυστυχώς από τους προπονητές",
+        "fixed": "Η ¨ανατροφή¨ δυστυχώς από τους προπονητές",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: Don't fix a multiplication symbol in quotes",
+        "original": "higher values (“+” and “×” curves) in the superficial region",
+        "fixed-encoding": "higher values (“+” and “×” curves) in the superficial region",
+        "fixed": "higher values (\"+\" and \"×\" curves) in the superficial region",
+        "expect": "pass"
+    },
+    {
+        "label": "Sort of negative: this inconsistent mojibake could be Latin-1 or MacRoman, and it was meant to be Latin-1, but it's safest to not decode it as either",
+        "comment": "issue #202",
+        "original": "Bremer/Mccoy – DrÃ¥ber",
+        "fixed": "Bremer/Mccoy – DrÃ¥ber",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: 'è' preceded by a non-breaking space is not a small capital Y",
+        "original": "Con il corpo e lo spirito ammaccato,\u00a0è come se nel cuore avessi un vetro conficcato.",
+        "fixed": "Con il corpo e lo spirito ammaccato,\u00a0è come se nel cuore avessi un vetro conficcato.",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: multiplication sign and ellipsis",
+        "comment": "Should not turn into a dot below",
+        "original": "4288×…",
+        "fixed": "4288×…",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: accents are sometimes used as quotes",
+        "comment": "Under a previous heuristic, this tested the CESU-8 decoder, which would try to decode it and fail when it hit the end of the string",
+        "original": "``toda produzida pronta pra assa aí´´",
+        "fixed": "``toda produzida pronta pra assa aí´´",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: 'Õ' followed by an ellipsis",
+        "comment": "Should not turn into the Armenian letter Յ",
+        "original": "HUHLL Õ…",
+        "fixed": "HUHLL Õ…",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: 'Ê' followed by an ellipsis",
+        "comment": "Should not turn into a squat reversed esh",
+        "original": "RETWEET SE VOCÊ…",
+        "fixed": "RETWEET SE VOCÊ…",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: 'É' followed by an ellipsis",
+        "comment": "Should not turn into 'MARQUɅ'",
+        "original": "PARCE QUE SUR LEURS PLAQUES IL Y MARQUÉ…",
+        "fixed": "PARCE QUE SUR LEURS PLAQUES IL Y MARQUÉ…",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: 'Ó' followed by an ellipsis",
+        "comment": "Should not turn into 'SӅ'",
+        "original": "TEM QUE SEGUIR, SDV SÓ…",
+        "fixed": "TEM QUE SEGUIR, SDV SÓ…",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: 'É' followed by a curly apostrophe",
+        "comment": "Should not turn into 'ZZAJɒs'",
+        "original": "Join ZZAJÉ’s Official Fan List and receive news, events, and more!",
+        "fixed-encoding": "Join ZZAJÉ’s Official Fan List and receive news, events, and more!",
+        "fixed": "Join ZZAJÉ's Official Fan List and receive news, events, and more!",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: 'é' preceded by curly apostrophe",
+        "comment": "Should not turn into 'LՎpisode'",
+        "original": "L’épisode 8 est trop fou ouahh",
+        "fixed-encoding": "L’épisode 8 est trop fou ouahh",
+        "fixed": "L'épisode 8 est trop fou ouahh",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: three raised eyebrows or something?",
+        "comment": "Should not turn into private use character U+F659",
+        "original": "Ôôô VIDA MINHA",
+        "fixed": "Ôôô VIDA MINHA",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: copyright sign preceded by non-breaking space",
+        "comment": "Should not turn into 'ʩ'",
+        "original": "[x]\u00a0©",
+        "fixed": "[x]\u00a0©",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: en dash and infinity sign",
+        "comment": "Should not turn into '2012Ѱ'",
+        "original": "2012—∞",
+        "fixed": "2012—∞",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: This Е is a Ukrainian letter, but nothing else is wrong",
+        "original": "SENSЕ - Oleg Tsedryk",
+        "fixed": "SENSЕ - Oleg Tsedryk",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: angry face",
+        "comment": "The face should not turn into '`«'",
+        "original": "OK??:(   `¬´    ):",
+        "fixed": "OK??:(   `¬´    ):",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative, synthetic: face with glasses and a raised eyebrow",
+        "original": "( o¬ô )",
+        "fixed": "( o¬ô )",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: triangle and degree sign",
+        "comment": "I'm not really sure what it *is* supposed to be, but it's not 'ơ'",
+        "original": "∆°",
+        "fixed": "∆°",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: Portuguese with inverted question mark",
+        "comment": "Former false positive - it should not turn into 'QUEM ɿ'",
+        "original": "ESSE CARA AI QUEM É¿",
+        "fixed": "ESSE CARA AI QUEM É¿",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: Portuguese with acute accents as quotation marks",
+        "comment": "Former false positive - the end should not turn into a superscript H",
+        "original": "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´",
+        "fixed": "``hogwarts nao existe, voce nao vai pegar o trem pra lá´´",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: Finnish Ä followed by a non-breaking space",
+        "comment": "Former false positive - should not become a G with a dot",
+        "original": "SELKÄ\u00a0EDELLÄ\u00a0MAAHAN via @YouTube",
+        "fixed": "SELKÄ\u00a0EDELLÄ\u00a0MAAHAN via @YouTube",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: multiplying by currency",
+        "comment": "Former false positive - should not become the Hebrew letter 'final pe'",
+        "original": "Offering 5×£35 pin ups",
+        "fixed": "Offering 5×£35 pin ups",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: registered chocolate brand name",
+        "comment": "Former false positive - should not become the IPA letter 'lezh'",
+        "original": "NESTLÉ® requiere contratar personal para diferentes areas a nivel nacional e internacional",
+        "fixed": "NESTLÉ® requiere contratar personal para diferentes areas a nivel nacional e internacional",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: it looks like Windows-1257 mojibake but someone writes their name this way",
+        "comment": "Should not become a cedilla",
+        "original": "Connect with Āø on Facebook",
+        "fixed": "Connect with Āø on Facebook",
+        "expect": "pass"
+    },
+    {
+        "label": "Mostly negative: we only need to fix C1 control characters",
+        "comment": "We should not decode 'é\u0085 ' as '酠'",
+        "original": "C'est vrai que nous n'en avons pas encore beaucoup parlé\u0085 Tu sais, ça fait de nombreuses années",
+        "fixed": "C'est vrai que nous n'en avons pas encore beaucoup parlé… Tu sais, ça fait de nombreuses années",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: We don't fix Ã in all contexts",
+        "original": "C O N C L U S Ã O",
+        "fixed": "C O N C L U S Ã O",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: Two concatenated strings",
+        "comment": "Should not turn into 'fratarak᧠141'",
+        "original": "Oborzos, per. Vahbarz, frataraká§ 141",
+        "fixed": "Oborzos, per. Vahbarz, frataraká§ 141",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: Indonesian leetspeak",
+        "original": "MÄ£ÄM ÌÑÌ Q £ÄGÌ GÄLÄW ÑÍCH SÖÄ£ ÑÝÄ $ÚÄMÌ Q £ÄGÌ GÄK ÉÑÄK BÄDÄÑ....?????????,                     ......JÄDÍ...",
+        "fixed": "MÄ£ÄM ÌÑÌ Q £ÄGÌ GÄLÄW ÑÍCH SÖÄ£ ÑÝÄ $ÚÄMÌ Q £ÄGÌ GÄK ÉÑÄK BÄDÄÑ....?????????,                     ......JÄDÍ...",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: math in Unicode",
+        "comment": "This isn't mojibake, it's an actual equation",
+        "original": "(-1/2)! = √π",
+        "fixed": "(-1/2)! = √π",
+        "expect": "pass"
+    },
+    {
+        "label": "Negative: Leet line-art",
+        "comment": "The heuristic before v6 loved to 'fix' this and decode it as 'ôaſaſaſaſa'",
+        "original": "├┤a┼┐a┼┐a┼┐a┼┐a",
+        "fixed": "├┤a┼┐a┼┐a┼┐a┼┐a",
+        "expect": "pass"
+    }
+]

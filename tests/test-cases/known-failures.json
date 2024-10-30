@@ -1,0 +1,70 @@
+[
+    {
+        "label": "Misleading mix-up in Spanish",
+        "comment": "The original text has mojibake, but the sequence 'á \u0093' can decode as U+1813 MONGOLIAN DIGIT THREE, when the whole string should really just decode as a Latin-1/Windows-1252 mixup",
+        "original": "tiene demora y está \u0093próximo a resolverse\u0094",
+        "fixed": "tiene demora y está \"próximo a resolverse\"",
+        "expect": "fail"
+    },
+    {
+        "label": "Two levels of inconsistent mojibake",
+        "comment": "The en-dash was mojibaked in UTF-8 / Windows-1252 as three characters, two of which were mojibaked again as Windows-1252 / Latin-1, and the third of which was mojibaked as UTF-8 / Latin-1. Unfortunately, if we fix this, we leave ourselves room to greedily 'decode' random Han characters in complex Latin-alphabet mojibake",
+        "original": "Arsenal v Wolfsburg: pre-season friendly â\u0080â\u0080\u009c live!",
+        "fixed": "Arsenal v Wolfsburg: pre-season friendly – live!",
+        "expect": "fail"
+    },
+    {
+        "label": "A-with-grave in Vietnamese",
+        "comment": "Currently adds extra spaces that shouldn't be there",
+        "original": "Xem clip hĂ i, phim hĂ i má»›i hay nháşĄt",
+        "fixed": "Xem clip hài, phim hài mới hay nhất",
+        "expect": "fail"
+    },
+    {
+        "label": "Latin-1 / MacRoman mixup in Spanish",
+        "comment": "Requires something like encoding detection",
+        "original": "Deja dos heridos hundimiento de barco tur\u0092stico en Acapulco.",
+        "fixed": "Deja dos heridos hundimiento de barco turístico en Acapulco.",
+        "expect": "fail"
+    },
+    {
+        "label": "subtle UTF-8 / codepage 437 mixup in Spanish",
+        "original": "┬┐que diferencia hay?",
+        "fixed": "¿que diferencia hay?",
+        "expect": "fail"
+    },
+    {
+        "label": "Latin-1 / MacRoman mixup in Spanish, 2 characters",
+        "comment": "Requires something like encoding detection",
+        "original": "Habitantes de Coatl\u0087n conf\u0092an en proyecto de edil electo independiente",
+        "fixed": "Habitantes de Coatlán confían en proyecto de edil electo independiente",
+        "expect": "fail"
+    },
+    {
+        "label": "An example with 'à' in windows-1251 where we need our heuristic to be bolder",
+        "original": "faites attention Г bien vous renseigner avant sur le mГ©dicament",
+        "fixed": "faites attention à bien vous renseigner avant sur le médicament",
+        "expect": "fail"
+    },
+    {
+        "label": "Italian UTF-8 / MacRoman mojibake that looks like math",
+        "comment": "False negative: 'pi√π' is a bit too reasonable to fix",
+        "original": "Sarai ricontattato dal nostro Esperto al pi√π presto.",
+        "fixed": "Sarai ricontattato dal nostro Esperto al più presto.",
+        "expect": "fail"
+    },
+    {
+        "label": "Synthetic: Incomplete UTF-8 / Windows-1252 mixup in Arabic",
+        "comment": "I find text like this in OSCAR a fair amount, but couldn't isolate a good example that tested digits. The intended text means 'more than 100 countries'.",
+        "original": "أكثر Ù…Ù† Ù Ù Ù¡ Ø¨Ù„Ø¯",
+        "fixed": "أكثر من ٠٠١ بلد",
+        "expect": "fail"
+    },
+    {
+        "label": "Synthetic, false positive: the title of a manga, in weird capitalized romaji, with a non-breaking space",
+        "comment": "Testing tells me I should worry about cases like this, though I haven't seen a real example. Searching for similar real text yields a lot of examples that actually come out fine.",
+        "original": "MISUTÂ\u00a0AJIKKO",
+        "fixed": "MISUTÂ\u00a0AJIKKO",
+        "expect": "fail"
+    }
+]
