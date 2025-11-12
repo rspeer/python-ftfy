@@ -747,6 +747,8 @@ def apply_plan(text: str, plan: list[tuple[str, str]]) -> str:
             obj = obj.encode(encoding)  # type: ignore
         elif operation == "decode":
             obj = obj.decode(encoding)  # type: ignore
+        elif operation == "normalize":
+            obj = unicodedata.normalize(encoding, obj)  # type: ignore
         elif operation in ("transcode", "apply"):
             if encoding in FIXERS:
                 obj = FIXERS[encoding](obj)
