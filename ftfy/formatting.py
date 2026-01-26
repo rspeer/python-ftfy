@@ -6,11 +6,7 @@ We used to have our own implementation here, but now we mostly rely on
 the 'wcwidth' library.
 """
 
-from unicodedata import normalize
-
-from wcwidth import wcswidth, wcwidth
-
-from ftfy.fixes import remove_terminal_escapes
+import wcwidth
 
 
 def character_width(char: str) -> int:
@@ -31,7 +27,7 @@ def character_width(char: str) -> int:
     >>> character_width('\n')
     -1
     """
-    return int(wcwidth(char))
+    return wcwidth.wcwidth(char)
 
 
 def monospaced_width(text: str) -> int:
@@ -43,16 +39,12 @@ def monospaced_width(text: str) -> int:
     This can be useful for formatting text that may contain non-spacing
     characters, or CJK characters that take up two character cells.
 
-    Returns -1 if the string contains a non-printable or control character.
-
     >>> monospaced_width('ちゃぶ台返し')
     12
     >>> len('ちゃぶ台返し')
     6
     >>> monospaced_width('owl\N{SOFT HYPHEN}flavored')
-    11
-    >>> monospaced_width('example\x80')
-    -1
+    12
 
     A more complex example: The Korean word 'ibnida' can be written with 3
     pre-composed characters or 7 jamo. Either way, it *looks* the same and
@@ -67,13 +59,16 @@ def monospaced_width(text: str) -> int:
     4 characters, when shown as intended.
     >>> monospaced_width('\x1b[34mblue\x1b[m')
     4
+
+    Emoji ZWJ sequences are treated as single grapheme clusters with width 2.
+    >>> monospaced_width('👨‍👩‍👧')
+    2
+
+    Control characters are parsed and treated as zero-width.
+    >>> monospaced_width('example\x80')
+    7
     """
-    # NFC-normalize the text first, so that we don't need special cases for
-    # Hangul jamo.
-    #
-    # Remove terminal escapes before calculating width, because if they are
-    # displayed as intended, they will have zero width.
-    return int(wcswidth(remove_terminal_escapes(normalize("NFC", text))))
+    return wcwidth.width(text, control_codes="parse")
 
 
 def display_ljust(text: str, width: int, fillchar: str = " ") -> str:
@@ -102,13 +97,7 @@ def display_ljust(text: str, width: int, fillchar: str = " ") -> str:
         msg = "The padding character must have display width 1"
         raise ValueError(msg)
 
-    text_width = monospaced_width(text)
-    if text_width == -1:
-        # There's a control character here, so just don't add padding
-        return text
-
-    padding = max(0, width - text_width)
-    return text + fillchar * padding
+    return wcwidth.ljust(text, width, fillchar=fillchar)
 
 
 def display_rjust(text: str, width: int, fillchar: str = " ") -> str:
@@ -133,12 +122,7 @@ def display_rjust(text: str, width: int, fillchar: str = " ") -> str:
         msg = "The padding character must have display width 1"
         raise ValueError(msg)
 
-    text_width = monospaced_width(text)
-    if text_width == -1:
-        return text
-
-    padding = max(0, width - text_width)
-    return fillchar * padding + text
+    return wcwidth.rjust(text, width, fillchar=fillchar)
 
 
 def display_center(text: str, width: int, fillchar: str = " ") -> str:
@@ -159,11 +143,4 @@ def display_center(text: str, width: int, fillchar: str = " ") -> str:
         msg = "The padding character must have display width 1"
         raise ValueError(msg)
 
-    text_width = monospaced_width(text)
-    if text_width == -1:
-        return text
-
-    padding = max(0, width - text_width)
-    left_padding = padding // 2
-    right_padding = padding - left_padding
-    return fillchar * left_padding + text + fillchar * right_padding
+    return wcwidth.center(text, width, fillchar=fillchar)

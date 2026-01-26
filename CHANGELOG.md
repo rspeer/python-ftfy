@@ -1,3 +1,12 @@
+## Version 6.4.0 (unreleased)
+
+- Enhanced `monospaced_width()` to support emoji ZWJ sequences, flags, variation selectors,
+  skin tones, and many more languages and terminal sequences, like OSC 8 hyperlinks.  It no longer
+  returns -1 for control characters; instead they are parsed (eg.  BACKSPACE, `\b`) for their
+  horizontal effects, or otherwise ignored, (eg. BEL, `\a`).
+- `display_ljust/rjust/center()` delegate to directly to `wcwidth.ljust()/..` for the same.
+- Updated `display_center()` to match standard python `str.center()` "parity-odd" spacing.
+
 ## Version 6.3.1 (October 25, 2024)
 
 - Fixed `license` metadata field in pyproject.toml.
