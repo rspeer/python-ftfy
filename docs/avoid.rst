@@ -64,7 +64,7 @@ A sign that something is about to go wrong with encodings is if a developer is t
 
 ASCII is a set of 128 character codes (95 of them displayable). It has not had any new characters added to it since the backslash was added in 1967.
 
-Because ASCII is a 7-bit encoding but our computers use 8-bit bytes, it seems clear that ASCII *could* be extended to assign a meaning to all 256 possible bytes. There are many different encodings that have done so, and they're all incompatible with one another, which is why treating bytes as characters as a bad idea and why we have Unicode now.
+Because ASCII is a 7-bit encoding but our computers use 8-bit bytes, it seems clear that ASCII *could* be extended to assign a meaning to all 256 possible bytes. There are many different encodings that have done so, and they're all incompatible with one another, which is why treating bytes as characters is a bad idea and why we have Unicode now.
 
 Many developers refer to one of these encodings as "extended ASCII", whose colloquial meaning is "the encoding of 256 characters that I learned first". Its meaning is completely dependent on the country you were in and the operating system you were using when you started programming:
 
