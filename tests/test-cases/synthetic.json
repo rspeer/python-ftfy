@@ -204,5 +204,12 @@
         "original": "OÃ™ ET QUAND?",
         "fixed": "OÙ ET QUAND?",
         "expect": "pass"
+    },
+    {
+        "label": "Synthetic: mojibake at the beginning of a string (Ã¥ for å)",
+        "comment": "issue #222: å mojibake not detected at the very start of a string. The badness heuristic missed Ã¥ when a currency symbol followed an upper-accented letter without a preceding space.",
+        "original": "Ã¥klagarmyndighets",
+        "fixed": "åklagarmyndighets",
+        "expect": "pass"
     }
 ]

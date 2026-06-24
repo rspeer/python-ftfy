@@ -364,6 +364,12 @@ BADNESS_RE = re.compile(
     |
     ^[ÃÂ][ ]
     |
+    # Upper-accented letter followed by a currency symbol at the very
+    # start of the string (otherwise usually requires a preceding space).
+    # Require a word character after the pair so the pattern does not match
+    # the isolated 2-character substring inside decode_inconsistent_utf8.
+    ^[{upper_accented}][{currency}]\w
+    |
 
     # Cases where Â precedes a character as an encoding of exactly the same
     # character, and the character is common enough
