@@ -365,6 +365,13 @@ BADNESS_RE = re.compile(
     ^[ÃÂ][ ]
     |
 
+    # Windows-1252 mojibake of three-byte UTF-8 sequences in the U+2000
+    # punctuation and symbol blocks, whose lead byte 0xE2 shows up as 'â'.
+    # This is restricted to 'â' on purpose: the same shape with other
+    # accented letters is ambiguous, e.g. 'Brontë…”' is not mojibake.
+    â[{common}][{start_punctuation}{end_punctuation}{currency}{numeric}{common}]
+    |
+
     # Cases where Â precedes a character as an encoding of exactly the same
     # character, and the character is common enough
     [a-z.,?!{end_punctuation}] Â [ {start_punctuation}{end_punctuation}]
