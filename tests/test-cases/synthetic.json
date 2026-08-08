@@ -204,5 +204,12 @@
         "original": "OÃ™ ET QUAND?",
         "fixed": "OÙ ET QUAND?",
         "expect": "pass"
+    },
+    {
+        "label": "Synthetic: vulgar fractions in Windows-1252 mojibake",
+        "comment": "issue #233. The lead byte of U+2153 is 0xE2, which shows up as 'â'; the second byte lands in the 'common' category, which on its own is not evidence of mojibake.",
+        "original": "â…“ and â…›",
+        "fixed": "⅓ and ⅛",
+        "expect": "pass"
     }
 ]
