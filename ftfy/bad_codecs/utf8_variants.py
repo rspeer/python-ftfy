@@ -58,11 +58,11 @@ NAME = "utf-8-variants"
 CESU8_EXPR = (
     b"("
     b"\xed"
-    b"([\xa0-\xaf]|$)"
-    b"([\x80-\xbf]|$)"
-    b"(\xed|$)"
-    b"([\xb0-\xbf]|$)"
-    b"([\x80-\xbf]|$)"
+    b"([\xa0-\xaf]|\\Z)"
+    b"([\x80-\xbf]|\\Z)"
+    b"(\xed|\\Z)"
+    b"([\xb0-\xbf]|\\Z)"
+    b"([\x80-\xbf]|\\Z)"
     b")"
 )
 
@@ -70,11 +70,11 @@ CESU8_RE = re.compile(CESU8_EXPR)
 
 # This expression matches isolated surrogate characters that aren't
 # CESU-8, which have to be handled carefully on Python 2.
-SURROGATE_EXPR = b"(\xed([\xa0-\xbf]|$)([\x80-\xbf]|$))"
+SURROGATE_EXPR = b"(\xed([\xa0-\xbf]|\\Z)([\x80-\xbf]|\\Z))"
 
 # This expression matches the Java encoding of U+0, including if it's
 # truncated and we need more bytes.
-NULL_EXPR = b"(\xc0(\x80|$))"
+NULL_EXPR = b"(\xc0(\x80|\\Z))"
 
 # This regex matches cases that we need to decode differently from
 # standard UTF-8.
