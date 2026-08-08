@@ -301,7 +301,7 @@ BADNESS_RE = re.compile(
     |
     [{box}] [{kaomoji}]
     |
-    [{lower_accented}{upper_accented}{currency}{numeric}{start_punctuation}{end_punctuation}{law}] [{box}]
+    [{lower_accented}{upper_accented}{lower_common}{upper_common}{currency}{numeric}{start_punctuation}{end_punctuation}{law}] [{box}]
     |
     [{box}] [{end_punctuation}]
     |
