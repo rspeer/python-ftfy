@@ -447,5 +447,12 @@
         "fixed-encoding": "Ningbo，China",
         "fixed": "Ningbo,China",
         "expect": "pass"
+    },
+    {
+        "label": "Russian text in KOI8-R mojibake",
+        "comment": "issue #231. Reported as CP437/CP866, but it is KOI8-R: 0xD0 and 0xD1 decode to 'п' and 'я', which are the UTF-8 lead bytes of Cyrillic.",
+        "original": "п∙я│п╩п╦ п▓я▀ п╫п╣ я▐п╡п╩я▐п╣я┌п╣я│я▄ п╟п╢я─п╣я│п╟я┌п╬п╪",
+        "fixed": "Если Вы не являетесь адресатом",
+        "expect": "pass"
     }
 ]
