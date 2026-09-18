@@ -244,7 +244,11 @@ def _config_from_kwargs(config: TextFixerConfig, kwargs: dict[str, Any]) -> Text
         kwargs = kwargs.copy()
         kwargs["unescape_html"] = kwargs["fix_entities"]
         del kwargs["fix_entities"]
-    return config._replace(**kwargs)
+    config = config._replace(**kwargs)
+    # bool subclasses int; max_decode_length=True would silently become 1
+    if isinstance(config.max_decode_length, bool):
+        raise TypeError("max_decode_length must be an int, not bool")
+    return config
 
 
 BYTES_ERROR_TEXT = """Hey wait, this isn't Unicode.
