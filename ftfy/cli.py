@@ -5,7 +5,6 @@ A command-line utility for fixing text found in a file.
 import os
 import sys
 from pathlib import Path
-from typing import Union
 
 from ftfy import TextFixerConfig, __version__, fix_file
 
@@ -84,11 +83,28 @@ def main() -> None:
         default="NFC",
         help='The normalization of Unicode to apply. Defaults to NFC. Can be "none".',
     )
-    parser.add_argument(
+    entity_options = parser.add_mutually_exclusive_group()
+    entity_options.add_argument(
         "--preserve-entities",
-        action="store_true",
+        dest="unescape_html",
+        action="store_const",
+        const=False,
+        default="auto",
         help="Leave HTML entities as they are. The default "
         "is to decode them, as long as no HTML tags have appeared in the file.",
+    )
+
+    entity_options.add_argument(
+        "--unescape-entities",
+        dest="unescape_html",
+        action="store_const",
+        const=True,
+        help="Decode HTML entities even when HTML tags appear in the file.",
+    )
+    parser.add_argument(
+        "--preserve-quotes",
+        action="store_true",
+        help="Leave curly quotation marks as they are instead of converting them to ASCII.",
     )
 
     args = parser.parse_args()
@@ -116,10 +132,11 @@ def main() -> None:
     if normalization.lower() == "none":
         normalization = None
 
-    unescape_html: Union[str, bool]
-    unescape_html = False if args.preserve_entities else "auto"
-
-    config = TextFixerConfig(unescape_html=unescape_html, normalization=normalization)
+    config = TextFixerConfig(
+        unescape_html=args.unescape_html,
+        uncurl_quotes=not args.preserve_quotes,
+        normalization=normalization,
+    )
 
     try:
         for line in fix_file(file, encoding=encoding, config=config):

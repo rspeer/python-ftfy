@@ -65,3 +65,42 @@ def test_stdin():
     with TEST_FILENAME.open("rb") as infile:
         output = get_command_output(["ftfy"], stdin=infile)
         assert output == CORRECT_OUTPUT
+
+
+@pytest.mark.parametrize(
+    ("options", "expected"),
+    [
+        ([], '"café" <tag>&amp;\n&amp;\n'),
+        (["--preserve-quotes"], "“café” <tag>&amp;\n&amp;\n"),
+        (["--unescape-entities"], '"café" <tag>&\n&\n'),
+        (["--preserve-entities"], '"café" <tag>&amp;\n&amp;\n'),
+        (["--preserve-quotes", "--unescape-entities"], "“café” <tag>&\n&\n"),
+        (["--preserve-quotes", "--preserve-entities"], "“café” <tag>&amp;\n&amp;\n"),
+    ],
+)
+@pytest.mark.parametrize("use_stdin", [False, True])
+def test_cli_fix_options(tmp_path, options, expected, use_stdin):
+    source = tmp_path / "input.txt"
+    source.write_text("“cafÃ©” <tag>&amp;\n&amp;\n", encoding="utf-8")
+    if use_stdin:
+        with source.open("rb") as infile:
+            output = get_command_output(["ftfy", *options], stdin=infile)
+    else:
+        destination = tmp_path / "output.txt"
+        get_command_output(["ftfy", *options, source, "-o", destination])
+        output = destination.read_text(encoding="utf-8")
+    if use_stdin:
+        expected = expected.replace("\n", os.linesep)
+    assert output == expected
+
+
+def test_conflicting_entity_options(tmp_path):
+    destination = tmp_path / "output.txt"
+    destination.write_text("keep this file", encoding="utf-8")
+    with pytest.raises(subprocess.CalledProcessError) as exception:
+        get_command_output(
+            ["ftfy", "--preserve-entities", "--unescape-entities", "-o", destination]
+        )
+    assert exception.value.returncode == 2
+    assert "not allowed with argument" in exception.value.output.decode("utf-8")
+    assert destination.read_text(encoding="utf-8") == "keep this file"
