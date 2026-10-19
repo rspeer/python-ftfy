@@ -8,7 +8,7 @@ Here's the usage documentation for the `ftfy` command:
 .. code-block:: text
 
     usage: ftfy [-h] [-o OUTPUT] [-g] [-e ENCODING] [-n NORMALIZATION]
-                [--preserve-entities]
+                [--preserve-entities | --unescape-entities] [--preserve-quotes]
                 [filename]
 
     ftfy (fixes text for you), version 6.0
@@ -32,3 +32,17 @@ Here's the usage documentation for the `ftfy` command:
       --preserve-entities   Leave HTML entities as they are. The default is to
                             decode them, as long as no HTML tags have appeared in
                             the file.
+      --unescape-entities   Decode HTML entities even when HTML tags appear in
+                            the file.
+      --preserve-quotes     Leave curly quotation marks as they are instead of
+                            converting them to ASCII.
+
+For example, to keep curly quotes while decoding HTML entities even in text
+containing ``<`` characters::
+
+    ftfy --preserve-quotes --unescape-entities input.txt -o output.txt
+
+These options set :class:`ftfy.TextFixerConfig`'s ``uncurl_quotes=False`` and
+``unescape_html=True`` respectively. Other fixes, including mojibake repair,
+still run. ``--unescape-entities`` and ``--preserve-entities`` cannot be combined.
+Without either option, HTML entity decoding retains its automatic behavior.
