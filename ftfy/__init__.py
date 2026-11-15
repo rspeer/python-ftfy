@@ -393,7 +393,7 @@ def fix_and_explain(
 
         if config.fix_encoding:
             if steps is None:
-                text = fix_encoding(text)
+                text = fix_encoding(text, config)
             else:
                 text, encoding_steps = fix_encoding_and_explain(text, config)
                 if encoding_steps is not None:
